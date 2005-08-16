@@ -83,11 +83,9 @@
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
 
-(cl:defmethod reinitialize-instance :around
-  ((class standard-class) &rest initargs)
-  (declare (dynamic-extent initargs))
-  (prog1 (apply #'call-next-method class initargs)
-    (modify-accessors class)))
+(cl:defmethod reinitialize-instance :after
+  ((class standard-class) &key)
+  (modify-accessors class))
 
 ;;; The following three methods ensure that the dependent protocol
 ;;; for generic function works.
@@ -105,9 +103,7 @@
   ((gf standard-generic-function) &rest initargs)
   (declare (dynamic-extent initargs))
   (set-funcallable-instance-function
-   gf
-   #+cmu (clos-mop:compute-discriminating-function gf)
-   #+sbcl (sb-mop:compute-discriminating-function gf))
+   gf (compute-discriminating-function gf))
   (map-dependents
    gf (lambda (dep) (apply #'update-dependent gf dep initargs))))
 

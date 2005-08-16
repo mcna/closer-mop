@@ -115,21 +115,34 @@
 ;; - Removal of direct subclasses.
 
 (cl:defmethod initialize-instance :around
-  ((class standard-class)
-   &rest initargs
-   &key (direct-superclasses ())
-   &allow-other-keys)
+  ((class standard-class) &rest initargs)
   (declare (dynamic-extent initargs))
   (apply #'call-next-method class
          :optimize-slot-access nil
+         initargs))
+
+(cl:defmethod initialize-instance
+           ((class standard-class)
+            &rest initargs
+            &key (direct-superclasses ())
+            &allow-other-keys)
+  (declare (dynamic-extent initargs))
+  (apply #'call-next-method class
          :direct-superclasses (modify-superclasses direct-superclasses)
          initargs))
 
 (cl:defmethod reinitialize-instance :around
-  ((class standard-class)
-   &rest initargs
-   &key  (direct-superclasses () direct-superclasses-p)
-   &allow-other-keys)
+  ((class standard-class) &rest initargs)
+  (declare (dynamic-extent initargs))
+  (apply #'call-next-method class
+         :optimize-slot-access nil
+         initargs))
+
+(cl:defmethod reinitialize-instance
+           ((class standard-class)
+            &rest initargs
+            &key  (direct-superclasses () direct-superclasses-p)
+            &allow-other-keys)
   (declare (dynamic-extent initargs))
   (when direct-superclasses-p
     (setq direct-superclasses (modify-superclasses direct-superclasses))
@@ -138,29 +151,39 @@
           do (remove-direct-subclass superclass class)))
   (if direct-superclasses-p
       (apply #'call-next-method class
-             :optimize-slot-access nil
              :direct-superclasses direct-superclasses
              initargs)
-    (apply #'call-next-method class
-           :optimize-slot-access nil
-           initargs)))
+    (call-next-method)))
 
 (cl:defmethod initialize-instance :around
-  ((class funcallable-standard-class)
-   &rest initargs
-   &key (direct-superclasses ())
-   &allow-other-keys)
+  ((class funcallable-standard-class) &rest initargs)
   (declare (dynamic-extent initargs))
   (apply #'call-next-method class
          :optimize-slot-access nil
+         initargs))
+
+(cl:defmethod initialize-instance
+           ((class funcallable-standard-class)
+            &rest initargs
+            &key (direct-superclasses ())
+            &allow-other-keys)
+  (declare (dynamic-extent initargs))
+  (apply #'call-next-method class
          :direct-superclasses (modify-superclasses direct-superclasses nil)
          initargs))
 
 (cl:defmethod reinitialize-instance :around
-  ((class funcallable-standard-class)
-   &rest initargs
-   &key (direct-superclasses () direct-superclasses-p)
-   &allow-other-keys)
+  ((class funcallable-standard-class) &rest initargs)
+  (declare (dynamic-extent initargs))
+  (apply #'call-next-method class
+         :optimize-slot-access nil
+         initargs))
+
+(cl:defmethod reinitialize-instance
+           ((class funcallable-standard-class)
+            &rest initargs
+            &key (direct-superclasses () direct-superclasses-p)
+            &allow-other-keys)
   (declare (dynamic-extent initargs))
   (when direct-superclasses-p
     (setq direct-superclasses (modify-superclasses direct-superclasses nil))
@@ -169,12 +192,9 @@
           do (remove-direct-subclass superclass class)))
   (if direct-superclasses-p
       (apply #'call-next-method class
-             :optimize-slot-access nil
              :direct-superclasses direct-superclasses
              initargs)
-    (apply #'call-next-method class
-           :optimize-slot-access nil
-           initargs)))
+    (call-next-method)))
 
 ;; The following is necessary for forward-referenced-classes.
 ;; Since we replace the original funcallable-standard-object with
