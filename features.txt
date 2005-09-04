@@ -14,7 +14,7 @@ Allegro Common Lisp, 6.2 Trial edition and 7.0
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
 
-CLisp, 2.34
+CLisp, 2.34, 2.35
 
 None of the incompatibilities in CLisp are fixed.
 
@@ -23,7 +23,7 @@ None of the incompatibilities in CLisp are fixed.
 - DEFMETHOD does not call MAKE-METHOD-LAMBDA.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
 - MAKE-METHOD-LAMBDA is not provided.
-- Methods are not initialized with :function. Not fixed.
+- Methods are not initialized with :function.
 
 CMUCL 19b
 
@@ -110,7 +110,7 @@ In OpenMCL, generic functions work completely differently than specified. The sp
 
 - EQL-SPECIALIZER is not exported. Fixed.
 
-SBCL, 0.9.3
+SBCL, 0.9.3, 0.9.4
 
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
 - Classes cannot be anonymous. Fixed.
