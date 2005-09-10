@@ -468,45 +468,57 @@
                                              (declare ,@declarations)
                                              (block ,name
                                                ,@tail))))
-                  (multiple-value-bind
-                      (method-lambda method-args)
-                      (make-method-lambda
-                       gf (class-prototype method-class)
-                       lambda-expression env)
-                    (with-unique-names (gf method)
-                      (return-from defmethod
-                        `(let ((,gf (if (fboundp ',name)
-                                        (ensure-generic-function ',name)
-                                      (ensure-generic-function
-                                       ',name :lambda-list ',gf-lambda-list)))
-                               (,method
-                                (make-instance
-                                 ',method-class
-                                 :qualifiers ',qualifiers
-                                 :specializers
-                                 (list
-                                  ,@(mapcar
-                                     (lambda (specializer-name)
-                                       (typecase specializer-name
-                                         (symbol `(find-class ',specializer-name))
-                                         (cons (cond
-                                                ((> (length specializer-name) 2)
-                                                 (error "Invalid specializer ~S in defmethod form ~S."
-                                                        specializer-name form))
-                                                ((eq (car specializer-name) 'eql)
-                                                 `(intern-eql-specializer ,(cadr specializer-name)))
-                                                (t (error "Invalid specializer ~S in defmethod form ~S."
-                                                          specializer-name form))))
-                                         (t (error "Invalid specializer ~S in defmethod form ~S."
-                                                   specializer-name form))))
-                                     (extract-specializer-names specialized-args)))
-                                 :lambda-list ',lambda-list
-                                 :function (function ,method-lambda)
-                                 ,@(unless (eq documentation :unbound)
-                                     (list :documentation documentation))
-                                 ,@method-args)))
-                           (add-method ,gf ,method)
-                           ,method)))))))))
+                  (if (equal (compute-applicable-methods
+                              #'make-method-lambda
+                              (list gf (class-prototype method-class)
+                                    lambda-expression env))
+                             (list (find-method
+                                    #'make-method-lambda '()
+                                    (list (find-class 'cl:standard-generic-function)
+                                          (find-class 'standard-method)
+                                          (find-class 't)
+                                          (find-class 't))
+                                    nil)))
+                      (return-from defmethod `(cl:defmethod ,@(rest form)))
+                    (multiple-value-bind
+                        (method-lambda method-args)
+                        (make-method-lambda
+                         gf (class-prototype method-class)
+                         lambda-expression env)
+                      (with-unique-names (gf method)
+                        (return-from defmethod
+                          `(let ((,gf (if (fboundp ',name)
+                                          (ensure-generic-function ',name)
+                                        (ensure-generic-function
+                                         ',name :lambda-list ',gf-lambda-list)))
+                                 (,method
+                                  (make-instance
+                                   ',method-class
+                                   :qualifiers ',qualifiers
+                                   :specializers
+                                   (list
+                                    ,@(mapcar
+                                       (lambda (specializer-name)
+                                         (typecase specializer-name
+                                           (symbol `(find-class ',specializer-name))
+                                           (cons (cond
+                                                  ((> (length specializer-name) 2)
+                                                   (error "Invalid specializer ~S in defmethod form ~S."
+                                                          specializer-name form))
+                                                  ((eq (car specializer-name) 'eql)
+                                                   `(intern-eql-specializer ,(cadr specializer-name)))
+                                                  (t (error "Invalid specializer ~S in defmethod form ~S."
+                                                            specializer-name form))))
+                                           (t (error "Invalid specializer ~S in defmethod form ~S."
+                                                     specializer-name form))))
+                                       (extract-specializer-names specialized-args)))
+                                   :lambda-list ',lambda-list
+                                   :function (function ,method-lambda)
+                                   ,@(unless (eq documentation :unbound)
+                                       (list :documentation documentation))
+                                   ,@method-args)))
+                             (add-method ,gf ,method)
+                             ,method))))))))))
 
 ;; The following macro ensures that the new standard-generic-function
 ;; is used by default. It also ensures that make-method-lambda is called
