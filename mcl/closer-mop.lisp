@@ -63,11 +63,8 @@
           (remove standard-object direct-superclasses)))))
 
   (cl:defmethod initialize-instance :around
-    ((class standard-class)
-     &rest initargs
-     &key (name (gensym))
-     (direct-superclasses ())
-     &allow-other-keys)
+    ((class standard-class) &rest initargs
+     &key (name (gensym)) (direct-superclasses ()))
     (declare (dynamic-extent initargs))
     (apply #'call-next-method class
            :name name
@@ -75,10 +72,8 @@
            initargs))
 
   (cl:defmethod reinitialize-instance :around
-    ((class standard-class)
-     &rest initargs
-     &key (direct-superclasses () direct-superclasses-p)
-     &allow-other-keys)
+    ((class standard-class) &rest initargs
+     &key (direct-superclasses () direct-superclasses-p))
     (declare (dynamic-extent initargs))
     (if direct-superclasses-p
         (apply #'call-next-method class

@@ -75,10 +75,8 @@
 ;; potentially anonymous.
 
 (cl:defmethod initialize-instance :around
-  ((class standard-class)
-   &rest initargs
-   &key (name (gensym))
-   &allow-other-keys)
+  ((class standard-class) &rest initargs
+   &key (name (gensym)))
   (declare (dynamic-extent initargs))
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
