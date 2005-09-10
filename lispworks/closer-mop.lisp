@@ -175,7 +175,8 @@
 
 (cl:defmethod change-class :around
   ((class forward-referenced-class)
-   (new-class funcallable-standard-class) &rest initargs
+   (new-class funcallable-standard-class)
+   &rest initargs
    &key (direct-superclasses ()))
   (declare (dynamic-extent initargs))
   (apply #'call-next-method class new-class
