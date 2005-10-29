@@ -24,7 +24,6 @@ None of the incompatibilities in CLisp are fixed.
 - DEFMETHOD does not call MAKE-METHOD-LAMBDA.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
 - MAKE-METHOD-LAMBDA is not provided.
-- Methods are not initialized with :function.
 
 CMUCL 19b
 
