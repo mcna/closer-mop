@@ -19,6 +19,7 @@
 :clisp
 :accessor-method-initialized-with-function (no)
 :add-method-calls-compute-discriminating-function (no)
+:compute-slots-requested-slot-order-honoured (no)
 :defmethod-calls-make-method-lambda (no)
 :forward-referenced-class-changed-by-change-class (no)
 :initialize-instance-calls-compute-discriminating-function (no)
@@ -37,6 +38,8 @@
 :class-initialization-calls-reader-method-class (fixed)
 :class-initialization-calls-writer-method-class (fixed)
 :dependent-protocol-for-generic-functions (fixed)
+:discriminating-functions-can-be-closures (no)
+:discriminating-functions-can-be-funcalled (no)
 :documentation-passed-to-effective-slot-definition-class (redef sc)
 :effective-slot-definition-initialized-with-documentation (redef sc)
 :method-initialized-with-function (no)
@@ -139,6 +142,8 @@
 :compute-applicable-methods-using-classes (no)
 :defmethod-calls-generic-function-method-class (no)
 :defmethod-calls-make-method-lambda (no)
+:discriminating-functions-can-be-closures (no)
+:discriminating-functions-can-be-funcalled (no)
 :funcallable-standard-object (no)
 :function-invocation-calls-compute-applicable-methods (no)
 :function-invocation-calls-compute-applicable-methods-using-classes (no)
@@ -154,6 +159,7 @@
 :setf-generic-function-name (no)
 :setf-generic-function-name-calls-reinitialize-instance (no)
 -
+:compute-slots-requested-slot-order-honoured (no)
 :direct-slot-definition (fixed)
 :direct-superclasses-by-default-empty (not fixed, but direct superclasses are automatically adjusted, not for funcallable-standard-class though)
 :effective-slot-definition (fixed)
@@ -168,6 +174,8 @@
 :compute-applicable-methods-using-classes (no)
 :defmethod-calls-generic-function-method-class (no)
 :defmethod-calls-make-method-lambda (no)
+:discriminating-functions-can-be-closures (no)
+:discriminating-functions-can-be-funcalled (no)
 :funcallable-standard-object (no)
 :function-invocation-calls-compute-applicable-methods (no)
 :function-invocation-calls-compute-applicable-methods-using-classes (no)
@@ -181,6 +189,7 @@
 :setf-generic-function-name (no)
 :setf-generic-function-name-calls-reinitialize-instance (no)
 -
+:compute-slots-requested-slot-order-honoured (no)
 :eql-specializer (fixed)
 
 :sbcl
@@ -194,9 +203,7 @@
 :dependent-protocol-for-generic-functions (fixed)
 :documentation-passed-to-effective-slot-definition-class (redef finalize-inheritance)
 :effective-slot-definition-initialized-with-documentation (redef finalize-inheritance)
-:metaobject (no)
 :method-initialized-with-function (no)
 :reinitialize-instance-calls-compute-discriminating-function (fixed)
 :setf-class-name-calls-reinitialize-instance (no)
 :setf-generic-function-name-calls-reinitialize-instance (no)
-:standard-class-and-funcallable-standard-class-are-compatible (no)

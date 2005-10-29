@@ -4,8 +4,8 @@
   (:use #:common-lisp #:lispworks)
   (:nicknames #:c2mop)
 
-  (:shadow #:defclass #:standard-class #:typep #:subtypep)
-  (:export #:defclass #:standard-class #:typep #:subtypep)
+  (:shadow #:typep #:subtypep)
+  (:export #:typep #:subtypep)
 
   (:import-from
    #+cmu #:clos-mop
@@ -17,7 +17,7 @@
    #:forward-referenced-class
    #:funcallable-standard-class
    #:funcallable-standard-object
-   #-sbcl #:metaobject
+   #:metaobject
    #:slot-definition
    #:specializer
    #:standard-accessor-method
@@ -103,7 +103,7 @@
    #:forward-referenced-class
    #:funcallable-standard-class
    #:funcallable-standard-object
-   #-sbcl #:metaobject
+   #:metaobject
    #:slot-definition
    #:specializer
    #:standard-accessor-method

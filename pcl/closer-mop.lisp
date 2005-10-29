@@ -1,5 +1,12 @@
 (in-package :closer-mop)
 
+;; The following is commented out. SBCL now supports compatible standard-class and
+;; funcallable-standard-class metaclasses, but this requires that we don't mess with
+;; the class hierarchy anymore. So we will try the trick we have already used
+;; for generic functions: We just add methods for the existing metaclasses.
+;; This is not AMOP-compliant, but if it works it works.
+
+#|
 ;; We need a new standard-class for various things.
 
 (cl:defclass standard-class (cl:standard-class)
@@ -21,10 +28,18 @@
   (or (when (eq (class-of class) (find-class 'standard-class))
         (member (class-of superclass)
                 (list (find-class 'cl:standard-class)
-                      (find-class 'standard-class))))
+                      (find-class 'standard-class)
+                      #+sbcl (find-class 'funcallable-standard-class))))
       (call-next-method)
       (when (eq (class-of superclass) (find-class 'cl:standard-class))
         (validate-superclass class (class-prototype (find-class 'standard-class))))))
+
+#+sbcl
+(cl:defmethod validate-superclass
+           ((class funcallable-standard-class)
+            (superclass standard-class))
+  (and (eq (class-of class) (find-class 'funcallable-standard-class))
+       (eq (class-of superclass) (find-class 'standard-class))))
 
 ;; The following macro ensures that the new standard-class is used
 ;; by default. It would have been useful to fix other deficiencies
@@ -38,9 +53,10 @@
       `(cl:defclass ,name ,supers ,@options)
     `(cl:defclass ,name ,supers ,@options
        (:metaclass standard-class))))
+|#
 
 ;; In CMUCL and SBCL, reader-method-class and writer-method-class are
-;; not used during class initialization. The following three definitions
+;; not used during class initialization. The following definitions
 ;; correct this.
 
 (defun modify-accessors (class)
@@ -70,7 +86,7 @@
               unless (eq method-class (class-of writer-method))
               do (add-method writer-function (apply #'make-instance method-class initargs)))))
 
-;; The following two methods additionally create a gensym for the class name
+;; The following methods additionally create a gensym for the class name
 ;; unless a name is explicitly provided. AMOP requires classes to be
 ;; potentially anonymous.
 
@@ -81,8 +97,19 @@
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
 
+(cl:defmethod initialize-instance :around
+  ((class funcallable-standard-class) &rest initargs
+   &key (name (gensym)))
+  (declare (dynamic-extent initargs))
+  (prog1 (apply #'call-next-method class :name name initargs)
+    (modify-accessors class)))
+
 (cl:defmethod reinitialize-instance :after
   ((class standard-class) &key)
+  (modify-accessors class))
+
+(cl:defmethod reinitialize-instance :after
+  ((class funcallable-standard-class) &key)
   (modify-accessors class))
 
 ;;; The following three methods ensure that the dependent protocol

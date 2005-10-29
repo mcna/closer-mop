@@ -14,12 +14,13 @@ Allegro Common Lisp, 6.2 Trial edition and 7.0
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
 
-CLisp, 2.34, 2.35
+CLisp, 2.35
 
 None of the incompatibilities in CLisp are fixed.
 
 - Methods are not initialized with :function.
 - ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.
+- The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP.
 - DEFMETHOD does not call MAKE-METHOD-LAMBDA.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
 - MAKE-METHOD-LAMBDA is not provided.
@@ -30,6 +31,7 @@ CMUCL 19b
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
+- The object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk. Not fixed.
 - The dependent protocol for generic functions doesn't work fully. Fixed.
 - Effective slot definitions are not initialized with :documentation, and EFFECTIVE-SLOT-DEFINITION-CLASS also doesn't receive that initarg. Not fixed.
 - Methods are not initialized with :function. Not fixed.
@@ -99,6 +101,8 @@ MCL 5.1
 
 In MCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
 
+- The object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk. Not fixed.
+- The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, SLOT-DEFINITION and STANDARD-SLOT-DEFINITION are not exported. Fixed.
 - When classes are initialized, :direct-superclasses are by default not empty. Not fixed, but direct superclasses are automatically adjusted when you use the standard idiom for adding a new default superclass.
 - Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
@@ -108,25 +112,27 @@ OpenMCL, 0.14.3
 
 In OpenMCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
 
+- The object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk. Not fixed.
+- The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - EQL-SPECIALIZER is not exported. Fixed.
 
-SBCL, 0.9.3, 0.9.4
+SBCL, 0.9.6
 
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
 - The dependent protocol for generic functions doesn't work fully. Fixed.
 - Effective slot definitions are not initialized with :documentation, and EFFECTIVE-SLOT-DEFINITION-CLASS also doesn't receive that initarg. Not fixed.
-- METAOBJECT doesn't exist. Not fixed.
 - Methods are not initialized with :function. Not fixed.
 - REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
 - (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) do not use REINITIALIZE-INSTANCE for changing the names. Not fixed.
-- STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 
 
 Summary:
 
 - If you specialize COMPUTE-DEFAULT-INITAGS, conditionalize for the extra parameters in Allegro Common Lisp.
+- In CMUCL, MCL and OpenMCL, the object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk.
+- In CLisp, MCL and OpenMCL, the slot order requested by a primary method for COMPUTE-SLOTS is not honoured by the respective MOPs.
 - Don't rely on FIND-METHOD-COMBINATION to do its job correctly, only when you don't provide method combination options.
 - MAKE-METHOD-LAMBDA only works in CMUCL and SBCL as specified (but make sure that the respective generic function and method metaobject classes and make-method-lambda definitions are part of your compilation enviroment). MAKE-METHOD-LAMBDA also works in LispWorks, but the returned lambda expressions don't adhere to the AMOP specification (which may be good enough for your purposes).
 - Specialize the methods for the dependent protocol on the class or generic function metaobject class. The example in AMOP doesn't do this but that is fragile code.
@@ -134,7 +140,7 @@ Summary:
 - CLisp doesn't change a FORWARD-REFERENCED-CLASS via CHANGE-CLASS. Apart from that, FORWARD-REFERENCED-CLASS works reliably across all MOPs.
 - Effective slot definitions and EFFECTIVE-SLOT-DEFINITION-CLASS don't receive :documentation in CMUCL and SBCL, and no :allocation (!) in LispWorks.
 - If you specialize DIRECT-SLOT-DEFINITION-CLASS, use FIX-SLOT-INITARGS in portable code.
-- In CMUCL, SBCL and LispWorks, STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible.
+- In Allegro, CMUCL and LispWorks, STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible.
 - The function invocation protocol only works in CMUCL, SBCL and CLisp.
 - If you need to see :direct-default-initargs when classes are initialized, conditionalize on #+lispworks to receive :default-initargs instead.
 - COMPUTE-DEFAULT-INITARGS doesn't exist (and isn't called) in LispWorks.
@@ -143,5 +149,4 @@ Summary:
 - If you need to see :declarations when generic functions are initialized, conditionalize on #+lispworks to receive 'declare instead. (Actually, AMOP and ANSI Common Lisp diverge in this regard. AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since most MOP implementations adhere to AMOP in this regard, I have also chosen that path.)
 - In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
 - In LispWorks, the class SPECIALIZER doesn't exist.
-- In SBCL, the class METAOBJECT doesn't exist.
 - If you need to rely on the generic function protocols, don't use MCL or OpenMCL (or be very careful - some minor things work there as specified).
