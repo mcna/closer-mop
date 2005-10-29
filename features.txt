@@ -107,11 +107,10 @@ In MCL, generic functions work completely differently than specified. The specif
 - Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
 - (SETF CLASS-NAME) doesn't use REINITIALIZE-INSTANCE for changing the names. Fixed.
 
-OpenMCL, 0.14.3
+OpenMCL, 1.0
 
 In OpenMCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
 
-- The object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk. Not fixed.
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - EQL-SPECIALIZER is not exported. Fixed.
 

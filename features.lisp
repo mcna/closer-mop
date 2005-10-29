@@ -186,8 +186,6 @@
 :method-lambdas-are-processed (no)
 :reinitialize-instance-calls-compute-discriminating-function (no)
 :remove-method-calls-compute-discriminating-function (no)
-:setf-generic-function-name (no)
-:setf-generic-function-name-calls-reinitialize-instance (no)
 -
 :compute-slots-requested-slot-order-honoured (no)
 :eql-specializer (fixed)
