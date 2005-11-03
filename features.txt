@@ -70,7 +70,7 @@ LispWorks, 4.3 Personal Edition
 - SPECIALIZER-DIRECT-GENERIC-FUNCTIONS doesn't exist. Fixed.
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 
-LispWorks, 4.4.5, Personal and Professional Editions
+LispWorks, 4.4.5, 4.4.6, Personal and Professional Editions
 
 - ADD-METHOD doesn't call ADD-DIRECT-METHOD and REMOVE-METHOD. Fixed.
 - ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.

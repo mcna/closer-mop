@@ -2,8 +2,8 @@ Allegro 6.2 Trial
 Allegro 7.0
 CLisp 2.35
 CMU Common Lisp 19b
-LispWorks 4.4.5 Personal Edition
-LispWorks 4.4.5 Professional Edition
+LispWorks 4.4.5, 4.4.6 Personal Edition
+LispWorks 4.4.5, 4.4.6 Professional Edition
 Macintosh Common Lisp 5.1
 OpenMCL 1.0
 SBCL 0.9.6
