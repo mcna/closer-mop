@@ -5,11 +5,11 @@
   (:nicknames #:c2mop)
 
   (:shadow
-   #:defgeneric #:ensure-generic-function 
-   #:standard-generic-function)
+   #:defclass #:defgeneric #:ensure-generic-function 
+   #:standard-class #:standard-generic-function)
   (:export
-   #:defgeneric #:ensure-generic-function
-   #:standard-generic-function)
+   #:defclass #:defgeneric #:ensure-generic-function
+   #:standard-class #:standard-generic-function)
 
   (:import-from #:mop
 

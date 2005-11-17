@@ -1,5 +1,83 @@
 (in-package :closer-mop)
 
+;; We need a new standard-class for various things.
+
+(cl:defclass standard-class (cl:standard-class)
+  ())
+
+;; validate-superclass for metaclass classes is a little bit
+;; more tricky than for class metaobject classes because
+;; we don't want to make all standard-classes compatible to
+;; each other.
+
+;; Our validate-superclass may get passed a class-prototype
+;; as its second argument, so don't expect its readers to
+;; yield useful information. (In ANSI parlance, "the
+;; consequences are undefined...")
+
+(cl:defmethod validate-superclass
+           ((class standard-class)
+            (superclass cl:standard-class))
+  (or (when (eq (class-of class) (find-class 'standard-class))
+        (member (class-of superclass)
+                (list (find-class 'cl:standard-class)
+                      (find-class 'standard-class))))
+      (call-next-method)
+      (when (eq (class-of superclass) (find-class 'cl:standard-class))
+        (validate-superclass class (class-prototype (find-class 'standard-class))))))
+
+;; The following macro ensures that the new standard-class is used by default.
+
+(defmacro defclass (name (&rest supers) &body options)
+  (if (member :metaclass options :key #'car)
+    `(cl:defclass ,name ,supers ,@options)
+    `(cl:defclass ,name ,supers ,@options
+       (:metaclass standard-class))))
+
+;;; In Allegro, slot-boundp-using-class and slot-makunbound-using-class are specialized
+;;; on slot names instead of effective slot definitions. In order to fix this,
+;;; we need to rewire the slot access protocol.
+
+(cl:defmethod slot-boundp-using-class
+           ((class standard-class) object (slot symbol))
+  (declare (optimize (speed 3) (debug 0) (safety 0)
+                     (compilation-speed 0)))
+  (let ((slotd (find slot (class-slots class)
+                     :test #'eq
+                     :key #'slot-definition-name)))
+    (if slotd
+      (slot-boundp-using-class class object slotd)
+      (slot-missing class object slot 'slot-boundp))))
+
+(cl:defmethod slot-boundp-using-class
+           ((class standard-class) object (slotd standard-effective-slot-definition))
+  (declare (optimize (speed 3) (debug 0) (safety 0)
+                     (compilation-speed 0)))
+  (slot-boundp-using-class
+   (load-time-value (class-prototype (find-class 'cl:standard-class)))
+   object
+   (slot-definition-name slotd)))
+
+(cl:defmethod slot-makunbound-using-class
+           ((class standard-class) object (slot symbol))
+  (declare (optimize (speed 3) (debug 0) (safety 0)
+                     (compilation-speed 0)))
+  (let ((slotd (find slot (class-slots class)
+                     :test #'eq
+                     :key #'slot-definition-name)))
+    (if slotd
+      (slot-makunbound-using-class class object slotd)
+      (slot-missing class object slot 'slot-makunbound))))
+
+(cl:defmethod slot-makunbound-using-class
+           ((class standard-class) object (slotd standard-effective-slot-definition))
+  (declare (optimize (speed 3) (debug 0) (safety 0)
+                     (compilation-speed 0)))
+  (slot-makunbound-using-class
+   (load-time-value (class-prototype (find-class 'cl:standard-class)))
+   object
+   (slot-definition-name slotd)))
+
 ;; We need a new standard-generic-function for various things.
 
 (cl:defclass standard-generic-function (cl:standard-generic-function)
