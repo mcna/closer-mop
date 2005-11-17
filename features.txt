@@ -1,6 +1,23 @@
 Features that don't adhere to AMOP in various CLOS MOP implementations, and whether and how they are resolved in Closer to MOP.
 
-Allegro Common Lisp, 6.2 Trial edition and 7.0
+Allegro Common Lisp 7.0
+
+- COMPUTE-DEFAULT-INITARGS takes more parameters than specified. Not fixed. Conditionalize on #+allegro for your own methods instead.
+- DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
+- DEFMETHOD doesn't call MAKE-METHOD-LAMBDA. Not fixed.
+- The dependent protocol for generic functions doesn't work fully. Fixed.
+- The function invocation protocol doesn't call COMPUTE-APPLICABLE-METHODS, COMPUTE-APPLICABLE-METHODS-USING-CLASSES and COMPUTE-EFFECTIVE-METHOD. Not fixed.
+- The :ALLOCATION type cannot be extended. Not fixed.
+- MAKE-METHOD-LAMBDA is not provided. Not fixed.
+- Method functions don't take parameters as specified in AMOP, but instead just the parameters that the generic function receives. Not fixed.
+- The defmethod form does not accept multiple qualifiers. Not fixed.
+- REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
+- (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) do not use REINITIALIZE-INSTANCE for changing the names. Not fixed.
+- SLOT-BOUNDP-USING-CLASS and SLOT-MAKUNBOUND-USING-CLASS are not specialized on slot definition metaobjects, but on symbols. Fixed.
+- STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
+- VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
+
+Allegro Common Lisp 8.0b
 
 - COMPUTE-DEFAULT-INITARGS takes more parameters than specified. Not fixed. Conditionalize on #+allegro for your own methods instead.
 - DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
@@ -12,6 +29,7 @@ Allegro Common Lisp, 6.2 Trial edition and 7.0
 - Method functions don't take parameters as specified in AMOP, but instead just the parameters that the generic function receives. Not fixed.
 - REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
 - (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) do not use REINITIALIZE-INSTANCE for changing the names. Not fixed.
+- SLOT-BOUNDP-USING-CLASS and SLOT-MAKUNBOUND-USING-CLASS are not specialized on slot definition metaobjects, but on symbols. Fixed.
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
 
@@ -27,13 +45,12 @@ None of the incompatibilities in CLisp are fixed.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
 - MAKE-METHOD-LAMBDA is not provided.
 
-CMUCL 19b
+CMUCL 19c
 
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
 - The object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk. Not fixed.
-- The dependent protocol for generic functions doesn't work fully. Fixed.
 - Effective slot definitions are not initialized with :documentation, and EFFECTIVE-SLOT-DEFINITION-CLASS also doesn't receive that initarg. Not fixed.
 - Methods are not initialized with :function. Not fixed.
 - Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
