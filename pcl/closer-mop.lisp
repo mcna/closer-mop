@@ -129,14 +129,17 @@
   (declare (dynamic-extent initargs))
   (set-funcallable-instance-function
    gf (compute-discriminating-function gf))
+  #-cmu
   (map-dependents
    gf (lambda (dep) (apply #'update-dependent gf dep initargs))))
 
+#-cmu
 (cl:defmethod add-method :after
   ((gf standard-generic-function) method)
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'add-method method))))
 
+#-cmu
 (cl:defmethod remove-method :after
   ((gf standard-generic-function) method)
   (map-dependents
