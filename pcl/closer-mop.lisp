@@ -124,6 +124,7 @@
 ; standard-generic-function can be created, and taking away that option from user
 ; code doesn't make a lot of sense in our context.
 
+#-sbcl
 (cl:defmethod reinitialize-instance :after
   ((gf standard-generic-function) &rest initargs)
   (declare (dynamic-extent initargs))
@@ -133,13 +134,13 @@
   (map-dependents
    gf (lambda (dep) (apply #'update-dependent gf dep initargs))))
 
-#-cmu
+#-(or cmu sbcl)
 (cl:defmethod add-method :after
   ((gf standard-generic-function) method)
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'add-method method))))
 
-#-cmu
+#-(or cmu sbcl)
 (cl:defmethod remove-method :after
   ((gf standard-generic-function) method)
   (map-dependents

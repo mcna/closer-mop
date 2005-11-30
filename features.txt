@@ -104,16 +104,12 @@ In OpenMCL, generic functions work completely differently than specified. The sp
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - EQL-SPECIALIZER is not exported. Fixed.
 
-SBCL, 0.9.6
+SBCL, 0.9.7
 
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
-- The dependent protocol for generic functions doesn't work fully. Fixed.
-- Effective slot definitions are not initialized with :documentation, and EFFECTIVE-SLOT-DEFINITION-CLASS also doesn't receive that initarg. Not fixed.
 - Methods are not initialized with :function. Not fixed.
-- REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
-- (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) do not use REINITIALIZE-INSTANCE for changing the names. Not fixed.
 
 
 Summary:
@@ -126,7 +122,7 @@ Summary:
 - Specialize the methods for the dependent protocol on the class or generic function metaobject class. The example in AMOP doesn't do this but that is fragile code.
 - Don't rely on methods being initialized with the specified initargs from inside the MOP.
 - CLisp doesn't change a FORWARD-REFERENCED-CLASS via CHANGE-CLASS. Apart from that, FORWARD-REFERENCED-CLASS works reliably across all MOPs.
-- Effective slot definitions and EFFECTIVE-SLOT-DEFINITION-CLASS don't receive :documentation in CMUCL and SBCL, and no :allocation (!) in LispWorks.
+- Effective slot definitions and EFFECTIVE-SLOT-DEFINITION-CLASS don't receive :documentation in CMUCL, and no :allocation (!) in LispWorks.
 - If you specialize DIRECT-SLOT-DEFINITION-CLASS, use FIX-SLOT-INITARGS in portable code.
 - If you want to use :ALLOCATION types other than :CLASS or :INSTANCE, you cannot use Allegro Common Lisp, CLisp, LispWorks or MCL. Only CMUCL, OpenMCL and SBCL support this.
 - In Allegro, CMUCL and LispWorks, STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible.
