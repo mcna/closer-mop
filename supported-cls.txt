@@ -1,6 +1,6 @@
 Allegro 7.0
 Allegro 8.0b
-CLisp 2.35
+CLisp 2.35, 2.36
 CMU Common Lisp 19c
 LispWorks 4.4.5, 4.4.6 Personal Edition
 LispWorks 4.4.5, 4.4.6 Professional Edition
