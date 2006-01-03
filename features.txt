@@ -33,7 +33,7 @@ Allegro Common Lisp 8.0b
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
 
-CLisp, 2.35 and 2.36
+CLisp 2.35 and 2.36
 
 None of the incompatibilities in CLisp are fixed.
 
@@ -42,6 +42,17 @@ None of the incompatibilities in CLisp are fixed.
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP.
 - DEFMETHOD does not call MAKE-METHOD-LAMBDA.
 - The :ALLOCATION type cannot be extended. Not fixed.
+- A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
+- MAKE-METHOD-LAMBDA is not provided.
+
+CLisp 2.37
+
+None of the incompatibilities in CLisp are fixed.
+
+- Methods are not initialized with :function.
+- ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.
+- The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP.
+- DEFMETHOD does not call MAKE-METHOD-LAMBDA.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
 - MAKE-METHOD-LAMBDA is not provided.
 
@@ -124,7 +135,7 @@ Summary:
 - CLisp doesn't change a FORWARD-REFERENCED-CLASS via CHANGE-CLASS. Apart from that, FORWARD-REFERENCED-CLASS works reliably across all MOPs.
 - Effective slot definitions and EFFECTIVE-SLOT-DEFINITION-CLASS don't receive :documentation in CMUCL, and no :allocation (!) in LispWorks.
 - If you specialize DIRECT-SLOT-DEFINITION-CLASS, use FIX-SLOT-INITARGS in portable code.
-- If you want to use :ALLOCATION types other than :CLASS or :INSTANCE, you cannot use Allegro Common Lisp, CLisp, LispWorks or MCL. Only CMUCL, OpenMCL and SBCL support this.
+- If you want to use :ALLOCATION types other than :CLASS or :INSTANCE, you cannot use Allegro Common Lisp, CLisp before 2.37, LispWorks or MCL. Only CLisp from 2.37 on, CMUCL, OpenMCL and SBCL support this.
 - In Allegro, CMUCL and LispWorks, STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible.
 - The function invocation protocol only works in CMUCL, SBCL and CLisp.
 - If you need to see :direct-default-initargs when classes are initialized, conditionalize on #+lispworks to receive :default-initargs instead.

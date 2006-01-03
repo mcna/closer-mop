@@ -40,12 +40,25 @@
 :standard-class-and-funcallable-standard-class-are-compatible (no)
 :t-is-always-a-valid-superclass (no)
 
-:clisp
+:clisp2.35-2.36
 :accessor-method-initialized-with-function (no)
 :add-method-calls-compute-discriminating-function (no)
 :compute-slots-requested-slot-order-honoured (no)
 :defmethod-calls-make-method-lambda (no)
 :extensible-allocation (no)
+:forward-referenced-class-changed-by-change-class (no)
+:initialize-instance-calls-compute-discriminating-function (no)
+:make-method-lambda (no)
+:method-initialized-with-function (no)
+:method-lambdas-are-processed (no)
+:reinitialize-instance-calls-compute-discriminating-function (no)
+:remove-method-calls-compute-discriminating-function (no)
+
+:clisp2.37
+:accessor-method-initialized-with-function (no)
+:add-method-calls-compute-discriminating-function (no)
+:compute-slots-requested-slot-order-honoured (no)
+:defmethod-calls-make-method-lambda (no)
 :forward-referenced-class-changed-by-change-class (no)
 :initialize-instance-calls-compute-discriminating-function (no)
 :make-method-lambda (no)
