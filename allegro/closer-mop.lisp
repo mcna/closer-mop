@@ -3,7 +3,9 @@
 ;; We need a new standard-class for various things.
 
 (cl:defclass standard-class (cl:standard-class)
-  ())
+  ((valid-slot-allocations :initform '(:instance :class)
+                           :accessor valid-slot-allocations
+                           :reader excl::valid-slot-allocation-list)))
 
 ;; validate-superclass for metaclass classes is a little bit
 ;; more tricky than for class metaobject classes because
@@ -33,6 +35,13 @@
     `(cl:defclass ,name ,supers ,@options)
     `(cl:defclass ,name ,supers ,@options
        (:metaclass standard-class))))
+
+;; Allegro defines an extra check for :allocation kinds. AMOP expects any kind to be
+;; permissible, though. This is corrected here.
+
+(defmethod direct-slot-definition-class :before ((class standard-class) &key allocation &allow-other-keys)
+  (unless (eq (class-of class) (find-class 'standard-class))
+    (pushnew allocation (valid-slot-allocations class))))
 
 ;;; In Allegro, slot-boundp-using-class and slot-makunbound-using-class are specialized
 ;;; on slot names instead of effective slot definitions. In order to fix this,

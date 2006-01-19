@@ -29,3 +29,4 @@ v0.3
 - Allegro 6.2 is not supported anymore. The existing conditionalizations are still available, though, and will be retained as long as they don't stand in the way of anything else.
 - The incorrect specialization of slot-boundp-using-class and slot-makunbound-using-class on symbols instead of slot definition metaobjects in Allegro is fixed.
 - SBCL 0.9.7 has improved a lot wrt MOP compatibility. This required some changes in the PCL support.
+- The lack of extensible :allocation kinds in Allegro is fixed. (Covers 6.2, 7.0 and 8.0. Thanks to John Foderaro for giving me the important hint on how to solve this.)
