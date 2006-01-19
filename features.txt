@@ -17,7 +17,7 @@ Allegro Common Lisp 7.0
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
 
-Allegro Common Lisp 8.0b
+Allegro Common Lisp 8.0
 
 - COMPUTE-DEFAULT-INITARGS takes more parameters than specified. Not fixed. Conditionalize on #+allegro for your own methods instead.
 - DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.

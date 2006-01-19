@@ -20,7 +20,7 @@
 :standard-class-and-funcallable-standard-class-are-compatible (no)
 :t-is-always-a-valid-superclass (no)
 
-:allegro8.0b
+:allegro8.0
 :compute-default-initargs -> :compute-default-initargs-allegro (no)
 :defgeneric-calls-find-method-combination (no)
 :defmethod-calls-make-method-lambda (no)
