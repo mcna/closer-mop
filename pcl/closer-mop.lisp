@@ -146,6 +146,7 @@
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'remove-method method))))
 
+#|
 (defun ensure-method (gf lambda-expression 
                          &key (method-class (generic-function-method-class gf))
                          (qualifiers ())
@@ -158,15 +159,40 @@
       (make-method-lambda
        gf (class-prototype method-class)
        lambda-expression ())
-    (let ((method  (apply #'make-instance
-                          method-class
-                          :qualifiers qualifiers
-                          :lambda-list lambda-list
-                          :specializers specializers
-                          :function (compile nil method-lambda)
-                          method-args)))
+    (let ((method (apply #'make-instance
+                         method-class
+                         :qualifiers qualifiers
+                         :lambda-list lambda-list
+                         :specializers specializers
+                         :function (compile nil (print method-lambda))
+                         method-args)))
       (add-method gf method)
       method)))
+|#
+
+#+sbcl
+(defgeneric transform-specializer (specializer)
+  (:method (specializer) specializer)
+  (:method ((specializer class))
+   (class-name specializer))
+  (:method ((specializer eql-specializer))
+   `(eql ,(eql-specializer-object specializer))))
+
+(defun ensure-method (gf lambda-expression 
+                         &key (qualifiers ())
+                         (lambda-list (cadr lambda-expression))
+                         (specializers (loop for arg in lambda-list
+                                             until (member arg lambda-list-keywords)
+                                             collect 't)))
+  (funcall (compile nil `(lambda ()
+                           (defmethod ,(generic-function-name gf) ,@qualifiers
+                             ,(loop for specializer in specializers
+                                    for (arg . rest) on lambda-list
+                                    collect `(,arg ,
+                                                   #-sbcl specializer
+                                                   #+sbcl (transform-specializer specializer)) into args
+                                    finally (return (nconc args rest)))
+                             ,@(cddr lambda-expression))))))
 
 ;; The following can be used in direct-slot-definition-class to get the correct initargs
 ;; for a slot. Use it like this:
