@@ -120,6 +120,7 @@
 
    #:ensure-method
    #:fix-slot-initargs
+   #:required-args
 
    #-lispworks4.3 #:accessor-method-slot-definition
    #:add-dependent

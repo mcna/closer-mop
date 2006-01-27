@@ -1,5 +1,12 @@
 (in-package :closer-mop)
 
+;; This is a useful utility function.
+
+(defun required-args (lambda-list &optional (collector #'identity))
+  (loop for arg in lambda-list
+        until (member arg lambda-list-keywords)
+        collect (funcall collector arg)))
+
 #-openmcl
 (progn
   ;; We need a new standard-class for various things.
@@ -107,9 +114,7 @@
 (defun ensure-method (gf lambda-expression 
                          &key (qualifiers ())
                          (lambda-list (cadr lambda-expression))
-                         (specializers (loop for arg in lambda-list
-                                             until (member arg lambda-list-keywords)
-                                             collect (find-class 't))))
+                         (specializers (required-args lambda-list (constantly (find-class 't)))))
   (eval `(defmethod ,(generic-function-name gf) ,@qualifiers
            ,(loop for specializer in specializers
                   for (arg . rest) on lambda-list

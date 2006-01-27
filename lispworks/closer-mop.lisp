@@ -1,5 +1,12 @@
 (in-package :closer-mop)
 
+;; This is a useful utility function.
+
+(defun required-args (lambda-list &optional (collector #'identity))
+  (loop for arg in lambda-list
+        until (member arg lambda-list-keywords)
+        collect (funcall collector arg)))
+
 ;; We need a new standard-generic-function for various things.
 
 (cl:defclass standard-generic-function (cl:standard-generic-function)
@@ -407,9 +414,7 @@
                          &key (method-class (generic-function-method-class gf))
                          (qualifiers ())
                          (lambda-list (cadr lambda-expression))
-                         (specializers (loop for arg in lambda-list
-                                             until (member arg lambda-list-keywords)
-                                             collect (find-class 't))))
+                         (specializers (required-args lambda-list (constantly (find-class 't)))))
   (multiple-value-bind
       (method-lambda method-args)
       (make-method-lambda

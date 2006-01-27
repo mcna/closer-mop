@@ -115,6 +115,7 @@
 
    #:ensure-method
    #:fix-slot-initargs
+   #:required-args
 
    #:accessor-method-slot-definition
    #:add-dependent
