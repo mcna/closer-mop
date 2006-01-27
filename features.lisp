@@ -54,7 +54,7 @@
 :reinitialize-instance-calls-compute-discriminating-function (no)
 :remove-method-calls-compute-discriminating-function (no)
 
-:clisp2.37
+:clisp2.37-2.38
 :accessor-method-initialized-with-function (no)
 :add-method-calls-compute-discriminating-function (no)
 :compute-slots-requested-slot-order-honoured (no)

@@ -45,7 +45,7 @@ None of the incompatibilities in CLisp are fixed.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
 - MAKE-METHOD-LAMBDA is not provided.
 
-CLisp 2.37
+CLisp 2.37 and 2.38
 
 None of the incompatibilities in CLisp are fixed.
 
@@ -108,14 +108,14 @@ In MCL, generic functions work completely differently than specified. The specif
 - Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
 - (SETF CLASS-NAME) doesn't use REINITIALIZE-INSTANCE for changing the names. Fixed.
 
-OpenMCL, 1.0
+OpenMCL 1.0
 
 In OpenMCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
 
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - EQL-SPECIALIZER is not exported. Fixed.
 
-SBCL, 0.9.7
+SBCL 0.9.7 - 0.9.9
 
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
 - Classes cannot be anonymous. Fixed.
