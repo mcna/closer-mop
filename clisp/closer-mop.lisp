@@ -8,8 +8,8 @@
                                              collect (find-class 't))))
   (funcall (compile nil `(lambda () 
                            (defmethod ,(generic-function-name gf) ,@qualifiers
-                             ,(loop for (arg . rest) on lambda-list
-                                    for specializer in specializers
+                             ,(loop for specializer in specializers
+                                    for (arg . rest) on lambda-list
                                     collect `(,arg ,specializer) into args
                                     finally (return (nconc args rest)))
                              ,@(cddr lambda-expression))))))
