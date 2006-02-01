@@ -2,6 +2,7 @@ Features that don't adhere to AMOP in various CLOS MOP implementations, and whet
 
 Allegro Common Lisp 7.0
 
+- CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS doesn't return canonicalized default initargs as specified. Not fixed.
 - COMPUTE-DEFAULT-INITARGS takes more parameters than specified. Not fixed. Conditionalize on #+allegro for your own methods instead.
 - DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
 - DEFMETHOD doesn't call MAKE-METHOD-LAMBDA. Not fixed.
@@ -19,6 +20,7 @@ Allegro Common Lisp 7.0
 
 Allegro Common Lisp 8.0
 
+- CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS doesn't return canonicalized default initargs as specified. Not fixed.
 - COMPUTE-DEFAULT-INITARGS takes more parameters than specified. Not fixed. Conditionalize on #+allegro for your own methods instead.
 - DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
 - DEFMETHOD doesn't call MAKE-METHOD-LAMBDA. Not fixed.
@@ -58,11 +60,13 @@ None of the incompatibilities in CLisp are fixed.
 
 CMUCL 19c
 
+- CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS doesn't return canonicalized default initargs as specified. Not fixed.
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
 - The object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk. Not fixed.
 - Effective slot definitions are not initialized with :documentation, and EFFECTIVE-SLOT-DEFINITION-CLASS also doesn't receive that initarg. Not fixed.
+- Calling DOCUMENTATION on effective slot definition metaobjects don't return their documentation as specified in ANSI Common Lisp. Fixed.
 - Methods are not initialized with :function. Not fixed.
 - Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
 - REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
@@ -71,6 +75,7 @@ CMUCL 19c
 
 LispWorks, 4.4.5, 4.4.6, Personal and Professional Editions
 
+- CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS doesn't return canonicalized default initargs as specified. Not fixed.
 - ADD-METHOD doesn't call ADD-DIRECT-METHOD and REMOVE-METHOD. Fixed.
 - ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.
 - Effective slot definitions are not initialized with :allocation, and EFFECTIVE-SLOT-DEFINITION-CLASS also doesn't receive that initarg. Not fixed. This information is encoded in the initarg :flags, but I don't have any detailed information about that parameter.
@@ -101,6 +106,7 @@ MCL 5.1
 In MCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
 
 - The object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk. Not fixed.
+- GENERIC-FUNCTION-DECLARATIONS doesn't return the specified declarations for a generic function. Not fixed.
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, SLOT-DEFINITION and STANDARD-SLOT-DEFINITION are not exported. Fixed.
 - When classes are initialized, :direct-superclasses are by default not empty. Not fixed, but direct superclasses are automatically adjusted when you use the standard idiom for adding a new default superclass.
@@ -114,6 +120,7 @@ In OpenMCL, generic functions work completely differently than specified. The sp
 
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - EQL-SPECIALIZER is not exported. Fixed.
+- DOCUMENTATION doesn't return the documentation strings for slot definition metaobjects. Fixed.
 
 SBCL 0.9.7 - 0.9.9
 
@@ -125,6 +132,7 @@ SBCL 0.9.7 - 0.9.9
 
 Summary:
 
+- CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS exist, but don't work as expected in Allegro Common Lisp, CMUCL and LispWorks.
 - If you specialize COMPUTE-DEFAULT-INITAGS, conditionalize for the extra parameters in Allegro Common Lisp.
 - In CMUCL, MCL and OpenMCL, the object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk.
 - In CLisp, MCL and OpenMCL, the slot order requested by a primary method for COMPUTE-SLOTS is not honoured by the respective MOPs.
@@ -146,3 +154,4 @@ Summary:
 - In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
 - In LispWorks, the class SPECIALIZER doesn't exist.
 - If you need to rely on the generic function protocols, don't use MCL or OpenMCL (or be very careful - some minor things work there as specified).
+- The declarations for a generic function cannot be inspected in MCL.

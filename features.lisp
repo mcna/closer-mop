@@ -1,5 +1,7 @@
 
 :allegro7.0
+:class-default-initargs (no)
+:class-direct-default-initargs (no)
 :compute-default-initargs -> :compute-default-initargs-allegro (no)
 :defgeneric-calls-find-method-combination (no)
 :defmethod-calls-make-method-lambda (no)
@@ -21,6 +23,8 @@
 :t-is-always-a-valid-superclass (no)
 
 :allegro8.0
+:class-default-initargs (no)
+:class-direct-default-initargs (no)
 :compute-default-initargs -> :compute-default-initargs-allegro (no)
 :defgeneric-calls-find-method-combination (no)
 :defmethod-calls-make-method-lambda (no)
@@ -73,6 +77,8 @@
 :accessor-method-initialized-with-slot-definition (fixed)
 :accessor-method-initialized-with-specializers (fixed)
 :anonymous-classes (fixed)
+:class-default-initargs (no)
+:class-direct-default-initargs (no)
 :class-initialization-calls-reader-method-class (fixed)
 :class-initialization-calls-writer-method-class (fixed)
 :discriminating-functions-can-be-closures (no)
@@ -84,6 +90,7 @@
 :reinitialize-instance-calls-compute-discriminating-function (fixed)
 :setf-class-name-calls-reinitialize-instance (no)
 :setf-generic-function-name-calls-reinitialize-instance (no)
+:slot-definition-documentation (fixed)
 :standard-class-and-funcallable-standard-class-are-compatible (no)
 
 :lispworks4.4
@@ -92,6 +99,8 @@
 :add-method-calls-remove-method (fixed)
 :add-method-updates-specializer-direct-generic-functions (fixed)
 :allocation-passed-to-effective-slot-definition-class (instead :flags-passed-to-effective-slot-definition-class)
+:class-default-initargs (no)
+:class-direct-default-initargs (no)
 :class-initialized-with-direct-default-initargs (instead: conditionalization)
 :class-reinitialization-calls-remove-direct-subclass (fixed)
 :compute-applicable-methods-using-classes (redef sgf)
@@ -158,6 +167,7 @@
 :effective-slot-definition (fixed)
 :eql-specializer (fixed)
 :extensible-allocation (no)
+:generic-function-declarations (no)
 :multiple-slot-options-passed-as-list-to-direct-slot-definition-class (fix with fix-slot-initargs)
 :setf-class-name-calls-reinitialize-instance (no)
 :slot-definition (fixed)
@@ -184,6 +194,7 @@
 -
 :compute-slots-requested-slot-order-honoured (no)
 :eql-specializer (fixed)
+:slot-definition-documentation (fixed)
 
 :sbcl
 :accessor-method-initialized-with-function (fixed)
