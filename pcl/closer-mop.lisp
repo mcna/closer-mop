@@ -197,6 +197,19 @@
                                     finally (return (nconc args rest)))
                              ,@(cddr lambda-expression))))))
 
+;; The following ensures that effective slot definitions have a documentation in CMUCL.
+
+#+cmu
+(defmethod compute-effective-slot-definition :around
+  ((class standard-class) name direct-slot-definitions)
+  (let ((effective-slot (call-next-method)))
+    (loop for direct-slot in direct-slot-definitions
+          for documentation = (documentation direct-slot 't)
+          when documentation do
+          (setf (documentation effective-slot 't) documentation)
+          (loop-finish))
+    effective-slot))
+
 ;; The following can be used in direct-slot-definition-class to get the correct initargs
 ;; for a slot. Use it like this:
 ;;
