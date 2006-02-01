@@ -122,6 +122,12 @@
                   finally (return (nconc args rest)))
            ,@(cddr lambda-expression))))
 
+;; The following ensures that slot definitions have a documentation in OpenMCL.
+
+#+openmcl
+(defmethod initialize-instance :after ((slot slot-definition) &key documentation)
+  (setf (documentation slot 't) documentation))
+
 ;; The following can be used in direct-slot-definition-class to get the correct initargs
 ;; for a slot. Use it like this:
 ;;
