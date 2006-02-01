@@ -30,3 +30,5 @@ v0.3
 - The incorrect specialization of slot-boundp-using-class and slot-makunbound-using-class on symbols instead of slot definition metaobjects in Allegro is fixed.
 - SBCL 0.9.7 has improved a lot wrt MOP compatibility. This required some changes in the PCL support.
 - The lack of extensible :allocation kinds in Allegro is fixed. (Covers 6.2, 7.0 and 8.0. Thanks to John Foderaro for giving me the important hint on how to solve this.)
+
+After version 0.3, there are no separate release notes anymore, but they will be generated automatically by darcs in the future.
