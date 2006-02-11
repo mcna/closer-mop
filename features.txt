@@ -17,6 +17,7 @@ Allegro Common Lisp 7.0
 - SLOT-BOUNDP-USING-CLASS and SLOT-MAKUNBOUND-USING-CLASS are not specialized on slot definition metaobjects, but on symbols. Fixed.
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
+- Subclasses of BUILT-IN-CLASS, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, METHOD-COMBINATION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 Allegro Common Lisp 8.0
 
@@ -34,6 +35,7 @@ Allegro Common Lisp 8.0
 - SLOT-BOUNDP-USING-CLASS and SLOT-MAKUNBOUND-USING-CLASS are not specialized on slot definition metaobjects, but on symbols. Fixed.
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
+- Subclasses of BUILT-IN-CLASS, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, METHOD-COMBINATION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 CLisp 2.35 and 2.36
 
@@ -46,6 +48,7 @@ None of the incompatibilities in CLisp are fixed.
 - The :ALLOCATION type cannot be extended. Not fixed.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
 - MAKE-METHOD-LAMBDA is not provided.
+- Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 CLisp 2.37 and 2.38
 
@@ -57,6 +60,7 @@ None of the incompatibilities in CLisp are fixed.
 - DEFMETHOD does not call MAKE-METHOD-LAMBDA.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
 - MAKE-METHOD-LAMBDA is not provided.
+- Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 CMUCL 19c
 
@@ -72,6 +76,7 @@ CMUCL 19c
 - REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
 - (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) do not use REINITIALIZE-INSTANCE for changing the names. Fixed.
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
+- Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SLOT-DEFINITION, SPECIALIZER, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 LispWorks, 4.4.5, 4.4.6, Personal and Professional Editions
 
@@ -100,6 +105,8 @@ LispWorks, 4.4.5, 4.4.6, Personal and Professional Editions
 - SPECIALIZER doesn't exist. Not fixed.
 - SPECIALIZER-DIRECT-GENERIC-FUNCTIONS doesn't exist. Fixed.
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
+- Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
+
 
 MCL 5.1
 
@@ -113,6 +120,7 @@ In MCL, generic functions work completely differently than specified. The specif
 - The :ALLOCATION type cannot be extended. Not fixed.
 - Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
 - (SETF CLASS-NAME) doesn't use REINITIALIZE-INSTANCE for changing the names. Fixed.
+- Subclasses of DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 OpenMCL 1.0
 
@@ -121,6 +129,7 @@ In OpenMCL, generic functions work completely differently than specified. The sp
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - EQL-SPECIALIZER is not exported. Fixed.
 - DOCUMENTATION doesn't return the documentation strings for slot definition metaobjects. Fixed.
+- Subclasses of DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, GENERIC-FUNCTION, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 SBCL 0.9.7 - 0.9.9
 
@@ -128,7 +137,7 @@ SBCL 0.9.7 - 0.9.9
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
 - Methods are not initialized with :function. Not fixed.
-
+- Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, GENERIC-FUNCTION, METHOD-COMBINATION, SLOT-DEFINITION, SPECIALIZER, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 Summary:
 
@@ -155,3 +164,4 @@ Summary:
 - In LispWorks, the class SPECIALIZER doesn't exist.
 - If you need to rely on the generic function protocols, don't use MCL or OpenMCL (or be very careful - some minor things work there as specified).
 - The declarations for a generic function cannot be inspected in MCL.
+- All implementations define slots on various specified metaobject classes that are exported from some package and/or accessible in the package common-lisp-user. Only clisp is relatively safe in that it does that only for the class METHOD-COMBINATION.
