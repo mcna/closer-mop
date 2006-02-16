@@ -34,14 +34,14 @@ OTHER DEALINGS IN THE SOFTWARE.
     #+allegro "allegro"
     #+clisp "clisp"
     #+lispworks "lispworks"
-    #+mcl "mcl"
+    #+(or mcl openmcl) "mcl"
     #+(or cmu sbcl) "pcl"
     :components ((:file "closer-mop-packages")
                  (:file "closer-mop"
-                  :depends-on ("closer-mop-packages"))))
+                        :depends-on ("closer-mop-packages"))))
    (:file "closer-mop-utility-packages"
-    :depends-on (#+allegro "allegro"
-                           #+clisp "clisp"
-                           #+lispworks "lispworks"
-                           #+mcl "mcl"
-                           #+(or cmu sbcl) "pcl"))))
+          :depends-on (#+allegro "allegro"
+                       #+clisp "clisp"
+                       #+lispworks "lispworks"
+                       #+(or mcl openmcl) "mcl"
+                       #+(or cmu sbcl) "pcl"))))
