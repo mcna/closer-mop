@@ -16,7 +16,7 @@
    #:eql-specializer
    #:forward-referenced-class
    #:funcallable-standard-class
-   #-mcl #:funcallable-standard-object
+   #-(or mcl openmcl) #:funcallable-standard-object
    #:metaobject
    #:slot-definition
    #:specializer
@@ -40,7 +40,7 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-mcl #:compute-applicable-methods-using-classes
+   #-(or mcl openmcl) #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
    #:compute-discriminating-function
@@ -66,7 +66,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-mcl #:make-method-lambda
+   #-(or mcl openmcl) #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function
@@ -102,7 +102,7 @@
    #:eql-specializer
    #:forward-referenced-class
    #:funcallable-standard-class
-   #-mcl #:funcallable-standard-object
+   #-(or mcl openmcl) #:funcallable-standard-object
    #:metaobject
    #:slot-definition
    #:specializer
@@ -130,7 +130,7 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-mcl #:compute-applicable-methods-using-classes
+   #-(or mcl openmcl) #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
    #:compute-discriminating-function
@@ -156,7 +156,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-mcl #:make-method-lambda
+   #-(or mcl openmcl) #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function
@@ -166,7 +166,7 @@
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #-mcl #:set-funcallable-instance-function
+   #-(or mcl openmcl) #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
