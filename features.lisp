@@ -200,7 +200,6 @@
 :subclasses-of-standard-slot-definition-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-writer-method-do-not-inherit-exported-slots (no)
 
-
 :mcl
 :add-method-calls-compute-discriminating-function (no)
 :compute-applicable-methods-using-classes (no)
