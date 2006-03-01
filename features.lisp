@@ -281,7 +281,7 @@
 :subclasses-of-standard-slot-definition-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-writer-method-do-not-inherit-exported-slots (no)
 
-:sbcl
+:sbcl 0.9.7 - 0.9.9
 :accessor-method-initialized-with-function (fixed)
 :accessor-method-initialized-with-lambda-list (fixed)
 :accessor-method-initialized-with-slot-definition (fixed)
@@ -310,3 +310,20 @@
 :subclasses-of-standard-reader-method-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-slot-definition-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-writer-method-do-not-inherit-exported-slots (no)
+
+:sbcl 0.9.10
+:accessor-method-initialized-with-function (fixed)
+:accessor-method-initialized-with-lambda-list (fixed)
+:accessor-method-initialized-with-slot-definition (fixed)
+:accessor-method-initialized-with-specializers (fixed)
+:anonymous-classes (fixed)
+:class-initialization-calls-reader-method-class (fixed)
+:class-initialization-calls-writer-method-class (fixed)
+:method-initialized-with-function (no)
+:subclasses-of-built-in-class-do-not-inherit-exported-slots (no)
+:subclasses-of-class-do-not-inherit-exported-slots (no)
+:subclasses-of-eql-specializer-do-not-inherit-exported-slots (no)
+:subclasses-of-forward-referenced-class-do-not-inherit-exported-slots (no)
+:subclasses-of-funcallable-standard-class-do-not-inherit-exported-slot (no)
+:subclasses-of-specializer-do-not-inherit-exported-slots (no)
+:subclasses-of-standard-class-do-not-inherit-exported-slots (no)
