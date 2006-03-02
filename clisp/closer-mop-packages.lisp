@@ -151,7 +151,6 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #:intern-eql-specializer*
    #-clisp #:make-method-lambda
    #:map-dependents
    #:method-function
