@@ -139,6 +139,106 @@
 :subclasses-of-standard-slot-definition-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-writer-method-do-not-inherit-exported-slots (no)
 
+:ecl
+:accessor-method-initialized-with-function
+:accessor-method-initialized-with-lambda-list
+:accessor-method-initialized-with-slot-definition
+:accessor-method-initialized-with-specializers
+:accessor-method-slot-definition
+:add-direct-method
+:add-method-calls-add-direct-method
+:add-method-calls-compute-discriminating-function
+:add-method-calls-remove-method
+:add-method-updates-specializer-direct-generic-functions
+:add-method-updates-specializer-direct-methods
+:class-default-initargs
+:class-direct-default-initargs
+:class-initialization-calls-reader-method-class
+:class-initialization-calls-writer-method-class
+:class-reinitialization-calls-remove-direct-subclass
+:classes-are-always-their-own-valid-superclasses
+:compute-applicable-methods-is-generic
+:compute-applicable-methods-using-classes
+:compute-effective-method-is-generic
+:defgeneric-calls-find-method-combination
+:defmethod-calls-generic-function-method-class
+:defmethod-calls-initialize-instance
+:defmethod-calls-make-method-lambda
+:dependent-protocol-for-classes
+:dependent-protocol-for-generic-functions
+:direct-slot-definition-initialized-with-type
+:discriminating-functions-can-be-closures
+:discriminating-functions-can-be-funcalled
+:eql-specializer
+:eql-specializer-object
+:eql-specializers-are-objects
+:extract-lambda-list
+:extract-specializer-names
+:find-method-combination
+:find-method-is-generic
+:funcallable-standard-class
+:funcallable-standard-object
+:function-invocation-calls-compute-applicable-methods
+:function-invocation-calls-compute-applicable-methods-using-classes
+:function-invocation-calls-compute-effective-method
+:generic-function-declarations
+:generic-function-method-class-is-generic
+:generic-function-method-combination
+:generic-functions-can-be-empty
+:initform-passed-to-direct-slot-definition-class
+:initform-passed-to-effective-slot-definition-class
+:initialize-instance-calls-compute-discriminating-function
+:intern-eql-specializer
+:make-method-lambda
+:metaobject
+:method-functions-take-processed-parameters
+:method-initialized-with-documentation
+:method-initialized-with-function
+:method-initialized-with-lambda-list
+:method-initialized-with-qualifiers
+:method-initialized-with-specializers
+:method-lambdas-are-processed
+:multiple-slot-options-passed-as-list-to-direct-slot-definition-class
+:reader-method-class
+:reinitialize-instance-calls-compute-discriminating-function
+:remove-direct-method
+:remove-method-calls-compute-discriminating-function
+:remove-method-calls-remove-direct-method
+:remove-method-is-generic
+:set-funcallable-instance-function
+:setf-class-name-calls-reinitialize-instance
+:setf-generic-function-name
+:setf-generic-function-name-calls-reinitialize-instance
+:slot-definition-documentation
+:slot-definition-initform
+:slot-definition-initfunction
+:slot-definition-type
+:slot-reader-calls-slot-value-using-class
+:slot-writer-calls-slot-value-using-class
+:specializer
+:specializer-direct-generic-functions
+:specializer-direct-methods
+:standard-accessor-method
+:standard-class-and-funcallable-standard-class-are-compatible
+:standard-reader-method
+:standard-writer-method
+:subclasses-of-built-in-class-do-not-inherit-exported-slots
+:subclasses-of-class-do-not-inherit-exported-slots
+:subclasses-of-direct-slot-definition-do-not-inherit-exported-slots
+:subclasses-of-effective-slot-definition-do-not-inherit-exported-slots
+:subclasses-of-forward-referenced-class-do-not-inherit-exported-slots
+:subclasses-of-slot-definition-do-not-inherit-exported-slots
+:subclasses-of-standard-class-do-not-inherit-exported-slots
+:subclasses-of-standard-direct-slot-definition-do-not-inherit-exported-slots
+:subclasses-of-standard-effective-slot-definition-do-not-inherit-exported-slots
+:subclasses-of-standard-generic-function-do-not-inherit-exported-slots
+:subclasses-of-standard-method-do-not-inherit-exported-slots
+:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots
+:t-is-always-a-valid-superclass
+:type-passed-to-direct-slot-definition-class
+:validate-superclass
+:writer-method-class
+
 :lispworks4.4
 :add-method-calls-add-direct-method (fixed)
 :add-method-calls-compute-discriminating-function (no)
@@ -211,6 +311,7 @@
 :function-invocation-calls-compute-applicable-methods (no)
 :function-invocation-calls-compute-applicable-methods-using-classes (no)
 :function-invocation-calls-compute-effective-method (no)
+:generic-function-declarations (no)
 :generic-function-initialized-with-declarations (no)
 :generic-functions-can-be-empty (no)
 :initialize-instance-calls-compute-discriminating-function (no)
@@ -229,7 +330,6 @@
 :effective-slot-definition (fixed)
 :eql-specializer (fixed)
 :extensible-allocation (no)
-:generic-function-declarations (no)
 :multiple-slot-options-passed-as-list-to-direct-slot-definition-class (fix with fix-slot-initargs)
 :setf-class-name-calls-reinitialize-instance (no)
 :slot-definition (fixed)
