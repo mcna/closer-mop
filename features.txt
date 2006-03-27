@@ -147,6 +147,14 @@ SBCL 0.9.10
 - Methods are not initialized with :function. Not fixed.
 - Subclasses of BUILT-IN-CLASS, CLASS, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SPECIALIZER, STANDARD-CLASS will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
+SBCL 0.9.11
+
+- Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
+- Classes cannot be anonymous. Fixed.
+- Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
+- Methods are not initialized with :function. Not fixed.
+
+
 Summary:
 
 - CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS exist, but don't work as expected in Allegro Common Lisp, CMUCL and LispWorks.
@@ -172,4 +180,4 @@ Summary:
 - In LispWorks, the class SPECIALIZER doesn't exist.
 - If you need to rely on the generic function protocols, don't use MCL or OpenMCL (or be very careful - some minor things work there as specified).
 - The declarations for a generic function cannot be inspected in MCL.
-- All implementations define slots on various specified metaobject classes that are exported from some package and/or accessible in the package common-lisp-user. Only clisp is relatively safe in that it does that only for the class METHOD-COMBINATION.
+- All implementations define slots on various specified metaobject classes that are exported from some package and/or accessible in the package common-lisp-user. Only sbcl is safe from this, and clisp is relatively safe in that it does that only for the class METHOD-COMBINATION.

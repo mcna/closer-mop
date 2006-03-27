@@ -427,3 +427,13 @@
 :subclasses-of-funcallable-standard-class-do-not-inherit-exported-slot (no)
 :subclasses-of-specializer-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-class-do-not-inherit-exported-slots (no)
+
+:sbcl 0.9.11
+:accessor-method-initialized-with-function (fixed)
+:accessor-method-initialized-with-lambda-list (fixed)
+:accessor-method-initialized-with-slot-definition (fixed)
+:accessor-method-initialized-with-specializers (fixed)
+:anonymous-classes (fixed)
+:class-initialization-calls-reader-method-class (fixed)
+:class-initialization-calls-writer-method-class (fixed)
+:method-initialized-with-function (no)
