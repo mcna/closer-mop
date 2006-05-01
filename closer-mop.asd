@@ -33,6 +33,7 @@ OTHER DEALINGS IN THE SOFTWARE.
   ((:module
     #+allegro "allegro"
     #+clisp "clisp"
+    #+ecl "ecl"
     #+lispworks "lispworks"
     #+(or mcl openmcl) "mcl"
     #+(or cmu sbcl) "pcl"
@@ -42,6 +43,7 @@ OTHER DEALINGS IN THE SOFTWARE.
    (:file "closer-mop-utility-packages"
           :depends-on (#+allegro "allegro"
                        #+clisp "clisp"
+                       #+ecl "ecl"
                        #+lispworks "lispworks"
                        #+(or mcl openmcl) "mcl"
                        #+(or cmu sbcl) "pcl"))))
