@@ -294,9 +294,9 @@
   `(eql ,object))
 
 (cl:defclass eql-specializer* (metaobject)
-  ((object :reader eql-specializer-object
-           :initarg eso
-           :initform (error "Use intern-eql-specializer to create eql-specializers."))
+  ((obj :reader eql-specializer-object
+        :initarg eso
+        :initform (error "Use intern-eql-specializer to create eql-specializers."))
    (direct-methods :reader specializer-direct-methods
                    :accessor es-direct-methods
                    :initform ())))
