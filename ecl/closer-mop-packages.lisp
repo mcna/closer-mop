@@ -106,18 +106,18 @@
    #-ecl #:metaobject
    #:slot-definition
    #-ecl #:specializer
-   #-ecl #:standard-accessor-method
+   #:standard-accessor-method
    #:standard-direct-slot-definition
    #:standard-effective-slot-definition
-   #-ecl #:standard-reader-method
+   #:standard-reader-method
    #:standard-slot-definition
-   #-ecl #:standard-writer-method
+   #:standard-writer-method
 
    #:ensure-method
    #:fix-slot-initargs
    #:required-args
 
-   #-ecl #:accessor-method-slot-definition
+   #:accessor-method-slot-definition
    #-ecl #:add-dependent
    #:add-direct-method
    #:add-direct-subclass

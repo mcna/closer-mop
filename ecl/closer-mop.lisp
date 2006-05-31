@@ -61,6 +61,18 @@
            args)))
 |#
 
+;; The standard accessor classes.
+
+(cl:defclass standard-accessor-method (standard-method)
+  ((slotd :initarg :slot-definition
+          :reader accessor-method-slot-definition)))
+
+(cl:defclass standard-reader-method (standard-accessor-method)
+  ())
+
+(cl:defclass standard-writer-method (standard-accessor-method)
+  ())
+
 ;; In ECL, reader-method-class and writer-method-class are
 ;; not used during class initialization. The following definitions
 ;; correct this.
@@ -68,12 +80,12 @@
 (cl:defgeneric reader-method-class (class slot-definition &rest initargs)
   (:method ((class class) slot-definition &rest initargs)
    (declare (ignore slot-definition initargs))
-   (load-time-value (find-class 'standard-method))))
+   (load-time-value (find-class 'standard-reader-method))))
 
 (cl:defgeneric writer-method-class (class slot-definition &rest initargs)
   (:method ((class class) slot-definition &rest initargs)
    (declare (ignore slot-definition initargs))
-   (load-time-value (find-class 'standard-method))))
+   (load-time-value (find-class 'standard-writer-method))))
 
 (cl:defgeneric find-method (gf qualifiers specializers &optional errorp)
   (:method ((gf generic-function) qualifiers specializers &optional (errorp t))
@@ -155,9 +167,9 @@
 (cl:defgeneric specializer-direct-methods (specializer))
 
 (cl:defclass eql-specializer* (standard-object)
-  ((object :reader eql-specializer-object
-           :initarg eso
-           :initform (error "Use intern-eql-specializer to create eql-specializers."))
+  ((obj :reader eql-specializer-object
+        :initarg eso
+        :initform (error "Use intern-eql-specializer to create eql-specializers."))
    (direct-methods :reader specializer-direct-methods
                    :accessor es-direct-methods
                    :initform ())))
