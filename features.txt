@@ -147,7 +147,7 @@ SBCL 0.9.10
 - Methods are not initialized with :function. Not fixed.
 - Subclasses of BUILT-IN-CLASS, CLASS, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SPECIALIZER, STANDARD-CLASS will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-SBCL 0.9.11 - 0.9.13
+SBCL 0.9.11 - 0.9.14
 
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
 - Classes cannot be anonymous. Fixed.

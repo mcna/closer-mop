@@ -428,7 +428,7 @@
 :subclasses-of-specializer-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-class-do-not-inherit-exported-slots (no)
 
-:sbcl 0.9.11 - 0.9.13
+:sbcl 0.9.11 - 0.9.14
 :accessor-method-initialized-with-function (fixed)
 :accessor-method-initialized-with-lambda-list (fixed)
 :accessor-method-initialized-with-slot-definition (fixed)
