@@ -319,6 +319,7 @@
 :method-functions-take-processed-parameters (no)
 :method-lambdas-are-processed (no)
 :reinitialize-instance-calls-compute-discriminating-function (no)
+:reinitialize-lambda-list-reinitializes-argument-precedence-order (no)
 :remove-method-calls-compute-discriminating-function (no)
 :set-funcallable-instance-function (no)
 :setf-generic-function-name (no)
@@ -363,6 +364,7 @@
 :method-functions-take-processed-parameters (no)
 :method-lambdas-are-processed (no)
 :reinitialize-instance-calls-compute-discriminating-function (no)
+:reinitialize-lambda-list-reinitializes-argument-precedence-order (no)
 :remove-method-calls-compute-discriminating-function (no)
 -
 :compute-slots-requested-slot-order-honoured (no)
