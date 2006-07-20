@@ -74,6 +74,7 @@ CMUCL 19c
 - Methods are not initialized with :function. Not fixed.
 - Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
 - REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
+- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) do not use REINITIALIZE-INSTANCE for changing the names. Fixed.
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SLOT-DEFINITION, SPECIALIZER, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
@@ -120,6 +121,7 @@ In MCL, generic functions work completely differently than specified. The specif
 - The :ALLOCATION type cannot be extended. Not fixed.
 - Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
 - (SETF CLASS-NAME) doesn't use REINITIALIZE-INSTANCE for changing the names. Fixed.
+- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - Subclasses of DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 OpenMCL 1.0
@@ -129,6 +131,7 @@ In OpenMCL, generic functions work completely differently than specified. The sp
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - EQL-SPECIALIZER is not exported. Fixed.
 - DOCUMENTATION doesn't return the documentation strings for slot definition metaobjects. Fixed.
+- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - Subclasses of DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, GENERIC-FUNCTION, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 SBCL 0.9.7 - 0.9.9
@@ -137,6 +140,7 @@ SBCL 0.9.7 - 0.9.9
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
 - Methods are not initialized with :function. Not fixed.
+- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, GENERIC-FUNCTION, METHOD-COMBINATION, SLOT-DEFINITION, SPECIALIZER, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 SBCL 0.9.10
@@ -145,6 +149,7 @@ SBCL 0.9.10
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
 - Methods are not initialized with :function. Not fixed.
+- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - Subclasses of BUILT-IN-CLASS, CLASS, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SPECIALIZER, STANDARD-CLASS will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 SBCL 0.9.11 - 0.9.14
@@ -153,6 +158,7 @@ SBCL 0.9.11 - 0.9.14
 - Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
 - Methods are not initialized with :function. Not fixed.
+- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 
 
 Summary:
@@ -175,6 +181,7 @@ Summary:
 - COMPUTE-DEFAULT-INITARGS doesn't exist (and isn't called) in LispWorks.
 - In LispWorks, eql specializers are lists.
 - FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS doesn't exist / should not be used in LispWorks.
+- In CMUCL, MCL, OpenMCL and SBCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
 - If you need to see :declarations when generic functions are initialized, conditionalize on #+lispworks to receive 'declare instead. (Actually, AMOP and ANSI Common Lisp diverge in this regard. AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since most MOP implementations adhere to AMOP in this regard, I have also chosen that path.)
 - In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
 - In LispWorks, the class SPECIALIZER doesn't exist.
