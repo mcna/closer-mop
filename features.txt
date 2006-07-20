@@ -50,7 +50,7 @@ None of the incompatibilities in CLisp are fixed.
 - MAKE-METHOD-LAMBDA is not provided.
 - Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-CLisp 2.37 and 2.38
+CLisp 2.37 - 2.39
 
 None of the incompatibilities in CLisp are fixed.
 

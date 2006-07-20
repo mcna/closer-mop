@@ -85,7 +85,7 @@
 :remove-method-calls-compute-discriminating-function (no)
 :subclasses-of-method-combination-do-not-inherit-exported-slots (no)
 
-:clisp2.37-2.38
+:clisp2.37-2.39
 :accessor-method-initialized-with-function (no)
 :add-method-calls-compute-discriminating-function (no)
 :compute-slots-requested-slot-order-honoured (no)
