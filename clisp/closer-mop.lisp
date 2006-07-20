@@ -1,11 +1,18 @@
 (in-package :closer-mop)
 
-;; This is a useful utility function.
+;; Some utility functions.
 
 (defun required-args (lambda-list &optional (collector #'identity))
   (loop for arg in lambda-list
         until (member arg lambda-list-keywords)
         collect (funcall collector arg)))
+
+(defun ensure-finalized (class &optional (errorp t))
+  (if (typep class 'class)
+    (unless (class-finalized-p class)
+      (finalize-inheritance class))
+    (when errorp (error "~S is not a class." class)))
+  class)
 
 (defun ensure-method (gf lambda-expression 
                          &key (qualifiers ())

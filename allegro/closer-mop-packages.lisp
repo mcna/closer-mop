@@ -115,6 +115,7 @@
    #:standard-slot-definition
    #:standard-writer-method
 
+   #:ensure-finalized
    #:ensure-method
    #:fix-slot-initargs
    #:required-args
