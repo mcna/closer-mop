@@ -82,6 +82,7 @@
 :method-initialized-with-function (no)
 :method-lambdas-are-processed (no)
 :reinitialize-instance-calls-compute-discriminating-function (no)
+:reinitialize-instance-calls-finalize-inheritance (no)
 :remove-method-calls-compute-discriminating-function (no)
 :subclasses-of-method-combination-do-not-inherit-exported-slots (no)
 
@@ -96,6 +97,7 @@
 :method-initialized-with-function (no)
 :method-lambdas-are-processed (no)
 :reinitialize-instance-calls-compute-discriminating-function (no)
+:reinitialize-instance-calls-finalize-inheritance (no)
 :remove-method-calls-compute-discriminating-function (no)
 :subclasses-of-method-combination-do-not-inherit-exported-slots (no)
 
