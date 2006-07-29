@@ -4,8 +4,8 @@
   (:use #:common-lisp #:lispworks)
   (:nicknames #:c2mop)
 
-  (:shadow #:typep #:subtypep)
-  (:export #:typep #:subtypep)
+  #-sbcl (:shadow #:typep #:subtypep)
+  #-sbcl (:export #:typep #:subtypep)
 
   (:import-from
    #+cmu #:clos-mop

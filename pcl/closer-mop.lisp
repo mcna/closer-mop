@@ -259,22 +259,24 @@
 ;; TYPEP and SUBTYPEP don't work as expected in conjunction with
 ;; class metaobjects
 
-(defgeneric typep (object type)
-  (:method (object type)
-   (cl:typep object type))
-  (:method (object (type class))
-   (cl:typep object (class-name type))))
+#-sbcl
+(progn
+  (defgeneric typep (object type)
+    (:method (object type)
+     (cl:typep object type))
+    (:method (object (type class))
+     (cl:typep object (class-name type))))
 
-(defgeneric subtypep (type1 type2)
-  (:method (type1 type2)
-   (cl:subtypep type1 type2))
-  (:method ((type1 class) type2)
-   (cl:subtypep (class-name type1) type2))
-  (:method (type1 (type2 class))
-   (cl:subtypep type1 (class-name type2)))
-  (:method ((type1 class) (type2 class))
-   (cl:subtypep (class-name type1)
-                (class-name type2))))
+  (defgeneric subtypep (type1 type2)
+    (:method (type1 type2)
+     (cl:subtypep type1 type2))
+    (:method ((type1 class) type2)
+     (cl:subtypep (class-name type1) type2))
+    (:method (type1 (type2 class))
+     (cl:subtypep type1 (class-name type2)))
+    (:method ((type1 class) (type2 class))
+     (cl:subtypep (class-name type1)
+                  (class-name type2)))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (pushnew :closer-mop *features*))
