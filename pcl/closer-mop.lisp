@@ -104,6 +104,7 @@
 ;; unless a name is explicitly provided. AMOP requires classes to be
 ;; potentially anonymous.
 
+#-sbcl
 (cl:defmethod initialize-instance :around
   ((class standard-class) &rest initargs
    &key (name (gensym)))
@@ -111,12 +112,23 @@
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
 
+#+sbcl
+(cl:defmethod initialize-instance :after
+  ((class standard-class) &key)
+  (modify-accessors class))
+
+#-sbcl
 (cl:defmethod initialize-instance :around
   ((class funcallable-standard-class) &rest initargs
    &key (name (gensym)))
   (declare (dynamic-extent initargs))
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
+
+#+sbcl
+(cl:defmethod initialize-instance :after
+  ((class funcallable-standard-class) &key)
+  (modify-accessors class))
 
 (cl:defmethod reinitialize-instance :after
   ((class standard-class) &key)
