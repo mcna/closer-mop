@@ -136,31 +136,11 @@ In OpenMCL, generic functions work completely differently than specified. The sp
 - REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - Subclasses of DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, GENERIC-FUNCTION, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-SBCL 0.9.7 - 0.9.9
+SBCL 0.9.15
 
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
-- Classes cannot be anonymous. Fixed.
 - Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
 - Methods are not initialized with :function. Not fixed.
-- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
-- Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, GENERIC-FUNCTION, METHOD-COMBINATION, SLOT-DEFINITION, SPECIALIZER, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
-
-SBCL 0.9.10
-
-- Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
-- Classes cannot be anonymous. Fixed.
-- Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
-- Methods are not initialized with :function. Not fixed.
-- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
-- Subclasses of BUILT-IN-CLASS, CLASS, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SPECIALIZER, STANDARD-CLASS will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
-
-SBCL 0.9.11 - 0.9.14
-
-- Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.
-- Classes cannot be anonymous. Fixed.
-- Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. Fixed.
-- Methods are not initialized with :function. Not fixed.
-- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 
 
 Summary:
