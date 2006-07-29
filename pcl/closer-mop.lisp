@@ -188,7 +188,7 @@
                          :qualifiers qualifiers
                          :lambda-list lambda-list
                          :specializers specializers
-                         :function (compile nil (print method-lambda))
+                         :function (compile nil method-lambda)
                          method-args)))
       (add-method gf method)
       method)))
