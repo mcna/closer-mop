@@ -163,7 +163,7 @@ Summary:
 - COMPUTE-DEFAULT-INITARGS doesn't exist (and isn't called) in LispWorks.
 - In LispWorks, eql specializers are lists.
 - FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS doesn't exist / should not be used in LispWorks.
-- In CLisp, CMUCL, MCL, OpenMCL and SBCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
+- In CLisp, CMUCL, MCL and OpenMCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
 - If you need to see :declarations when generic functions are initialized, conditionalize on #+lispworks to receive 'declare instead. (Actually, AMOP and ANSI Common Lisp diverge in this regard. AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since most MOP implementations adhere to AMOP in this regard, I have also chosen that path.)
 - In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
 - In LispWorks, the class SPECIALIZER doesn't exist.
