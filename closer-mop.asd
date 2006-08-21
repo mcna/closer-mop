@@ -1,5 +1,3 @@
-(in-package :cl-user)
-
 (asdf:defsystem #:closer-mop
   :name "Closer to MOP"
   :author "Pascal Costanza"
