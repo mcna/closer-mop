@@ -388,11 +388,5 @@
 :subclasses-of-standard-slot-definition-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-writer-method-do-not-inherit-exported-slots (no)
 
-:sbcl 0.9.15
-:accessor-method-initialized-with-function (fixed)
-:accessor-method-initialized-with-lambda-list (fixed)
-:accessor-method-initialized-with-slot-definition (fixed)
-:accessor-method-initialized-with-specializers (fixed)
-:class-initialization-calls-reader-method-class (fixed)
-:class-initialization-calls-writer-method-class (fixed)
-:method-initialized-with-function (no)
+:sbcl 0.9.16
+#| all features implemented |#

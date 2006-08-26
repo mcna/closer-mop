@@ -69,10 +69,11 @@
        (:metaclass standard-class))))
 |#
 
-;; In CMUCL and SBCL, reader-method-class and writer-method-class are
+;; In CMUCL, reader-method-class and writer-method-class are
 ;; not used during class initialization. The following definitions
 ;; correct this.
 
+#-sbcl
 (defun modify-accessors (class)
   (loop with reader-specializers = (list class)
         with writer-specializers = (list (find-class 't) class)
@@ -112,11 +113,6 @@
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
 
-#+sbcl
-(cl:defmethod initialize-instance :after
-  ((class standard-class) &key)
-  (modify-accessors class))
-
 #-sbcl
 (cl:defmethod initialize-instance :around
   ((class funcallable-standard-class) &rest initargs
@@ -125,15 +121,12 @@
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
 
-#+sbcl
-(cl:defmethod initialize-instance :after
-  ((class funcallable-standard-class) &key)
-  (modify-accessors class))
-
+#-sbcl
 (cl:defmethod reinitialize-instance :after
   ((class standard-class) &key)
   (modify-accessors class))
 
+#-sbcl
 (cl:defmethod reinitialize-instance :after
   ((class funcallable-standard-class) &key)
   (modify-accessors class))
@@ -144,9 +137,9 @@
 ;; The following method additionally ensures that
 ;; compute-discriminating-function is triggered.
 
-; Note that for CMUCL and SBCL, these methods violate the AMOP specification
+; Note that for CMUCL, these methods violate the AMOP specification
 ; by specializing on the original standard-generic-function metaclass. However,
-; this is necassary because in CMUCL and SBCL, only one subclass of
+; this is necassary because in CMUCL, only one subclass of
 ; standard-generic-function can be created, and taking away that option from user
 ; code doesn't make a lot of sense in our context.
 
@@ -172,7 +165,7 @@
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'remove-method method))))
 
-#|
+#+sbcl
 (defun ensure-method (gf lambda-expression 
                          &key (method-class (generic-function-method-class gf))
                          (qualifiers ())
@@ -192,7 +185,6 @@
                          method-args)))
       (add-method gf method)
       method)))
-|#
 
 #|
 (defgeneric transform-specializer (specializer)
@@ -203,6 +195,7 @@
    `(eql ,(eql-specializer-object specializer))))
 |#
 
+#-sbcl
 (defun ensure-method (gf lambda-expression 
                          &key (qualifiers ())
                          (lambda-list (cadr lambda-expression))
@@ -254,21 +247,21 @@
          (keys-to-fix (loop for (key value) on counts by #'cddr
                             if (> value 1) collect key)))
     (if keys-to-fix
-        (let ((multiple-standard-keys
-               (intersection keys-to-fix *standard-slot-keys*)))
-          (if multiple-standard-keys
-              (error "Too many occurences of ~S in slot initargs ~S."
-                     multiple-standard-keys initargs)
-            (loop with fixed-keys
-                  for (key value) on initargs by #'cddr
-                  if (member key keys-to-fix)
-                  do (nconcf (getf fixed-keys key) (list value))
-                  else nconc (list key value) into fixed-initargs
-                  finally (return (nconc fixed-initargs fixed-keys)))))
+      (let ((multiple-standard-keys
+             (intersection keys-to-fix *standard-slot-keys*)))
+        (if multiple-standard-keys
+          (error "Too many occurences of ~S in slot initargs ~S."
+                 multiple-standard-keys initargs)
+          (loop with fixed-keys
+                for (key value) on initargs by #'cddr
+                if (member key keys-to-fix)
+                do (nconcf (getf fixed-keys key) (list value))
+                else nconc (list key value) into fixed-initargs
+                finally (return (nconc fixed-initargs fixed-keys)))))
       initargs)))
 
-;; TYPEP and SUBTYPEP don't work as expected in conjunction with
-;; class metaobjects
+;; In CMUCL, TYPEP and SUBTYPEP don't work as expected
+;; in conjunction with class metaobjects.
 
 #-sbcl
 (progn
