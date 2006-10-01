@@ -64,6 +64,18 @@ None of the incompatibilities in CLisp are fixed.
 - REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
+CLisp 2.40
+
+None of the incompatibilities in CLisp are fixed.
+
+- Methods are not initialized with :function.
+- ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.
+- The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP.
+- DEFMETHOD does not call MAKE-METHOD-LAMBDA.
+- A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
+- MAKE-METHOD-LAMBDA is not provided.
+- Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
+
 CMUCL 19c
 
 - CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS doesn't return canonicalized default initargs as specified. Not fixed.
@@ -161,7 +173,7 @@ Summary:
 - COMPUTE-DEFAULT-INITARGS doesn't exist (and isn't called) in LispWorks.
 - In LispWorks, eql specializers are lists.
 - FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS doesn't exist / should not be used in LispWorks.
-- In CLisp, CMUCL, MCL and OpenMCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
+- In CLisp before version 2.40, and in CMUCL, MCL and OpenMCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
 - If you need to see :declarations when generic functions are initialized, conditionalize on #+lispworks to receive 'declare instead. (Actually, AMOP and ANSI Common Lisp diverge in this regard. AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since most MOP implementations adhere to AMOP in this regard, I have also chosen that path.)
 - In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
 - In LispWorks, the class SPECIALIZER doesn't exist.

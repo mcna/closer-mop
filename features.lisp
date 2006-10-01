@@ -101,6 +101,20 @@
 :remove-method-calls-compute-discriminating-function (no)
 :subclasses-of-method-combination-do-not-inherit-exported-slots (no)
 
+:clisp2.40
+:accessor-method-initialized-with-function (no)
+:add-method-calls-compute-discriminating-function (no)
+:compute-slots-requested-slot-order-honoured (no)
+:defmethod-calls-make-method-lambda (no)
+:forward-referenced-class-changed-by-change-class (no)
+:initialize-instance-calls-compute-discriminating-function (no)
+:make-method-lambda (no)
+:method-initialized-with-function (no)
+:method-lambdas-are-processed (no)
+:reinitialize-instance-calls-compute-discriminating-function (no)
+:remove-method-calls-compute-discriminating-function (no)
+:subclasses-of-method-combination-do-not-inherit-exported-slots (no)
+
 :cmu
 :accessor-method-initialized-with-function (fixed)
 :accessor-method-initialized-with-lambda-list (fixed)
