@@ -17,7 +17,7 @@
 ;; We need a new standard-generic-function for various things.
 
 (cl:defclass standard-generic-function (cl:standard-generic-function)
-  ()
+  ((initial-methods :initform '()))
   (:metaclass clos:funcallable-standard-class))
 
 ;; The following ensures that the new standard-generic-function is used.
@@ -536,22 +536,23 @@
 ;; is used by default. It also ensures that make-method-lambda is called
 ;; for the default methods, by expanding into defmethod forms.
 
-(defvar *gf-initial-methods* (make-hash-table :test #'equal))
-
 (defmacro defgeneric (&whole form name (&rest args) &body options)
   (unless (every #'consp options)
     (error "Illegal generic functions options in defgeneric form ~S." form))
   `(progn
-     (loop for method in (gethash ',name *gf-initial-methods*)
-           do (remove-method (method-generic-function method) method))
+     (let ((generic-function (ignore-errors (fdefinition ',name))))
+       (when generic-function
+         (loop for method in (slot-value generic-function 'initial-methods)
+               do (remove-method generic-function method))))
      (cl:defgeneric ,name ,args
        ,@(remove :method options :key #'car :test #'eq)
        ,@(unless (member :generic-function-class options :key #'car :test #'eq)
            '((:generic-function-class standard-generic-function))))
-     (setf (gethash ',name *gf-initial-methods*)
-           (list ,@(loop for method-spec in (remove :method options :key #'car :test-not #'eq)
-                         collect `(defmethod ,name ,@(cdr method-spec)))))
-     (fdefinition ',name)))
+     (let ((generic-function (fdefinition ',name)))
+       (setf (slot-value generic-function 'initial-methods)
+             (list ,@(loop for method-spec in (remove :method options :key #'car :test-not #'eq)
+                           collect `(defmethod ,name ,@(cdr method-spec)))))
+       generic-function)))
 
 ;; The following can be used in direct-slot-definition-class to get the correct initargs
 ;; for a slot. Use it like this:
