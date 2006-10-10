@@ -541,7 +541,7 @@
     (error "Illegal generic functions options in defgeneric form ~S." form))
   `(progn
      (let ((generic-function (ignore-errors (fdefinition ',name))))
-       (when generic-function
+       (when (and generic-function (typep generic-function 'standard-generic-function))
          (loop for method in (slot-value generic-function 'initial-methods)
                do (remove-method generic-function method))))
      (cl:defgeneric ,name ,args
