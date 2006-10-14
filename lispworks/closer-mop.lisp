@@ -34,9 +34,9 @@
                 "~S is already fbound, but not as a generic function." name)
         (fmakunbound name))))
   (if (fboundp name)
-      (let ((function (fdefinition name)))
-        (apply #'ensure-generic-function-using-class
-               function name args))
+    (let ((function (fdefinition name)))
+      (apply #'ensure-generic-function-using-class
+             function name args))
     (apply #'ensure-generic-function-using-class nil name
            :generic-function-class generic-function-class
            args)))
@@ -76,7 +76,7 @@
     
 (defmacro defclass (name (&rest supers) &body options)
   (if (member :metaclass options :key #'car)
-      `(cl:defclass ,name ,supers ,@options)
+    `(cl:defclass ,name ,supers ,@options)
     `(cl:defclass ,name ,supers ,@options
        (:metaclass standard-class))))
 
@@ -98,9 +98,16 @@
       (when (eq (class-of superclass) (find-class 'clos:funcallable-standard-class))
         (validate-superclass class (class-prototype (find-class 'funcallable-standard-class))))))
 
+#+lispworks5.0
+(cl:defmethod validate-superclass
+           ((class funcallable-standard-class)
+            (superclass (eql (find-class 'funcallable-standard-object))))
+  t)
+
 ;; We also need a new funcallable-standard-object because the default one
 ;; is not an instance of clos:funcallable-standard-class.
 
+#-lispworks5.0
 (cl:defclass funcallable-standard-object (clos:funcallable-standard-object)
   ()
   (:metaclass clos:funcallable-standard-class))
@@ -108,19 +115,20 @@
 ;; The following code ensures that possibly incorrect lists of direct
 ;; superclasses are corrected.
 
+#-lispworks5.0
 (defun modify-superclasses (direct-superclasses &optional (standardp t))
   (if (null direct-superclasses)
-      (list (if standardp
-                (find-class 'standard-object)
-              (find-class 'funcallable-standard-object)))
+    (list (if standardp
+            (find-class 'standard-object)
+            (find-class 'funcallable-standard-object)))
     (let ((standard-object (if standardp
-                               (find-class 'standard-object)
+                             (find-class 'standard-object)
                              (find-class 'clos:funcallable-standard-object))))
       (if (eq (car (last direct-superclasses)) standard-object)
-          (if standardp
-              direct-superclasses
-            (append (butlast direct-superclasses)
-                    (list (find-class 'funcallable-standard-object))))
+        (if standardp
+          direct-superclasses
+          (append (butlast direct-superclasses)
+                  (list (find-class 'funcallable-standard-object))))
         (remove standard-object direct-superclasses)))))
 
 ;; During class re/initialization, we take care of the following things:
@@ -130,63 +138,82 @@
 
 (cl:defmethod initialize-instance :around
   ((class standard-class) &rest initargs
-   &key (direct-superclasses ()))
+   #-lispworks5.0 &key
+   #-lispworks5.0 (direct-superclasses ()))
   (declare (dynamic-extent initargs))
   (apply #'call-next-method class
-         :direct-superclasses (modify-superclasses direct-superclasses)
+         #-lispworks5.0 :direct-superclasses
+         #-lispworks5.0 (modify-superclasses direct-superclasses)
          :optimize-slot-access nil
          initargs))
 
 (cl:defmethod reinitialize-instance :around
   ((class standard-class) &rest initargs
-   &key  (direct-superclasses () direct-superclasses-p))
+   #-lispworks5.0 &key
+   #-lispworks5.0 (direct-superclasses () direct-superclasses-p))
   (declare (dynamic-extent initargs))
-  (when direct-superclasses-p
-    (setq direct-superclasses (modify-superclasses direct-superclasses))
-    (loop for superclass in (copy-list (class-direct-superclasses class))
-          unless (member superclass direct-superclasses)
-          do (remove-direct-subclass superclass class)))
-  (if direct-superclasses-p
+  #-lispworks5.0
+  (progn
+    (when direct-superclasses-p
+      (setq direct-superclasses (modify-superclasses direct-superclasses))
+      (loop for superclass in (copy-list (class-direct-superclasses class))
+            unless (member superclass direct-superclasses)
+            do (remove-direct-subclass superclass class)))
+    (if direct-superclasses-p
       (apply #'call-next-method class
              :direct-superclasses direct-superclasses
              :optimize-slot-access nil
              initargs)
-    (apply #'call-next-method class
-           :optimize-slot-access nil
-           initargs)))
+      (apply #'call-next-method class
+             :optimize-slot-access nil
+             initargs)))
+  #+lispworks5.0
+  (apply #'call-next-method class
+         :optimize-slot-access nil
+         initargs))
 
 (cl:defmethod initialize-instance :around
   ((class funcallable-standard-class) &rest initargs
-   &key (direct-superclasses ()))
+   #-lispworks5.0 &key
+   #-lispworks5.0 (direct-superclasses ()))
   (declare (dynamic-extent initargs))
   (apply #'call-next-method class
-         :direct-superclasses (modify-superclasses direct-superclasses nil)
+         #-lispworks5.0 :direct-superclasses
+         #-lispworks5.0 (modify-superclasses direct-superclasses nil)
          :optimize-slot-access nil
          initargs))
 
 (cl:defmethod reinitialize-instance :around
   ((class funcallable-standard-class) &rest initargs
-   &key (direct-superclasses () direct-superclasses-p))
+   #-lispworks5.0 &key
+   #-lispworks5.0 (direct-superclasses () direct-superclasses-p))
   (declare (dynamic-extent initargs))
-  (when direct-superclasses-p
-    (setq direct-superclasses (modify-superclasses direct-superclasses nil))
-    (loop for superclass in (copy-list (class-direct-superclasses class))
-          unless (member superclass direct-superclasses)
-          do (remove-direct-subclass superclass class)))
-  (if direct-superclasses-p
+  #-lispworks5.0
+  (progn
+    (when direct-superclasses-p
+      (setq direct-superclasses (modify-superclasses direct-superclasses nil))
+      (loop for superclass in (copy-list (class-direct-superclasses class))
+            unless (member superclass direct-superclasses)
+            do (remove-direct-subclass superclass class)))
+    (if direct-superclasses-p
       (apply #'call-next-method class
              :direct-superclasses direct-superclasses
              :optimize-slot-access nil
              initargs)
-    (apply #'call-next-method class
-           :optimize-slot-access nil
-           initargs)))
+      (apply #'call-next-method class
+             :optimize-slot-access nil
+             initargs)))
+  #+lispworks5.0
+  (apply #'call-next-method class
+         :optimize-slot-access nil
+         initargs))
 
 ;; The following is necessary for forward-referenced-classes.
 ;; Since we replace the original funcallable-standard-object with
 ;; a new one, we have to prevent LispWorks from trying to use
 ;; the original one when forward-ferenced-classes are resolved.
 
+#-lispworks5.0
 (cl:defmethod change-class :around
   ((class forward-referenced-class)
    (new-class funcallable-standard-class)
@@ -210,7 +237,7 @@
                      :test #'eq
                      :key #'slot-definition-name)))
     (if slotd
-        (slot-value-using-class class object slotd)
+      (slot-value-using-class class object slotd)
       (slot-missing class object slot 'slot-value))))
 
 (cl:defmethod slot-value-using-class
@@ -230,8 +257,8 @@
                      :test #'eq
                      :key #'slot-definition-name)))
     (if slotd
-        (setf (slot-value-using-class class object slotd)
-              new-value)
+      (setf (slot-value-using-class class object slotd)
+            new-value)
       (slot-missing class object slot 'setf new-value))))
 
 (cl:defmethod (setf slot-value-using-class)
@@ -252,7 +279,7 @@
                      :test #'eq
                      :key #'slot-definition-name)))
     (if slotd
-        (slot-boundp-using-class class object slotd)
+      (slot-boundp-using-class class object slotd)
       (slot-missing class object slot 'slot-boundp))))
 
 (cl:defmethod slot-boundp-using-class
@@ -272,7 +299,7 @@
                      :test #'eq
                      :key #'slot-definition-name)))
     (if slotd
-        (slot-makunbound-using-class class object slotd)
+      (slot-makunbound-using-class class object slotd)
       (slot-missing class object slot 'slot-makunbound))))
 
 (cl:defmethod slot-makunbound-using-class
@@ -294,7 +321,7 @@
 (cl:defgeneric eql-specializer-object (eql-specializer)
   (:method ((cons cons))
    (if (clos:eql-specializer-p cons)
-       (cadr cons)
+     (cadr cons)
      (error "~S is not an eql-specializer." cons))))
 
 (defun intern-eql-specializer (object)
@@ -337,6 +364,7 @@
 
 ;; The following method ensures that remove-method is called.
 
+#-lispworks5.0
 (cl:defmethod add-method :before ((gf standard-generic-function) (method method))
   (when-let (old-method (find-method gf (method-qualifiers method)
                                      (method-specializers method) nil))
@@ -347,24 +375,28 @@
 
 (cl:defmethod add-method :after ((gf standard-generic-function) (method method))
   (loop for specializer in (method-specializers method)
+        if (consp specializer)
         do (add-direct-method
-            (if (consp specializer)
-                (intern-eql-specializer*
-                 (eql-specializer-object specializer))
-              specializer)
-            method))
+            (intern-eql-specializer*
+             (eql-specializer-object specializer))
+            method)
+        #-lispworks5.0 else
+        #-lispworks5.0 do
+        #-lispworks5.0 (add-direct-method specializer method))
   #+lispworks4.3
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'add-method method))))
 
 (cl:defmethod remove-method :after ((gf standard-generic-function) (method method))
   (loop for specializer in (method-specializers method)
+        if (consp specializer)
         do (remove-direct-method
-            (if (consp specializer)
-                (intern-eql-specializer*
-                 (eql-specializer-object specializer))
-              specializer)
-            method))
+            (intern-eql-specializer*
+             (eql-specializer-object specializer))
+            method)
+        #-lispworks5.0 else
+        #-lispworks5.0 do
+        #-lispworks5.0 (remove-direct-method specializer method))
   #+lispworks4.3
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'remove-method method))))
@@ -396,7 +428,7 @@
            if (stringp (car tail))
            do (setf documentation
                     (if (eq documentation :unbound)
-                        (car tail)
+                      (car tail)
                       (error "Too many documentation strings in lambda expression ~S."
                              lambda-expression)))
            else append (loop for declaration in (cdar tail) 
@@ -410,7 +442,7 @@
                         gf method args declarations
                         `(progn ,@tail) env)
                      (if (eq documentation :unbound)
-                         (return (values method-lambda method-args))
+                       (return (values method-lambda method-args))
                        (return (values
                                 `(lambda ,(cadr method-lambda)
                                    ,documentation
@@ -445,7 +477,7 @@
         until (member arg stop-keywords)
         collect arg into gf-lambda-list
         finally (return (if (member arg '(&rest &key))
-                            (append gf-lambda-list '(&key))
+                          (append gf-lambda-list '(&key))
                           gf-lambda-list))))
 
 ;; The defmethod macro is needed in order to ensure that make-method-lambda
@@ -466,14 +498,14 @@
                 if (stringp (car tail))
                 do (setq documentation
                          (if (eq documentation :unbound)
-                             (car tail)
+                           (car tail)
                            (error "Too many documentation strings for defmethod form ~S." form)))
                 else append (cdar tail) into declarations
                 finally
                 (let* ((lambda-list (extract-lambda-list specialized-args))
                        (gf-lambda-list (create-gf-lambda-list lambda-list))
                        (gf (if (fboundp name)
-                               (ensure-generic-function name)
+                             (ensure-generic-function name)
                              (ensure-generic-function name :lambda-list gf-lambda-list)))
                        (method-class (generic-function-method-class gf))
                        (lambda-expression `(lambda ,lambda-list
@@ -491,7 +523,7 @@
                                           (find-class 't)
                                           (find-class 't))
                                     nil)))
-                      (return-from defmethod `(cl:defmethod ,@(rest form)))
+                    (return-from defmethod `(cl:defmethod ,@(rest form)))
                     (multiple-value-bind
                         (method-lambda method-args)
                         (make-method-lambda
@@ -500,7 +532,7 @@
                       (with-unique-names (gf method)
                         (return-from defmethod
                           `(let ((,gf (if (fboundp ',name)
-                                          (ensure-generic-function ',name)
+                                        (ensure-generic-function ',name)
                                         (ensure-generic-function
                                          ',name :lambda-list ',gf-lambda-list)))
                                  (,method

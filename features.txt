@@ -123,6 +123,28 @@ LispWorks, 4.4.5, 4.4.6, Personal and Professional Editions
 - Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 
+LispWorks, 5.0, Professional Editions
+
+- CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS doesn't return canonicalized default initargs as specified. Not fixed.
+- ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.
+- COMPUTE-APPLICABLE-METHODS-USING-CLASSES doesn't exist. Not fixed.
+- COMPUTE-DEFAULT-INITARGS doesn't exist. Not fixed.
+- DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
+- EQL-SPECIALIZER, EQL-SPECIALIZER-OBJECT and INTERN-EQL-SPECIALIZER don't exist. In LispWorks, eql specializers are lists not objects. I have provided EQL-SPECIALIZER as a type (not as a class) and EQL-SPECIALIZER-OBJECT and INTERN-EQL-SPECIALIZER to work on lists, and a class EQL-SPECIALIZER* and corresponding EQL-SPECIALIZER-OBJECT* and INTERN-EQL-SPECILAIZER* to soften the incompatibilities.
+- The :ALLOCATION type cannot be extended. Not fixed.
+- FIND-METHOD-COMBINATION doesn't exist. Fixed, but fixed version doesn't work with method combination options.
+- FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS don't exist. Not fixed.
+- The function invocation protocol doesn't call COMPUTE-APPLICABLE-METHODS and COMPUTE-APPLICABLE-METHODS-USING-CLASSES. Not fixed.
+- MAKE-METHOD-LAMBDA expects other parameters than specified. Fixed.
+- Method functions don't take parameters as specified in AMOP, but instead just the parameters that the generic function receives. Not fixed.
+- The slot methods (SLOT-VALUE-USING-CLASS, etc.) are not specialized on effective slot definitions, but on slot names. Fixed.
+- The generated accessor methods don't use the slot methods for accessing slots. Fixed. (Don't use :optimize-slot-access to deoptimize slot access, or otherwise the fixed slot access protocol doesn't work anymore!)
+- SPECIALIZER doesn't exist. Not fixed.
+- SPECIALIZER-DIRECT-GENERIC-FUNCTIONS doesn't exist. Fixed.
+- STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
+- Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
+
+
 MCL 5.1
 
 In MCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
@@ -164,19 +186,19 @@ Summary:
 - Specialize the methods for the dependent protocol on the class or generic function metaobject class. The example in AMOP doesn't do this but that is fragile code.
 - Don't rely on methods being initialized with the specified initargs from inside the MOP.
 - CLisp doesn't change a FORWARD-REFERENCED-CLASS via CHANGE-CLASS. Apart from that, FORWARD-REFERENCED-CLASS works reliably across all MOPs.
-- Effective slot definitions and EFFECTIVE-SLOT-DEFINITION-CLASS don't receive :documentation in CMUCL, and no :allocation (!) in LispWorks.
+- Effective slot definitions and EFFECTIVE-SLOT-DEFINITION-CLASS don't receive :documentation in CMUCL, and no :allocation (!) in LispWorks before 5.0.
 - If you specialize DIRECT-SLOT-DEFINITION-CLASS, use FIX-SLOT-INITARGS in portable code.
 - If you want to use :ALLOCATION types other than :CLASS or :INSTANCE, you cannot use CLisp before 2.37, LispWorks or MCL. Only Allegro Common Lisp, CLisp from 2.37 on, CMUCL, OpenMCL and SBCL support this.
 - In Allegro, CMUCL and LispWorks, STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible.
 - The function invocation protocol only works in CMUCL, SBCL and CLisp.
-- If you need to see :direct-default-initargs when classes are initialized, conditionalize on #+lispworks to receive :default-initargs instead.
+- If you need to see :direct-default-initargs when classes are initialized, conditionalize on #+lispworks to receive :default-initargs instead for LispWorks version before 5.0.
 - COMPUTE-DEFAULT-INITARGS doesn't exist (and isn't called) in LispWorks.
 - In LispWorks, eql specializers are lists.
 - FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS doesn't exist / should not be used in LispWorks.
 - In CLisp before version 2.40, and in CMUCL, MCL and OpenMCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
-- If you need to see :declarations when generic functions are initialized, conditionalize on #+lispworks to receive 'declare instead. (Actually, AMOP and ANSI Common Lisp diverge in this regard. AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since most MOP implementations adhere to AMOP in this regard, I have also chosen that path.)
+- If you need to see :declarations when generic functions are initialized, conditionalize on #+lispworks to receive 'declare instead for LispWorks versions before 5.0. (Actually, AMOP and ANSI Common Lisp diverge in this regard. AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since most MOP implementations adhere to AMOP in this regard, I have also chosen that path.)
 - In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
-- In LispWorks, the class SPECIALIZER doesn't exist.
+- In LispWorks before 5.0, the class SPECIALIZER doesn't exist.
 - If you need to rely on the generic function protocols, don't use MCL or OpenMCL (or be very careful - some minor things work there as specified).
 - The declarations for a generic function cannot be inspected in MCL.
 - All implementations define slots on various specified metaobject classes that are exported from some package and/or accessible in the package common-lisp-user. Only sbcl is safe from this, and clisp is relatively safe in that it does that only for the class METHOD-COMBINATION.
