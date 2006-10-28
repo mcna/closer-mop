@@ -421,17 +421,15 @@
        lambda-expression
      (declare (ignore lambda))
      (loop with documentation = :unbound
-           for tail on body
-           while (or (stringp (car tail))
-                     (and (consp (car tail))
-                          (eq (caar tail) 'declare)))
-           if (stringp (car tail))
+           for (car . cdr) = body then cdr
+           while (or (stringp car)
+                     (and (consp car) (eq (car car) 'declare)))
+           if (stringp car)
            do (setf documentation
-                    (if (eq documentation :unbound)
-                      (car tail)
+                    (if (eq documentation :unbound) car
                       (error "Too many documentation strings in lambda expression ~S."
                              lambda-expression)))
-           else append (loop for declaration in (cdar tail) 
+           else append (loop for declaration in (cdr car) 
                              if (eq (car declaration) 'ignore)
                              collect `(ignorable ,@(cdr declaration))
                              and collect `(dynamic-extent ,@(cdr declaration))
@@ -440,7 +438,7 @@
                        (method-lambda method-args)
                        (clos:make-method-lambda
                         gf method args declarations
-                        `(progn ,@tail) env)
+                        `(progn ,car ,@cdr) env)
                      (if (eq documentation :unbound)
                        (return (values method-lambda method-args))
                        (return (values
@@ -484,23 +482,21 @@
 ;; is called. (Unfortunately, this doesn't work in the other CL implementations.)
 
 (defmacro defmethod (&whole form name &body body &environment env)
-  (loop for tail on body
+  (loop for tail = body then (cdr tail)
         until (listp (car tail))
         collect (car tail) into qualifiers
         finally
         (destructuring-bind
             ((&rest specialized-args) &body body) tail
           (loop with documentation = :unbound
-                for tail on body
-                while (or (stringp (car tail))
-                          (and (consp (car tail))
-                               (eq (caar tail) 'declare)))
-                if (stringp (car tail))
+                for (car . cdr) = body then cdr
+                while (or (stringp car)
+                          (and (consp car) (eq (car car) 'declare)))
+                if (stringp car)
                 do (setq documentation
-                         (if (eq documentation :unbound)
-                           (car tail)
+                         (if (eq documentation :unbound) car
                            (error "Too many documentation strings for defmethod form ~S." form)))
-                else append (cdar tail) into declarations
+                else append (cdr car) into declarations
                 finally
                 (let* ((lambda-list (extract-lambda-list specialized-args))
                        (gf-lambda-list (create-gf-lambda-list lambda-list))
@@ -510,8 +506,7 @@
                        (method-class (generic-function-method-class gf))
                        (lambda-expression `(lambda ,lambda-list
                                              (declare ,@declarations)
-                                             (block ,name
-                                               ,@tail))))
+                                             (block ,name ,car ,@cdr))))
                   (if (equal (compute-applicable-methods
                               #'make-method-lambda
                               (list gf (class-prototype method-class)
