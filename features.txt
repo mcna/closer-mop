@@ -76,7 +76,7 @@ None of the incompatibilities in CLisp are fixed.
 - MAKE-METHOD-LAMBDA is not provided.
 - Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-CMUCL 19c
+CMUCL 19c, 19d
 
 - CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS doesn't return canonicalized default initargs as specified. Not fixed.
 - Accessor methods are not initialized with :function, :lambda-list, :slot-definition and :specializers. Fixed.

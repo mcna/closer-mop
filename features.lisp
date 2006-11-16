@@ -115,7 +115,7 @@
 :remove-method-calls-compute-discriminating-function (no)
 :subclasses-of-method-combination-do-not-inherit-exported-slots (no)
 
-:cmu
+:cmu19c-19d
 :accessor-method-initialized-with-function (fixed)
 :accessor-method-initialized-with-lambda-list (fixed)
 :accessor-method-initialized-with-slot-definition (fixed)
