@@ -317,7 +317,7 @@
 :subclasses-of-standard-slot-definition-do-not-inherit-exported-slots (no)
 :subclasses-of-standard-writer-method-do-not-inherit-exported-slots (no)
 
-:lispworks5.0
+:lispworks5.0,5.0.1
 :add-method-calls-compute-discriminating-function (no)
 :add-method-updates-specializer-direct-generic-functions (fixed)
 :class-default-initargs (no)
