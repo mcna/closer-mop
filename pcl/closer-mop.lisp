@@ -165,7 +165,6 @@
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'remove-method method))))
 
-#|
 #+sbcl
 (defun ensure-method (gf lambda-expression 
                          &key (method-class (generic-function-method-class gf))
@@ -197,7 +196,6 @@
 |#
 
 #-sbcl
-|#
 (defun ensure-method (gf lambda-expression 
                          &key (qualifiers ())
                          (lambda-list (cadr lambda-expression))
