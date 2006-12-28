@@ -1,7 +1,7 @@
 (asdf:defsystem #:closer-mop
   :name "Closer to MOP"
   :author "Pascal Costanza"
-  :version "0.4"
+  :version "0.41"
   :licence "
 Copyright (c) 2005,2006 Pascal Costanza
 
