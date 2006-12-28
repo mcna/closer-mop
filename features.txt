@@ -24,6 +24,7 @@ Allegro Common Lisp 8.0
 
 - CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS don't return canonicalized default initargs as specified. Not fixed.
 - COMPUTE-DEFAULT-INITARGS takes more parameters than specified. Not fixed. Conditionalize on #+allegro for your own methods instead.
+- FUNCALLABLE-STANDARD-OBJECT is not used as the default superclass for classes with :metaclass FUNCALLABLE-STANDARD-CLASS.
 - DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
 - DEFMETHOD doesn't call MAKE-METHOD-LAMBDA. Not fixed.
 - The dependent protocol for generic functions doesn't work fully. Fixed.
@@ -178,6 +179,7 @@ Summary:
 
 - CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS exist, but don't work as expected in Allegro Common Lisp, CMUCL and LispWorks.
 - If you specialize COMPUTE-DEFAULT-INITAGS, conditionalize for the extra parameters in Allegro Common Lisp.
+- In Allegro Common Lisp, FUNCALLABLE-STANDARD-OBJECT is not used as the default superclass for classes with :metaclass FUNCALLABLE-STANDARD-CLASS.
 - In CMUCL, MCL and OpenMCL, the object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk.
 - In CLisp, MCL and OpenMCL, the slot order requested by a primary method for COMPUTE-SLOTS is not honoured by the respective MOPs.
 - Don't rely on FIND-METHOD-COMBINATION to do its job correctly, only when you don't provide method combination options.
