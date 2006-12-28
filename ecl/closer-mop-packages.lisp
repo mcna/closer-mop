@@ -76,7 +76,7 @@
    #-ecl #:remove-dependent
    #-ecl #:remove-direct-method
    #:remove-direct-subclass
-   #-ecl #:set-funcallable-instance-function
+   #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
@@ -169,7 +169,7 @@
    #-ecl #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #-ecl #:set-funcallable-instance-function
+   #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs

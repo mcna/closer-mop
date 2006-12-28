@@ -167,7 +167,7 @@
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #-(or mcl openmcl) #:set-funcallable-instance-function
+   #+openmcl #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
