@@ -472,9 +472,12 @@
         for arg in method-lambda-list
         until (member arg stop-keywords)
         collect arg into gf-lambda-list
-        finally (return (if (member arg '(&rest &key))
-                          (append gf-lambda-list '(&key))
-                          gf-lambda-list))))
+        finally (return (let (rest)
+                          (cond ((member '&key method-lambda-list)
+                                 (nconc gf-lambda-list '(&key)))
+                                ((setq rest (member '&rest method-lambda-list))
+                                 (nconc gf-lambda-list (subseq rest 0 2)))
+                                (t gf-lambda-list))))))
 
 ;; The defmethod macro is needed in order to ensure that make-method-lambda
 ;; is called. (Unfortunately, this doesn't work in the other CL implementations.)
