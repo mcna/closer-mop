@@ -60,25 +60,27 @@
 ;;; on slot names instead of effective slot definitions. In order to fix this,
 ;;; we need to rewire the slot access protocol.
 
-(cl:defmethod slot-boundp-using-class
-           ((class standard-class) object (slot symbol))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
-    (if slotd
-      (slot-boundp-using-class class object slotd)
-      (slot-missing class object slot 'slot-boundp))))
+#-(version>= 8 1)
+(progn
+  (cl:defmethod slot-boundp-using-class
+             ((class standard-class) object (slot symbol))
+    (declare (optimize (speed 3) (debug 0) (safety 0)
+                       (compilation-speed 0)))
+    (let ((slotd (find slot (class-slots class)
+                       :test #'eq
+                       :key #'slot-definition-name)))
+      (if slotd
+        (slot-boundp-using-class class object slotd)
+        (slot-missing class object slot 'slot-boundp))))
 
-(cl:defmethod slot-boundp-using-class
-           ((class standard-class) object (slotd standard-effective-slot-definition))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (slot-boundp-using-class
-   (load-time-value (class-prototype (find-class 'cl:standard-class)))
-   object
-   (slot-definition-name slotd)))
+  (cl:defmethod slot-boundp-using-class
+             ((class standard-class) object (slotd standard-effective-slot-definition))
+    (declare (optimize (speed 3) (debug 0) (safety 0)
+                       (compilation-speed 0)))
+    (slot-boundp-using-class
+     (load-time-value (class-prototype (find-class 'cl:standard-class)))
+     object
+     (slot-definition-name slotd))))
 
 (cl:defmethod slot-makunbound-using-class
            ((class standard-class) object (slot symbol))
