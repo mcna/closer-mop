@@ -85,7 +85,7 @@ None of the incompatibilities in CLisp are fixed.
 - REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-CLisp 2.40 and 2.41
+CLisp 2.40 and 2.42
 
 None of the incompatibilities in CLisp are fixed.
 
