@@ -54,7 +54,8 @@
 
 (defmethod direct-slot-definition-class :before ((class standard-class) &key allocation &allow-other-keys)
   (unless (eq (class-of class) (find-class 'standard-class))
-    (pushnew allocation (valid-slot-allocations class))))
+    (mp:without-scheduling
+     (pushnew allocation (valid-slot-allocations class)))))
 
 ;;; In Allegro, slot-boundp-using-class and slot-makunbound-using-class are specialized
 ;;; on slot names instead of effective slot definitions. In order to fix this,
@@ -194,4 +195,5 @@
   initargs)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (pushnew :closer-mop *features*))
+  (mp:without-scheduling
+   (pushnew :closer-mop *features*)))

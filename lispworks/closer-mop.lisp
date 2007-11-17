@@ -336,9 +336,10 @@
 (defvar *eql-specializers* (make-hash-table))
 
 (defun intern-eql-specializer* (object)
-  (or (gethash object *eql-specializers*)
-      (setf (gethash object *eql-specializers*)
-            (make-instance 'eql-specializer* 'eso object))))
+  (mp:without-preemption
+    (or (gethash object *eql-specializers*)
+        (setf (gethash object *eql-specializers*)
+              (make-instance 'eql-specializer* 'eso object)))))
 
 (cl:defmethod add-direct-method ((specializer eql-specializer*) (method method))
   (pushnew method (es-direct-methods specializer)))
@@ -602,4 +603,5 @@
   initargs)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (pushnew :closer-mop *features*))
+  (mp:without-preemption
+    (pushnew :closer-mop *features*)))
