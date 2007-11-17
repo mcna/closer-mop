@@ -16,7 +16,7 @@
    #:eql-specializer
    #:forward-referenced-class
    #:funcallable-standard-class
-   #-(or mcl openmcl) #:funcallable-standard-object
+   #:funcallable-standard-object
    #:metaobject
    #:slot-definition
    #:specializer
@@ -102,7 +102,7 @@
    #:eql-specializer
    #:forward-referenced-class
    #:funcallable-standard-class
-   #-(or mcl openmcl) #:funcallable-standard-object
+   #:funcallable-standard-object
    #:metaobject
    #:slot-definition
    #:specializer
