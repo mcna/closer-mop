@@ -1,5 +1,5 @@
 Allegro 7.0, 8.0 & 8.1
-CLisp 2.35 - 2.42
+CLisp 2.35 - 2.43
 CMU Common Lisp 19c, 19d
 LispWorks 4.4.5, 4.4.6 Personal Edition
 LispWorks 4.4.5, 4.4.6 Professional Edition
