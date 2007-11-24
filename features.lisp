@@ -84,6 +84,7 @@
  (:function-invocation-calls-compute-applicable-methods)
  (:function-invocation-calls-compute-applicable-methods-using-classes)
  (:function-invocation-calls-compute-effective-method)
+ (:generic-function-argument-precedence-order fixed)
  (:make-method-lambda)
  (:method-functions-take-processed-parameters)
  (:method-lambdas-are-processed)

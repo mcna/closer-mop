@@ -47,6 +47,7 @@ Allegro Common Lisp 8.1
 - DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
 - DEFMETHOD doesn't call MAKE-METHOD-LAMBDA. Not fixed.
 - The dependent protocol for generic functions doesn't work fully. Fixed.
+- GENERIC-FUNCTION-ARGUMENT-PRECEDENCE-ORDER doesn't return only the required arguments. Fixed.
 - The function invocation protocol doesn't call COMPUTE-APPLICABLE-METHODS, COMPUTE-APPLICABLE-METHODS-USING-CLASSES and COMPUTE-EFFECTIVE-METHOD. Not fixed.
 - The :ALLOCATION type cannot be extended. Fixed.
 - MAKE-METHOD-LAMBDA is not provided. Not fixed.

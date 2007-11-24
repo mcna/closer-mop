@@ -163,6 +163,12 @@
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'remove-method method))))
 
+;; The following ensure that we get only the required arguments
+;; from generic-function-argument-precedence-order
+
+(cl:defmethod generic-function-argument-precedence-order ((gf standard-generic-function))
+  (required-args (call-next-method)))
+
 (defun ensure-method (gf lambda-expression 
                          &key (qualifiers ())
                          (lambda-list (cadr lambda-expression))
