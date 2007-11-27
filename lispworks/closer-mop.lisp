@@ -573,10 +573,11 @@
        (when (and generic-function (typep generic-function 'standard-generic-function))
          (loop for method in (slot-value generic-function 'initial-methods)
                do (remove-method generic-function method))))
-     (cl:defgeneric ,name ,args
-       ,@(remove :method options :key #'car :test #'eq)
-       ,@(unless (member :generic-function-class options :key #'car :test #'eq)
-           '((:generic-function-class standard-generic-function))))
+     (eval-when (:compile-toplevel :load-toplevel :execute)
+       (cl:defgeneric ,name ,args
+         ,@(remove :method options :key #'car :test #'eq)
+         ,@(unless (member :generic-function-class options :key #'car :test #'eq)
+             '((:generic-function-class standard-generic-function)))))
      (let ((generic-function (fdefinition ',name)))
        (setf (slot-value generic-function 'initial-methods)
              (list ,@(loop for method-spec in (remove :method options :key #'car :test-not #'eq)
