@@ -4,4 +4,4 @@ CMU Common Lisp 19d
 LispWorks 5.0 - 5.0.2, Professional Edition
 Macintosh Common Lisp 5.1
 OpenMCL 1.0
-SBCL 1.0.13
+SBCL 1.0.14

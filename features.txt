@@ -94,7 +94,7 @@ In OpenMCL, generic functions work completely differently than specified. The sp
 - REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
 - Subclasses of DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, GENERIC-FUNCTION, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-SBCL 1.0.13
+SBCL 1.0.14
 
 All features implemented.
 
