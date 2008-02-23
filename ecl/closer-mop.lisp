@@ -1,5 +1,18 @@
 (in-package :closer-mop)
 
+;; Some internal utility functions.
+
+(define-modify-macro nconcf (&rest lists) nconc)
+
+(define-modify-macro removef (item &rest keys)
+  (lambda (place item &rest keys &key test test-not start end key)
+    (declare (ignorable test test-not start end key))
+    (apply #'remove item place keys)))
+
+(defmacro when-let ((var form) &body body)
+  `(let ((,var ,form))
+     (when ,var (locally ,@body))))
+
 ;; Some utility functions.
 
 (defun required-args (lambda-list &optional (collector #'identity))

@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (defpackage #:closer-mop
-  (:use #:common-lisp #:lispworks)
+  (:use #:common-lisp)
   (:nicknames #:c2mop)
 
   (:shadow #:defgeneric #:ensure-generic-function #:find-method

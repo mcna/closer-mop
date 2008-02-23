@@ -1,5 +1,10 @@
 (in-package :closer-mop)
 
+;; Some internal utility functions.
+
+#+cmu
+(define-modify-macro nconcf (&rest lists) nconc)
+
 ;; Some utility functions.
 
 (defun required-args (lambda-list &optional (collector #'identity))
