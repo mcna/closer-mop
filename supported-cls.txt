@@ -1,7 +1,7 @@
 Allegro 8.1
 CLisp 2.44.1
 CMU Common Lisp 19d
-LispWorks 5.0 - 5.0.2, Professional Edition
+LispWorks 5.0 - 5.0.2, 5.1, Professional Edition
 Macintosh Common Lisp 5.1
 OpenMCL 1.0
 SBCL 1.0.15
