@@ -9,6 +9,11 @@
   #-(or clozure-common-lisp openmcl)
   (:export #:defclass #:standard-class #:typep #:subtypep)
 
+  #+(or clozure-common-lisp openmcl)
+  (:shadow #:defgeneric #:ensure-generic-function #:standard-generic-function)
+  #+(or clozure-common-lisp openmcl)
+  (:export #:defgeneric #:ensure-generic-function #:standard-generic-function)
+
   (:import-from #:ccl
 
    #:direct-slot-definition

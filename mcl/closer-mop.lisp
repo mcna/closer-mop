@@ -122,6 +122,68 @@
     (:method ((type1 class) (type2 class))
      (member type2 (class-precedence-list type1)))))
 
+#+(or clozure-common-lisp openmcl)
+(progn
+  (cl:defclass standard-generic-function (cl:standard-generic-function) ()
+    (:metaclass funcallable-standard-class))
+
+  (defun ensure-generic-function
+         (name &rest args
+               &key (generic-function-class 'standard-generic-function)
+               &allow-other-keys)
+    (declare (dynamic-extent args))
+    (when (fboundp name)
+      (let ((function (fdefinition name)))
+        (unless (typep function 'generic-function)
+          (cerror "Discard existing definition and create generic function."
+                  "~S is already fbound, but not as a generic function." name)
+          (fmakunbound name))))
+    (if (fboundp name)
+      (let ((function (fdefinition name)))
+        (apply #'ensure-generic-function-using-class
+               function name args))
+      (apply #'ensure-generic-function-using-class nil name
+             :generic-function-class generic-function-class
+             args)))
+
+  (defmacro defgeneric (&whole form name (&rest args) &body options)
+    (unless (every #'consp options)
+      (error "Illegal generic functions options in defgeneric form ~S." form))
+    `(cl:defgeneric ,name ,args ,@options
+       ,@(unless (member :generic-function-class options :key #'car :test #'eq)
+	   '((:generic-function-class standard-generic-function)))))
+
+  (cl:defgeneric compute-discriminating-function (gf)
+    (:method ((gf generic-function))
+     (let ((std-dfun (ccl::%gf-dcode gf))
+           (dt (ccl::%gf-dispatch-table gf)))
+       (case (ccl::function-name std-dfun)
+         ((ccl::%%one-arg-dcode ccl::%%1st-two-arg-dcode)
+          (lambda (&rest args)
+            (declare (dynamic-extent args))
+            (apply std-dfun dt args)))
+         (t (lambda (&rest args)
+              (declare (dynamic-extent args))
+              (funcall std-dfun dt args)))))))
+
+  (defmethod add-method :after ((gf standard-generic-function) method)
+    (declare (ignore method))
+    (set-funcallable-instance-function
+     gf (compute-discriminating-function gf)))
+
+  (defmethod remove-method :after ((gf standard-generic-function) method)
+    (declare (ignore method))
+    (set-funcallable-instance-function
+     gf (compute-discriminating-function gf)))
+
+  (defmethod initialize-instance :after ((gf standard-generic-function) &key)
+    (set-funcallable-instance-function
+     gf (compute-discriminating-function gf)))
+
+  (defmethod reinitialize-instance :after ((gf standard-generic-function) &key)
+    (set-funcallable-instance-function
+     gf (compute-discriminating-function gf))))
+
 (defun ensure-method (gf lambda-expression 
                          &key (qualifiers ())
                          (lambda-list (cadr lambda-expression))

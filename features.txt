@@ -96,7 +96,7 @@ In MCL, generic functions work completely differently than specified. The specif
 
 OpenMCL 1.0
 
-In OpenMCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
+In OpenMCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed. However, there is now experimental support for compute-discriminating-function, which will automatically be called and whose result will be installed on initialize-instance, reinitialize-instance, add-method and remove-method.
 
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - EQL-SPECIALIZER is not exported. Fixed.
