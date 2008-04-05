@@ -2,7 +2,7 @@
 
 ;; Some internal utility functions.
 
-#-openmcl
+#-(or clozure-common-lisp openmcl)
 (define-modify-macro nconcf (&rest lists) nconc)
 
 ;; Some utility functions.
@@ -19,7 +19,7 @@
     (when errorp (error "~S is not a class." class)))
   class)
 
-#-openmcl
+#-(or clozure-common-lisp openmcl)
 (progn
   ;; We need a new standard-class for various things.
 
@@ -133,9 +133,9 @@
                   finally (return (nconc args rest)))
            ,@(cddr lambda-expression))))
 
-;; The following ensures that slot definitions have a documentation in OpenMCL.
+;; The following ensures that slot definitions have a documentation in Clozure CL and OpenMCL.
 
-#+openmcl
+#+(or clozure-common-lisp openmcl)
 (defmethod initialize-instance :after ((slot slot-definition) &key documentation)
   (setf (documentation slot 't) documentation))
 
@@ -156,8 +156,8 @@
     :readers :writers))
 
 (defun fix-slot-initargs (initargs)
-  #+openmcl initargs
-  #-openmcl
+  #+(or clozure-common-lisp openmcl) initargs
+  #-(or clozure-common-lisp openmcl)
   (let* ((counts (loop with counts
                        for (key nil) on initargs by #'cddr
                        do (incf (getf counts key 0))

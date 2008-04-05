@@ -4,9 +4,9 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
-  #-openmcl
+  #-(or clozure-common-lisp openmcl)
   (:shadow #:defclass #:standard-class #:typep #:subtypep)
-  #-openmcl
+  #-(or clozure-common-lisp openmcl)
   (:export #:defclass #:standard-class #:typep #:subtypep)
 
   (:import-from #:ccl
@@ -40,10 +40,10 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-(or mcl openmcl) #:compute-applicable-methods-using-classes
+   #-(or clozure-common-lisp openmcl mcl) #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
-   #:compute-discriminating-function
+   #-(or clozure-common-lisp openmcl) #:compute-discriminating-function
    #:compute-effective-method
    #:compute-effective-slot-definition
    #:compute-slots
@@ -66,7 +66,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-(or mcl openmcl) #:make-method-lambda
+   #-(or clozure-common-lisp openmcl mcl) #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function
@@ -76,7 +76,7 @@
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #+openmcl #:set-funcallable-instance-function
+   #+(or clozure-common-lisp openmcl) #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
@@ -131,7 +131,7 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-(or mcl openmcl) #:compute-applicable-methods-using-classes
+   #-(or clozure-common-lisp openmcl mcl) #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
    #:compute-discriminating-function
@@ -157,7 +157,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-(or mcl openmcl) #:make-method-lambda
+   #-(or clozure-common-lisp openmcl mcl) #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function
@@ -167,7 +167,7 @@
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #+openmcl #:set-funcallable-instance-function
+   #+(or clozure-common-lisp openmcl) #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
@@ -183,8 +183,8 @@
    #:specializer-direct-generic-functions
    #:specializer-direct-methods
    #:standard-instance-access
-   #-openmcl #:subtypep
-   #-openmcl #:typep
+   #-(or clozure-common-lisp openmcl) #:subtypep
+   #-(or clozure-common-lisp openmcl) #:typep
    #:update-dependent
    #:validate-superclass
    #:writer-method-class))
