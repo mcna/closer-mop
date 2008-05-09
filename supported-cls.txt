@@ -1,6 +1,6 @@
 Allegro 8.1
 CLisp 2.44.1
-Clozure Common Lisp 1.1-r7809
-CMU Common Lisp 19e-pre2
+Clozure Common Lisp 1.2-rc1
+CMU Common Lisp 19e
 LispWorks 5.1 Professional Edition
 SBCL 1.0.16
