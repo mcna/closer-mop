@@ -155,17 +155,21 @@
 
   (cl:defgeneric compute-discriminating-function (gf)
     (:method ((gf generic-function))
-     (let ((std-dfun (ccl::%gf-dcode gf))
-           (dt (ccl::%gf-dispatch-table gf)))
-       (case (ccl::function-name std-dfun)
-         ((ccl::%%one-arg-dcode ccl::%%1st-two-arg-dcode)
-          (lambda (&rest args)
-            (declare (dynamic-extent args))
-            (apply std-dfun dt args)))
-         (t (lambda (&rest args)
-              (declare (dynamic-extent args))
-              (funcall std-dfun dt args)))))))
-
+     (let ((non-dt-dcode (ccl::non-dt-dcode-function gf)))
+       (if non-dt-dcode
+         non-dt-dcode
+         (let* ((std-dfun (ccl::%gf-dcode gf))
+                (dt (ccl::%gf-dispatch-table gf))
+                (proto (cdr (assoc std-dfun ccl::dcode-proto-alist))))
+           (if (or (eq proto #'ccl::gag-one-arg)
+                   (eq proto #'ccl::gag-two-arg))
+             (lambda (&rest args)
+               (declare (dynamic-extent args))
+               (apply std-dfun dt args))
+             (lambda (&rest args)
+               (declare (dynamic-extent args))
+               (funcall std-dfun dt args))))))))
+  
   (defmethod add-method :after ((gf standard-generic-function) method)
     (declare (ignore method))
     (set-funcallable-instance-function
