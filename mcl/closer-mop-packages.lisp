@@ -16,6 +16,8 @@
 
   (:import-from #:ccl
 
+   #:classp
+
    #:direct-slot-definition
    #:effective-slot-definition
    #:eql-specializer
@@ -118,6 +120,7 @@
    #:standard-slot-definition
    #:standard-writer-method
 
+   #:classp
    #:ensure-finalized
    #:ensure-method
    #:fix-slot-initargs

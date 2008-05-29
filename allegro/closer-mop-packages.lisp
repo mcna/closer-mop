@@ -11,6 +11,8 @@
    #:defclass #:defgeneric #:ensure-generic-function
    #:standard-class #:standard-generic-function)
 
+  (:import-from #:excl #:classp)
+
   (:import-from #:mop
 
    #:direct-slot-definition
@@ -115,6 +117,7 @@
    #:standard-slot-definition
    #:standard-writer-method
 
+   #:classp
    #:ensure-finalized
    #:ensure-method
    #:fix-slot-initargs

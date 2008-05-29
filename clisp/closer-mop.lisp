@@ -2,6 +2,9 @@
 
 ;; Some utility functions.
 
+(defun classp (thing)
+  (typep thing 'class))
+
 (defun required-args (lambda-list &optional (collector #'identity))
   (loop for arg in lambda-list
         until (member arg lambda-list-keywords)

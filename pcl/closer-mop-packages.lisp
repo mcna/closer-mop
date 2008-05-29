@@ -8,6 +8,11 @@
   #-sbcl (:export #:typep #:subtypep)
 
   (:import-from
+   #+cmu #:pcl
+   #+sbcl #:sb-pcl
+   #:classp)
+
+  (:import-from
    #+cmu #:clos-mop
    #+sbcl #:sb-mop
 
@@ -113,6 +118,7 @@
    #:standard-slot-definition
    #:standard-writer-method
 
+   #:classp
    #:ensure-finalized
    #:ensure-method
    #:fix-slot-initargs

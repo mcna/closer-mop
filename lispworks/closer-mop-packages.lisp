@@ -15,6 +15,8 @@
 
   (:import-from #:clos
 
+   #:classp
+
    #:direct-slot-definition
    #:effective-slot-definition
    #-lispworks #:eql-specializer
@@ -118,6 +120,7 @@
    #:standard-slot-definition
    #:standard-writer-method
 
+   #:classp
    #:ensure-finalized
    #:ensure-method
    #:fix-slot-initargs
