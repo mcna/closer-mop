@@ -417,5 +417,5 @@
  (:subclasses-of-standard-accessor-method-do-not-inherit-exported-slots)
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
-:sbcl 1.0.19
+:sbcl 1.0.20
 #| all features implemented |#

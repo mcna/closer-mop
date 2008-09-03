@@ -3,4 +3,4 @@ CLisp 2.46
 Clozure Common Lisp 1.2-rc1
 CMU Common Lisp 19e
 LispWorks 5.1.1 Personal & Professional Edition
-SBCL 1.0.19
+SBCL 1.0.20
