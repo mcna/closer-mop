@@ -48,7 +48,7 @@
  (:remove-method-calls-compute-discriminating-function)
  (:subclasses-of-method-combination-do-not-inherit-exported-slots))
 
-:clozure-common-lisp1.2-rc1
+:clozure-common-lisp1.2
 ((:compute-applicable-methods-using-classes)
  (:defmethod-calls-generic-function-method-class)
  (:defmethod-calls-make-method-lambda)
