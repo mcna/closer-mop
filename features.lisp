@@ -34,7 +34,7 @@
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots)
  (:t-is-always-a-valid-superclass))
 
-:clisp2.46
+:clisp2.47
 ((:accessor-method-initialized-with-function)
  (:add-method-calls-compute-discriminating-function)
  (:compute-slots-requested-slot-order-honoured)
