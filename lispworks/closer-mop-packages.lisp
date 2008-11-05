@@ -156,7 +156,7 @@
    #:extract-specializer-names
    #:finalize-inheritance
    #:find-method-combination
-   #-lispworks #:funcallable-standard-instance-access
+   #:funcallable-standard-instance-access
    #:generic-function-argument-precedence-order
    #:generic-function-declarations
    #:generic-function-lambda-list
@@ -191,7 +191,7 @@
    #:slot-value-using-class
    #:specializer-direct-generic-functions
    #:specializer-direct-methods
-   #-lispworks #:standard-instance-access
+   #:standard-instance-access
    #:update-dependent
    #:validate-superclass
    #-lispworks4.3 #:writer-method-class))

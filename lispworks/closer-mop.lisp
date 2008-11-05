@@ -603,6 +603,34 @@
 (defun fix-slot-initargs (initargs)
   initargs)
 
+;; Provide standard-instance-access and funcallable-standard-instance-access
+
+(declaim (inline standard-instance-access
+                 (setf standard-instance-access)))
+
+(defun standard-instance-access (instance location)
+  (clos::fast-standard-instance-access instance location))
+
+(defun (setf standard-instance-access) (new-value instance location)
+  (setf (clos::fast-standard-instance-access instance location) new-value))
+
+(declaim (inline funcallable-instance-access))
+
+(defun funcallable-instance-access (instance location &rest args)
+  (declare (dynamic-extent args))
+  (let* ((class (class-of instance))
+         (slot (find location (class-slots class)
+                     :key #'slot-definition-location)))
+    (if slot
+      (apply #'clos::funcallable-instance-access instance (slot-definition-name slot) args)
+      (error "There is no slot with location ~S for instance ~S." location instance))))
+
+(defun funcallable-standard-instance-access (instance location)
+  (funcallable-instance-access instance location))
+
+(defun (setf funcallable-standard-instance-access) (new-value instance location)
+  (funcallable-instance-access instance location new-value))
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (mp:without-preemption
     (pushnew :closer-mop *features*)))
