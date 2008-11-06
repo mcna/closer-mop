@@ -17,6 +17,28 @@
     (when errorp (error "~S is not a class." class)))
   class)
 
+(defun subclassp (class superclass)
+  (flet ((get-class (class) (etypecase class
+                              (class class)
+                              (symbol (find-class class)))))
+    
+      (loop with class = (get-class class)
+            with superclass = (get-class superclass)
+            
+            for superclasses = (list class)
+            then (set-difference 
+                  (union (class-direct-superclasses current-class) superclasses)
+                  seen)
+
+            for current-class = (first superclasses)
+
+            while current-class
+            
+            if (eq current-class superclass) return t
+            else collect current-class into seen
+            
+            finally (return nil))))
+
 (defun ensure-method (gf lambda-expression 
                          &key (qualifiers ())
                          (lambda-list (cadr lambda-expression))

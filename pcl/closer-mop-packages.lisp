@@ -123,6 +123,7 @@
    #:ensure-method
    #:fix-slot-initargs
    #:required-args
+   #:subclassp
 
    #:accessor-method-slot-definition
    #:add-dependent

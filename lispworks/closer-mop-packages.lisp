@@ -125,6 +125,7 @@
    #:ensure-method
    #:fix-slot-initargs
    #:required-args
+   #:subclassp
 
    #-lispworks4.3 #:accessor-method-slot-definition
    #:add-dependent

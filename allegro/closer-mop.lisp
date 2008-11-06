@@ -14,6 +14,28 @@
     (when errorp (error "~S is not a class." class)))
   class)
 
+(defun subclassp (class superclass)
+  (flet ((get-class (class) (etypecase class
+                              (class class)
+                              (symbol (find-class class)))))
+    
+      (loop with class = (get-class class)
+            with superclass = (get-class superclass)
+            
+            for superclasses = (list class)
+            then (set-difference 
+                  (union (class-direct-superclasses current-class) superclasses)
+                  seen)
+
+            for current-class = (first superclasses)
+
+            while current-class
+            
+            if (eq current-class superclass) return t
+            else collect current-class into seen
+            
+            finally (return nil))))
+
 ;; We need a new standard-class for various things.
 
 (cl:defclass standard-class (cl:standard-class)
