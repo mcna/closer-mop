@@ -64,7 +64,6 @@
 ; ---
  (:add-method-calls-compute-discriminating-function fixed)
  (:compute-slots-requested-slot-order-honoured)
- (:eql-specializer fixed)
  (:generic-functions-can-be-empty fixed)
  (:initialize-instance-calls-compute-discriminating-function fixed)
  (:reinitialize-instance-calls-compute-discriminating-function fixed)
