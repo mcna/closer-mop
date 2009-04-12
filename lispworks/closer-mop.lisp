@@ -655,5 +655,4 @@
   (funcallable-instance-access instance location new-value))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (mp:without-preemption
-    (pushnew :closer-mop *features*)))
+  (pushnew :closer-mop *features*))
