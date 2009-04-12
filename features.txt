@@ -32,7 +32,7 @@ None of the incompatibilities in CLisp are fixed.
 - MAKE-METHOD-LAMBDA is not provided.
 - Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-Clozure Common Lisp 1.2
+Clozure Common Lisp 1.3
 
 In CCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed. However, there is now experimental support for compute-discriminating-function, which will automatically be called and whose result will be installed on initialize-instance, reinitialize-instance, add-method and remove-method.
 
