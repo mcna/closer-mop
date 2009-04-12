@@ -358,10 +358,11 @@
 (defvar *eql-specializers* (make-hash-table))
 
 (defun intern-eql-specializer* (object)
-  (mp:without-preemption
-    (or (gethash object *eql-specializers*)
-        (setf (gethash object *eql-specializers*)
-              (make-instance 'eql-specializer* 'eso object)))))
+  (or (gethash object *eql-specializers*)
+      (sys:with-hash-table-locked *eql-specializers*
+        (or (gethash object *eql-specializers*)
+            (setf (gethash object *eql-specializers*)
+                  (make-instance 'eql-specializer* 'eso object))))))
 
 (cl:defmethod add-direct-method ((specializer eql-specializer*) (method method))
   (pushnew method (es-direct-methods specializer)))
