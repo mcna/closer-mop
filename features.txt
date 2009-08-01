@@ -20,7 +20,7 @@ Allegro Common Lisp 8.1
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
 - Subclasses of BUILT-IN-CLASS, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, METHOD-COMBINATION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-CLisp 2.47
+CLisp 2.48
 
 None of the incompatibilities in CLisp are fixed.
 
