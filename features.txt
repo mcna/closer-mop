@@ -30,10 +30,15 @@ CLisp 2.48
 - MAKE-METHOD-LAMBDA is not provided. Fixed.
 - Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-Clozure Common Lisp 1.3
+Clozure Common Lisp 1.4
 
-In CCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed. However, there is now experimental support for compute-discriminating-function, which will automatically be called and whose result will be installed on initialize-instance, reinitialize-instance, add-method and remove-method.
-
+- ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE don't call COMPUTE-DISCRIMINATING-FUNCTION. Fixed.
+- DEFMETHOD doesn't call GENERIC-FUNCTION-METHOD-CLASS or MAKE-METHOD-LAMBDA. Fixed.
+- Discriminating functions cannot be determined, and thus cannot be closures and cannot be funcalled. Fixed.
+- Geveric function invocation doesn't call COMPUTE-APPLICABLE-METHODS, COMPUTE-APPLICABLE-METHODS-USING-CLASSES, or COMPUTE-EFFECTIVE-METHOD. Fixed.
+- Generic functions cannot be empty when called. Fixed.
+- MAKE-METHOD-LAMBDA is not supported. Fixed.
+- Reinitialization of a lambda list doesn't update the argument precedence order.
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - DOCUMENTATION doesn't return the documentation strings for slot definition metaobjects. Fixed.
 - REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
