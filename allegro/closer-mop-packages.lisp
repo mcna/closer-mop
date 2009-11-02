@@ -57,7 +57,7 @@
    #:finalize-inheritance
    #:find-method-combination
    #:funcallable-standard-instance-access
-   #:generic-function-argument-precedence-order
+   #-allegro #:generic-function-argument-precedence-order
    #:generic-function-declarations
    #:generic-function-lambda-list
    #:generic-function-method-class
