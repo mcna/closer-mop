@@ -102,21 +102,35 @@
    #:writer-method-class)
 
   (:export
+   #:built-in-class
+   #:class
    #:direct-slot-definition
    #:effective-slot-definition
    #:eql-specializer
    #:forward-referenced-class
    #:funcallable-standard-class
    #:funcallable-standard-object
+   #:generic-function
    #:metaobject
+   #:method
+   #:method-combination
    #:slot-definition
    #:specializer
    #:standard-accessor-method
+   #:standard-class
+   #:standard-generic-function
    #:standard-direct-slot-definition
    #:standard-effective-slot-definition
+   #:standard-method
+   #:standard-object
    #:standard-reader-method
    #:standard-slot-definition
    #:standard-writer-method
+
+   #:defclass
+   #:defgeneric
+   #:define-method-combination
+   #:defmethod
 
    #:classp
    #:ensure-finalized
@@ -149,6 +163,7 @@
    #:effective-slot-definition-class
    #:ensure-class
    #:ensure-class-using-class
+   #:ensure-generic-function
    #:ensure-generic-function-using-class
    #:eql-specializer-object
    #:extract-lambda-list
