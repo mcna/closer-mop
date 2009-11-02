@@ -22,14 +22,12 @@ Allegro Common Lisp 8.1
 
 CLisp 2.48
 
-None of the incompatibilities in CLisp are fixed.
-
-- Methods are not initialized with :function.
+- Methods are not initialized with :function. Not fixed.
 - ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.
-- The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP.
-- DEFMETHOD does not call MAKE-METHOD-LAMBDA.
+- The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
+- DEFMETHOD does not call MAKE-METHOD-LAMBDA. Fixed.
 - A FORWARD-REFERENCED-CLASS is not changed via CHANGE-CLASS (but is correctly reinitialized via REINITIALIZE-INSTANCE).
-- MAKE-METHOD-LAMBDA is not provided.
+- MAKE-METHOD-LAMBDA is not provided. Fixed.
 - Subclasses of METHOD-COMBINATION will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 Clozure Common Lisp 1.3
