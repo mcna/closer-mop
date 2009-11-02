@@ -119,7 +119,7 @@ Summary:
 - In CMUCL, the object returned by compute-discriminating-function cannot be a closure. Likewise, the second parameter to set-funcallable-instance-function cannot be a closure, but only a "pure" function/thunk.
 - In CLisp, Clozure CL, MCL, OpenMCL, the slot order requested by a primary method for COMPUTE-SLOTS is not honoured by the respective MOPs.
 - Don't rely on FIND-METHOD-COMBINATION to do its job correctly, only when you don't provide method combination options.
-- MAKE-METHOD-LAMBDA only works in CMUCL and SBCL as specified (but make sure that the respective generic function and method metaobject classes and make-method-lambda definitions are part of your compilation enviroment). MAKE-METHOD-LAMBDA also works in LispWorks, but the returned lambda expressions don't adhere to the AMOP specification (which may be good enough for your purposes).
+- MAKE-METHOD-LAMBDA works in CLisp, Clozure Common Lisp, CMUCL, LispWorks and SBCL as specified (but make sure that the respective generic function and method metaobject classes and make-method-lambda definitions are part of your compilation enviroment).
 - Specialize the methods for the dependent protocol on the class or generic function metaobject class. The example in AMOP doesn't do this but that is fragile code.
 - Don't rely on methods being initialized with the specified initargs from inside the MOP.
 - CLisp doesn't change a FORWARD-REFERENCED-CLASS via CHANGE-CLASS.
@@ -127,13 +127,13 @@ Summary:
 - If you specialize DIRECT-SLOT-DEFINITION-CLASS, use FIX-SLOT-INITARGS in portable code.
 - If you want to use :ALLOCATION types other than :CLASS or :INSTANCE, you cannot use LispWorks before version 5.1, or MCL. Allegro Common Lisp, CLisp, Clozure CL, CMUCL, LispWorks 5.1, OpenMCL and SBCL support this.
 - In Allegro, CMUCL and LispWorks, STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible.
-- The function invocation protocol only works in CMUCL, SBCL and CLisp.
+- The function invocation protocol works in Clozure Common Lisp, CLisp, CMUCL, LispWorks, and SBCL.
 - COMPUTE-DEFAULT-INITARGS doesn't exist (and isn't called) in LispWorks.
 - In LispWorks, eql specializers are lists.
-- FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS doesn't exist / should not be used in LispWorks.
+- FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS works in all supported Common Lisp implementations.
 - In Clozure CL, CMUCL, MCL and OpenMCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
 - AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since all MOP implementations adhere to AMOP in this regard, I have also chosen that path.
 - In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
-- If you need to rely on the generic function protocols, don't use Clozure CL, MCL or OpenMCL (or be very careful - some minor things work there as specified).
+- If you need to rely on the generic function protocols, don't use MCL or OpenMCL.
 - The declarations for a generic function cannot be inspected in MCL.
 - All implementations define slots on various specified metaobject classes that are exported from some package and/or accessible in the package common-lisp-user. Only SBCL is safe from this, and clisp is relatively safe in that it does that only for the class METHOD-COMBINATION.
