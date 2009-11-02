@@ -38,7 +38,7 @@
 
 ;; We need a new standard-class for various things.
 
-(cl:defclass standard-class (cl:standard-class)
+(cl:defclass standard-class (cl:standard-class excl:lockable-object)
   ((valid-slot-allocations :initform '(:instance :class)
                            :accessor valid-slot-allocations
                            :reader excl::valid-slot-allocation-list)))
@@ -68,7 +68,8 @@
 
 (defmethod direct-slot-definition-class :before ((class standard-class) &key allocation &allow-other-keys)
   (unless (eq (class-of class) (find-class 'standard-class))
-    (mp:without-scheduling
+    (excl:with-locked-object
+     (class :non-smp :without-scheduling)
      (pushnew allocation (valid-slot-allocations class)))))
 
 ;;; In Allegro, slot-boundp-using-class and slot-makunbound-using-class are specialized
@@ -210,5 +211,4 @@
   initargs)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (mp:without-scheduling
-   (pushnew :closer-mop *features*)))
+  (pushnew :closer-mop *features*))
