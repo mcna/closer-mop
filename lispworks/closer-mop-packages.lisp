@@ -20,7 +20,7 @@
    #-lispworks #:eql-specializer
    #:forward-referenced-class
    #-lispworks #:funcallable-standard-class
-   #+lispworks5.0 #:funcallable-standard-object
+   #+lispworks5 #:funcallable-standard-object
    #:metaobject
    #:slot-definition
    #-lispworks #:specializer
