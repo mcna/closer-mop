@@ -68,19 +68,6 @@
         (when (eq (class-of superclass) (find-class 'cl:standard-class))
           (validate-superclass class (class-prototype (find-class 'standard-class))))))
 
-  ;; The following macro ensures that the new standard-class is used
-  ;; by default. It would have been useful to fix other deficiencies
-  ;; in a complete redefinition of defclass, but there is no portable
-  ;; way to ensure the necessary compile-time effects as specified
-  ;; by ANSI Common Lisp. Therefore, we just expand to the original
-  ;; cl:defclass.
-    
-  (defmacro defclass (name (&rest supers) &body options)
-    (if (member :metaclass options :key #'car)
-        `(cl:defclass ,name ,supers ,@options)
-      `(cl:defclass ,name ,supers ,@options
-         (:metaclass standard-class))))
-
   ;; In MCL, the list of direct superclasses passed by the
   ;; defclass macro is not empty, as required by AMOP, but
   ;; instead passes the class metaobject for standard-object
@@ -151,7 +138,7 @@
 
   (defun ensure-generic-function
          (name &rest args
-               &key (generic-function-class 'standard-generic-function)
+               &key (generic-function-class 'cl:standard-generic-function)
                &allow-other-keys)
     (declare (dynamic-extent args))
     (when (fboundp name)
@@ -167,13 +154,7 @@
       (apply #'ensure-generic-function-using-class nil name
              :generic-function-class generic-function-class
              args)))
-
-  (defmacro defgeneric (&whole form name (&rest args) &body options)
-    (unless (every #'consp options)
-      (error "Illegal generic functions options in defgeneric form ~S." form))
-    `(cl:defgeneric ,name ,args ,@options
-       ,@(unless (member :generic-function-class options :key #'car :test #'eq)
-	   '((:generic-function-class standard-generic-function)))))
+  |#
 
   (cl:defgeneric compute-discriminating-function (gf)
     (:method ((gf generic-function))

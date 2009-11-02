@@ -42,11 +42,10 @@
   ((initial-methods :initform '()))
   (:metaclass clos:funcallable-standard-class))
 
-;; The following ensures that the new standard-generic-function is used.
-
+#|
 (defun ensure-generic-function
        (name &rest args
-             &key (generic-function-class 'standard-generic-function)
+             &key (generic-function-class 'cl:standard-generic-function)
              &allow-other-keys)
   (declare (dynamic-extent args))
   (when (fboundp name)
@@ -62,6 +61,7 @@
     (apply #'ensure-generic-function-using-class nil name
            :generic-function-class generic-function-class
            args)))
+|#
 
 ;; We need a new standard-class for various things.
 
@@ -87,19 +87,6 @@
       (call-next-method)
       (when (eq (class-of superclass) (find-class 'cl:standard-class))
         (validate-superclass class (class-prototype (find-class 'standard-class))))))
-
-;; The following macro ensures that the new standard-class is used
-;; by default. It would have been useful to fix other deficiencies
-;; in a complete redefinition of defclass, but there is no portable
-;; way to ensure the necessary compile-time effects as specified
-;; by ANSI Common Lisp. Therefore, we just expand to the original
-;; cl:defclass.
-    
-(defmacro defclass (name (&rest supers) &body options)
-  (if (member :metaclass options :key #'car)
-    `(cl:defclass ,name ,supers ,@options)
-    `(cl:defclass ,name ,supers ,@options
-       (:metaclass standard-class))))
 
 ;; We need a new funcallable-standard-class for various things.
 
@@ -584,9 +571,6 @@
                              (add-method ,gf ,method)
                              ,method))))))))))
 
-;; The following macro ensures that the new standard-generic-function
-;; is used by default. It also ensures that make-method-lambda is called
-;; for the default methods, by expanding into defmethod forms.
 
 (defmacro defgeneric (&whole form name (&rest args) &body options)
   (unless (every #'consp options)

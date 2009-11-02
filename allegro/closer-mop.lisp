@@ -63,14 +63,6 @@
       (when (eq (class-of superclass) (find-class 'cl:standard-class))
         (validate-superclass class (class-prototype (find-class 'standard-class))))))
 
-;; The following macro ensures that the new standard-class is used by default.
-
-(defmacro defclass (name (&rest supers) &body options)
-  (if (member :metaclass options :key #'car)
-    `(cl:defclass ,name ,supers ,@options)
-    `(cl:defclass ,name ,supers ,@options
-       (:metaclass standard-class))))
-
 ;; Allegro defines an extra check for :allocation kinds. AMOP expects any kind to be
 ;; permissible, though. This is corrected here.
 
@@ -131,6 +123,7 @@
   ()
   (:metaclass clos:funcallable-standard-class))
 
+#|
 ;; The following ensures that the new standard-generic-function is used.
 
 (defun ensure-generic-function
@@ -151,15 +144,8 @@
     (apply #'ensure-generic-function-using-class nil name
            :generic-function-class generic-function-class
            args)))
+|#
 
-;; The following macro ensures that the new standard-generic-function
-;; is used by default.
-
-(defmacro defgeneric (name (&rest args) &body options)
-  (if (member :generic-function-class options :key #'car)
-      `(cl:defgeneric ,name ,args ,@options)
-    `(cl:defgeneric ,name ,args ,@options
-       (:generic-function-class standard-generic-function))))
 
 ;;; The following three methods ensure that the dependent protocol
 ;;; for generic function works.

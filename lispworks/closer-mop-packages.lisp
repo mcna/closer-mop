@@ -5,12 +5,10 @@
   (:nicknames #:c2mop)
 
   (:shadow
-   #:defclass #:defgeneric #:defmethod
-   #:ensure-generic-function
+   #:defgeneric #:defmethod
    #:standard-class #:standard-generic-function)
   (:export
-   #:defclass #:defgeneric #:defmethod
-   #:ensure-generic-function
+   #:defgeneric #:defmethod
    #:standard-class #:standard-generic-function)
 
   (:import-from #:clos

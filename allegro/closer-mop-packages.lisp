@@ -4,12 +4,7 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
-  (:shadow
-   #:defclass #:defgeneric #:ensure-generic-function 
-   #:standard-class #:standard-generic-function)
-  (:export
-   #:defclass #:defgeneric #:ensure-generic-function
-   #:standard-class #:standard-generic-function)
+  (:shadow #:standard-class #:standard-generic-function)
 
   (:import-from #:excl #:classp)
 
