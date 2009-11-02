@@ -4,15 +4,10 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
-  #-(or clozure-common-lisp openmcl)
-  (:shadow #:defclass #:standard-class #:typep #:subtypep)
-  #-(or clozure-common-lisp openmcl)
-  (:export #:defclass #:standard-class #:typep #:subtypep)
-
-  #+(or clozure-common-lisp openmcl)
-  (:shadow #:defgeneric #:ensure-generic-function #:standard-generic-function)
-  #+(or clozure-common-lisp openmcl)
-  (:export #:defgeneric #:ensure-generic-function #:standard-generic-function)
+  #-ccl
+  (:shadow #:standard-class #:typep #:subtypep)
+  #-ccl
+  (:export #:typep #:subtypep)
 
   #+ccl
   (:shadow
@@ -52,10 +47,10 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-(or clozure-common-lisp openmcl mcl) #:compute-applicable-methods-using-classes
+   #-(or ccl mcl) #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
-   #-(or clozure-common-lisp openmcl) #:compute-discriminating-function
+   #-ccl #:compute-discriminating-function
    #:compute-effective-method
    #:compute-effective-slot-definition
    #:compute-slots
@@ -78,7 +73,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-(or clozure-common-lisp openmcl mcl) #:make-method-lambda
+   #-(or ccl mcl) #:make-method-lambda
    #:map-dependents
    #-ccl #:method-function
    #:method-generic-function
@@ -88,7 +83,7 @@
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #+(or clozure-common-lisp openmcl) #:set-funcallable-instance-function
+   #+ccl #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
@@ -197,7 +192,7 @@
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #+(or clozure-common-lisp openmcl) #:set-funcallable-instance-function
+   #+ccl #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
@@ -213,8 +208,8 @@
    #:specializer-direct-generic-functions
    #:specializer-direct-methods
    #:standard-instance-access
-   #-(or clozure-common-lisp openmcl) #:subtypep
-   #-(or clozure-common-lisp openmcl) #:typep
+   #-ccl #:subtypep
+   #-ccl #:typep
    #:update-dependent
    #:validate-superclass
    #:writer-method-class))

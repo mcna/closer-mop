@@ -2,7 +2,7 @@
 
 ;; Some internal utility functions.
 
-#-(or clozure-common-lisp openmcl)
+#-ccl
 (define-modify-macro nconcf (&rest lists) nconc)
 
 ;; Some utility functions.
@@ -41,7 +41,7 @@
             
             finally (return nil))))
 
-#-(or clozure-common-lisp openmcl)
+#-ccl
 (progn
   ;; We need a new standard-class for various things.
 
@@ -131,7 +131,7 @@
     (:method ((type1 class) (type2 class))
      (member type2 (class-precedence-list type1)))))
 
-#+(or clozure-common-lisp openmcl)
+#+ccl
 (progn
   (cl:defgeneric method-function (method)
     (:method ((method method))
@@ -697,10 +697,10 @@
                   finally (return (nconc args rest)))
            ,@(cddr lambda-expression))))
 
-;; The following ensures that slot definitions have a documentation in Clozure CL and OpenMCL.
+;; The following ensures that slot definitions have a documentation in Clozure CL.
 
-#+(or clozure-common-lisp openmcl)
-(defmethod initialize-instance :after ((slot slot-definition) &key documentation)
+#+ccl
+(cl:defmethod initialize-instance :after ((slot slot-definition) &key documentation)
   (setf (documentation slot 't) documentation))
 
 ;; The following can be used in direct-slot-definition-class to get the correct initargs
@@ -720,27 +720,26 @@
     :readers :writers))
 
 (defun fix-slot-initargs (initargs)
-  #+(or clozure-common-lisp openmcl) initargs
-  #-(or clozure-common-lisp openmcl)
-  (let* ((counts (loop with counts
-                       for (key nil) on initargs by #'cddr
-                       do (incf (getf counts key 0))
-                       finally (return counts)))
-         (keys-to-fix (loop for (key value) on counts by #'cddr
-                            if (> value 1) collect key)))
-    (if keys-to-fix
-        (let ((multiple-standard-keys
-               (intersection keys-to-fix *standard-slot-keys*)))
-          (if multiple-standard-keys
-              (error "Too many occurences of ~S in slot initargs ~S."
-                     multiple-standard-keys initargs)
-            (loop with fixed-keys
-                  for (key value) on initargs by #'cddr
-                  if (member key keys-to-fix)
-                  do (nconcf (getf fixed-keys key) (list value))
-                  else nconc (list key value) into fixed-initargs
-                  finally (return (nconc fixed-initargs fixed-keys)))))
-      initargs)))
+  #+ccl initargs
+  #-ccl (let* ((counts (loop with counts
+                             for (key nil) on initargs by #'cddr
+                             do (incf (getf counts key 0))
+                             finally (return counts)))
+               (keys-to-fix (loop for (key value) on counts by #'cddr
+                                  if (> value 1) collect key)))
+          (if keys-to-fix
+            (let ((multiple-standard-keys
+                   (intersection keys-to-fix *standard-slot-keys*)))
+              (if multiple-standard-keys
+                (error "Too many occurences of ~S in slot initargs ~S."
+                       multiple-standard-keys initargs)
+                (loop with fixed-keys
+                      for (key value) on initargs by #'cddr
+                      if (member key keys-to-fix)
+                      do (nconcf (getf fixed-keys key) (list value))
+                      else nconc (list key value) into fixed-initargs
+                      finally (return (nconc fixed-initargs fixed-keys)))))
+            initargs)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (pushnew :closer-mop *features*))
