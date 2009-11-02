@@ -41,58 +41,6 @@
             
             finally (return nil))))
 
-;; The following is commented out. SBCL now supports compatible standard-class and
-;; funcallable-standard-class metaclasses, but this requires that we don't mess with
-;; the class hierarchy anymore. So we will try the trick we have already used
-;; for generic functions: We just add methods for the existing metaclasses.
-;; This is not AMOP-compliant, but if it works it works.
-
-#|
-;; We need a new standard-class for various things.
-
-(cl:defclass standard-class (cl:standard-class)
-  ())
-
-;; validate-superclass for metaclass classes is a little bit
-;; more tricky than for class metaobject classes because
-;; we don't want to make all standard-classes compatible to
-;; each other.
-
-;; Our validate-superclass may get passed a class-prototype
-;; as its second argument, so don't expect its readers to
-;; yield useful information. (In ANSI parlance, "the
-;; consequences are undefined...")
-
-(cl:defmethod validate-superclass
-           ((class standard-class)
-            (superclass cl:standard-class))
-  (or (when (eq (class-of class) (find-class 'standard-class))
-        (or (eq (class-of superclass) (find-class 'cl:standard-class))
-            (eq (class-of superclass) (find-class 'standard-class))))
-      (call-next-method)
-      (when (eq (class-of superclass) (find-class 'cl:standard-class))
-        (validate-superclass class (class-prototype (find-class 'standard-class))))))
-
-#+sbcl
-(cl:defmethod validate-superclass
-           ((class funcallable-standard-class)
-            (superclass standard-class))
-  (and (eq (class-of class) (find-class 'funcallable-standard-class))
-       (eq (class-of superclass) (find-class 'standard-class))))
-
-;; The following macro ensures that the new standard-class is used
-;; by default. It would have been useful to fix other deficiencies
-;; in a complete redefinition of defclass, but there is no portable
-;; way to ensure the necessary compile-time effects as specified
-;; by ANSI Common Lisp. Therefore, we just expand to the original
-;; cl:defclass.
-    
-(defmacro defclass (name (&rest supers) &body options)
-  (if (member :metaclass options :key #'car)
-      `(cl:defclass ,name ,supers ,@options)
-    `(cl:defclass ,name ,supers ,@options
-       (:metaclass standard-class))))
-|#
 
 ;; In CMUCL, reader-method-class and writer-method-class are
 ;; not used during class initialization. The following definitions
@@ -479,14 +427,6 @@
       (add-method gf method)
       method)))
 
-#|
-(defgeneric transform-specializer (specializer)
-  (:method (specializer) specializer)
-  (:method ((specializer class))
-   (class-name specializer))
-  (:method ((specializer eql-specializer))
-   `(eql ,(eql-specializer-object specializer))))
-|#
 
 #-sbcl
 (defun ensure-method (gf lambda-expression 
@@ -532,26 +472,25 @@
 
 (defun fix-slot-initargs (initargs)
   #+sbcl initargs
-  #+cmu
-  (let* ((counts (loop with counts
-                       for (key nil) on initargs by #'cddr
-                       do (incf (getf counts key 0))
-                       finally (return counts)))
-         (keys-to-fix (loop for (key value) on counts by #'cddr
-                            if (> value 1) collect key)))
-    (if keys-to-fix
-      (let ((multiple-standard-keys
-             (intersection keys-to-fix *standard-slot-keys*)))
-        (if multiple-standard-keys
-          (error "Too many occurences of ~S in slot initargs ~S."
-                 multiple-standard-keys initargs)
-          (loop with fixed-keys
-                for (key value) on initargs by #'cddr
-                if (member key keys-to-fix)
-                do (nconcf (getf fixed-keys key) (list value))
-                else nconc (list key value) into fixed-initargs
-                finally (return (nconc fixed-initargs fixed-keys)))))
-      initargs)))
+  #+cmu (let* ((counts (loop with counts
+                             for (key nil) on initargs by #'cddr
+                             do (incf (getf counts key 0))
+                             finally (return counts)))
+               (keys-to-fix (loop for (key value) on counts by #'cddr
+                                  if (> value 1) collect key)))
+          (if keys-to-fix
+            (let ((multiple-standard-keys
+                   (intersection keys-to-fix *standard-slot-keys*)))
+              (if multiple-standard-keys
+                (error "Too many occurences of ~S in slot initargs ~S."
+                       multiple-standard-keys initargs)
+                (loop with fixed-keys
+                      for (key value) on initargs by #'cddr
+                      if (member key keys-to-fix)
+                      do (nconcf (getf fixed-keys key) (list value))
+                      else nconc (list key value) into fixed-initargs
+                      finally (return (nconc fixed-initargs fixed-keys)))))
+            initargs)))
 
 ;; In CMUCL, TYPEP and SUBTYPEP don't work as expected
 ;; in conjunction with class metaobjects.
