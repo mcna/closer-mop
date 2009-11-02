@@ -12,6 +12,12 @@
    #+sbcl #:sb-pcl
    #:classp)
 
+  #+sbcl
+  (:shadow
+   #:defgeneric
+   #:defmethod
+   #:standard-generic-function)
+
   (:import-from
    #+cmu #:clos-mop
    #+sbcl #:sb-mop
@@ -157,6 +163,7 @@
    #:compute-default-initargs
    #:compute-discriminating-function
    #:compute-effective-method
+   #:compute-effective-method-function
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class

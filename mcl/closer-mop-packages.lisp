@@ -14,6 +14,11 @@
   #+(or clozure-common-lisp openmcl)
   (:export #:defgeneric #:ensure-generic-function #:standard-generic-function)
 
+  #+ccl
+  (:shadow
+   #:defgeneric #:standard-generic-function
+   #:defmethod #:standard-method #:method-function)
+  
   (:import-from #:ccl
 
    #:classp
@@ -75,7 +80,7 @@
    #:intern-eql-specializer
    #-(or clozure-common-lisp openmcl mcl) #:make-method-lambda
    #:map-dependents
-   #:method-function
+   #-ccl #:method-function
    #:method-generic-function
    #:method-lambda-list
    #:method-specializers
@@ -154,11 +159,12 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-(or clozure-common-lisp openmcl mcl) #:compute-applicable-methods-using-classes
+   #+ccl #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
    #:compute-discriminating-function
    #:compute-effective-method
+   #:compute-effective-method-function
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -181,7 +187,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-(or clozure-common-lisp openmcl mcl) #:make-method-lambda
+   #+ccl #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function

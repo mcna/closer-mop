@@ -152,11 +152,12 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-lispworks #:compute-applicable-methods-using-classes
+   #+lispworks5 #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #-lispworks #:compute-default-initargs
    #:compute-discriminating-function
    #:compute-effective-method
+   #:compute-effective-method-function
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class

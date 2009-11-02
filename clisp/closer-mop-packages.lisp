@@ -4,6 +4,11 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
+  (:shadow
+   #:defgeneric
+   #:defmethod
+   #:standard-generic-function)
+
   (:import-from #:clos
 
    #:direct-slot-definition
@@ -147,6 +152,7 @@
    #:compute-default-initargs
    #:compute-discriminating-function
    #:compute-effective-method
+   #:compute-effective-method-function
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -169,7 +175,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-clisp #:make-method-lambda
+   #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function
