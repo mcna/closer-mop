@@ -786,12 +786,19 @@
     (add-method gf method)
     method))
 
+(define-condition defmethod-without-generic-function (style-warning)
+  ((name :initarg :name :reader dwg-name))
+  (:report (lambda (c s) (format s "No generic function present when encountering a defmethod for ~S. Assuming it will be an instance of standard-generic-function." (dwg-name c)))))
+
+(define-symbol-macro warn-on-defmethod-without-generic-function t)
+
 (defmacro defmethod (&whole form name &body body &environment env)
   (loop with generic-function = (when (fboundp name) (fdefinition name))
         
         initially
-        (unless generic-function
-          (warn "No generic function ~S present when encountering macroexpansion of defmethod. Assuming it will be an instance of standard-generic-function." name))
+        (when (macroexpand 'warn-on-defmethod-without-generic-function env)
+          (unless generic-function
+            (warn 'defmethod-without-generic-function :name name)))
         (unless (typep generic-function 'standard-generic-function)
           (return-from defmethod `(cl:defmethod ,@(cdr form))))
         (when (only-standard-methods generic-function)

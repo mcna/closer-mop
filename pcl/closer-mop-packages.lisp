@@ -216,4 +216,6 @@
    #:typep
    #:update-dependent
    #:validate-superclass
-   #:writer-method-class))
+   #:writer-method-class
+
+   #+sbcl warn-on-defmethod-without-generic-function))

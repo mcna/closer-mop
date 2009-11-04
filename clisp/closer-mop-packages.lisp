@@ -203,4 +203,6 @@
    #:standard-instance-access
    #:update-dependent
    #:validate-superclass
-   #:writer-method-class))
+   #:writer-method-class
+
+   #:warn-on-defmethod-without-generic-function))

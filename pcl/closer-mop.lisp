@@ -399,11 +399,18 @@
          (eval-when (:load-toplevel :execute)
            (cl:defgeneric ,name ,args ,@options)))))
 
-  (defmacro defmethod (&whole form name &body body)
+  (define-condition defmethod-without-generic-function (style-warning)
+    ((name :initarg :name :reader dwg-name))
+    (:report (lambda (c s) (format s "No generic function present when encountering a defmethod for ~S. Assuming it will be an instance of standard-generic-function." (dwg-name c)))))
+  
+  (define-symbol-macro warn-on-defmethod-without-generic-function nil)
+  
+  (defmacro defmethod (&whole form name &body body &environment env)
     (declare (ignore body))
     (let ((generic-function (when (fboundp name) (fdefinition name))))
-      (unless generic-function
-        (warn "No generic function ~S present when encountering macroexpansion of defmethod. Assuming it will be an instance of standard-generic-function." name))
+      (when (macroexpand 'warn-on-defmethod-without-generic-function env)
+        (unless generic-function
+          (warn 'defmethod-without-generic-function :name name)))
       `(cl:defmethod ,@(cdr form)))))
 
 #+sbcl

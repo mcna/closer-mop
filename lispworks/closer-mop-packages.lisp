@@ -209,4 +209,6 @@
    #:standard-instance-access
    #:update-dependent
    #:validate-superclass
-   #-lispworks4.3 #:writer-method-class))
+   #-lispworks4.3 #:writer-method-class
+
+   #:warn-on-defmethod-without-generic-function))

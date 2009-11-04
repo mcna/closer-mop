@@ -212,4 +212,6 @@
    #-ccl #:typep
    #:update-dependent
    #:validate-superclass
-   #:writer-method-class))
+   #:writer-method-class
+
+   #+ccl #:warn-on-defmethod-without-generic-function))
