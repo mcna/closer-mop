@@ -621,7 +621,8 @@
 
 (defvar *standard-gfs*
   (list #'compute-applicable-methods #'compute-applicable-methods-using-classes
-        #'compute-effective-method #'compute-effective-method-function))
+        #'compute-effective-method #'compute-effective-method-function
+        #'make-method-lambda))
 
 (defun only-standard-methods (gf &rest other-gfs)
   (declare (dynamic-extent other-gfs) (optimize (speed 3) (space 0) (compilation-speed 0)))
@@ -671,7 +672,7 @@
                (apply (the function emf) args))))
       (when (only-standard-methods gf #'compute-applicable-methods #'compute-applicable-methods-using-classes)
         (setq discriminator
-              (if (only-standard-methods gf #'compute-effective-method #'compute-effective-method-function)
+              (if (only-standard-methods gf #'compute-effective-method #'compute-effective-method-function #'make-method-lambda)
                 (call-next-method)
                 (cond ((null (generic-function-methods gf))
                        (lambda (&rest args)
