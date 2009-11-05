@@ -11,6 +11,7 @@
 
   #+ccl
   (:shadow
+   #:standard-class
    #:defgeneric #:standard-generic-function
    #:defmethod #:standard-method #:method-function)
   
@@ -51,7 +52,7 @@
    #:compute-class-precedence-list
    #:compute-default-initargs
    #-ccl #:compute-discriminating-function
-   #:compute-effective-method
+   #-ccl #:compute-effective-method
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class

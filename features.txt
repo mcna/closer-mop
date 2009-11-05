@@ -38,10 +38,10 @@ Clozure Common Lisp 1.4
 - Geveric function invocation doesn't call COMPUTE-APPLICABLE-METHODS, COMPUTE-APPLICABLE-METHODS-USING-CLASSES, or COMPUTE-EFFECTIVE-METHOD. Fixed.
 - Generic functions cannot be empty when called. Fixed.
 - MAKE-METHOD-LAMBDA is not supported. Fixed.
-- Reinitialization of a lambda list doesn't update the argument precedence order.
+- Reinitialization of a lambda list doesn't update the argument precedence order. Fixed.
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
 - DOCUMENTATION doesn't return the documentation strings for slot definition metaobjects. Fixed.
-- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
+- REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Fixed.
 - Subclasses of DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, GENERIC-FUNCTION, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 CMUCL 20a
@@ -131,7 +131,7 @@ Summary:
 - COMPUTE-DEFAULT-INITARGS doesn't exist (and isn't called) in LispWorks.
 - In LispWorks, eql specializers are lists.
 - FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS works in all supported Common Lisp implementations.
-- In Clozure CL, CMUCL, MCL and OpenMCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
+- In CMUCL, MCL and OpenMCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
 - AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since all MOP implementations adhere to AMOP in this regard, I have also chosen that path.
 - In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
 - If you need to rely on the generic function protocols, don't use MCL or OpenMCL.

@@ -133,6 +133,24 @@
 
 #+ccl
 (progn
+  (cl:defclass standard-class (cl:standard-class)
+    ())
+
+  (cl:defmethod validate-superclass
+             ((class standard-class)
+              (superclass cl:standard-class))
+    (or (when (eq (class-of class) (find-class 'standard-class))
+          (or (eq (class-of superclass) (find-class 'cl:standard-class))
+              (eq (class-of superclass) (find-class 'standard-class))))
+        (call-next-method)
+        (when (eq (class-of superclass) (find-class 'cl:standard-class))
+          (validate-superclass class (class-prototype (find-class 'standard-class))))))
+
+  (cl:defmethod reinitialize-instance :after ((class standard-class) &key)
+    (finalize-inheritance class)))
+
+#+ccl
+(progn
   (cl:defgeneric method-function (method)
     (:method ((method method))
      (ccl:method-function method)))
@@ -182,6 +200,18 @@
      (initial-methods :initform '()))
     (:metaclass funcallable-standard-class)
     (:default-initargs :name (gensym) :method-class (find-class 'standard-method)))
+
+  (cl:defmethod reinitialize-instance :around
+    ((gf standard-generic-function) &rest initargs &key
+     (lambda-list '() lambda-list-p)
+     (argument-precedence-order '() argument-precedence-order-p))
+    (declare (dynamic-extent initargs)
+             (ignore argument-precedence-order))
+    (if (and lambda-list-p (not argument-precedence-order-p))
+      (apply #'call-next-method gf
+             :argument-precedence-order (required-args lambda-list)
+             initargs)
+      (call-next-method)))
 
   #|
   (defun ensure-generic-function
@@ -255,6 +285,8 @@
                 when (> (svref specialized-count pos) 0)
                 collect pos into argument-order
                 finally (setf (argument-order gf) (coerce argument-order 'simple-vector)))))
+
+  (cl:defgeneric compute-effective-method (gf combination methods))
 
   (cl:defmethod compute-effective-method ((gf standard-generic-function)
                                           (combination ccl:standard-method-combination)
