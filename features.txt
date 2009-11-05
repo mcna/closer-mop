@@ -133,7 +133,7 @@ Summary:
 - FUNCALLABLE-STANDARD-INSTANCE-ACCESS and STANDARD-INSTANCE-ACCESS works in all supported Common Lisp implementations.
 - In CMUCL, MCL and OpenMCL, the reinitialization of a class metaobject does not lead to a call of FINALIZE-INHERITANCE, so methods defined on FINALIZE-INHERITANCE won't be called again in that case.
 - AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since all MOP implementations adhere to AMOP in this regard, I have also chosen that path.
-- In Allegro Common Lisp and LispWorks, method functions take the original parameters that a generic function has received.
+- In Allegro Common Lisp, method functions take the original parameters that a generic function has received.
 - If you need to rely on the generic function protocols, don't use MCL or OpenMCL.
 - The declarations for a generic function cannot be inspected in MCL.
 - All implementations define slots on various specified metaobject classes that are exported from some package and/or accessible in the package common-lisp-user. Only SBCL is safe from this, and clisp is relatively safe in that it does that only for the class METHOD-COMBINATION.
