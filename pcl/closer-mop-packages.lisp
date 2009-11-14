@@ -218,4 +218,4 @@
    #:validate-superclass
    #:writer-method-class
 
-   #+sbcl warn-on-defmethod-without-generic-function))
+   #+sbcl #:warn-on-defmethod-without-generic-function))
