@@ -123,4 +123,4 @@ Some extra notes:
 - Specialize the methods for the dependent protocol on the class or generic function metaobject class. The example in AMOP doesn't do this but that is fragile code.
 - Don't rely on methods being initialized with the specified initargs from inside the MOP.
 - If you specialize DIRECT-SLOT-DEFINITION-CLASS, use FIX-SLOT-INITARGS in portable code.
-- AMOP specifies that :declarations is used whereas ANSI Common Lisp specifies that 'declare is used. Since all MOP implementations adhere to AMOP in this regard, I have also chosen that path.
+- AMOP specifies that :declarations is used when initializing generic functions, whereas ANSI Common Lisp specifies that 'declare is used. Since almost all MOP implementations adhere to AMOP in this regard, I have also chosen that path.
