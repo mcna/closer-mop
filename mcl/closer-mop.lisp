@@ -68,45 +68,20 @@
         (when (eq (class-of superclass) (find-class 'cl:standard-class))
           (validate-superclass class (class-prototype (find-class 'standard-class))))))
 
-  ;; In MCL, the list of direct superclasses passed by the
-  ;; defclass macro is not empty, as required by AMOP, but
-  ;; instead passes the class metaobject for standard-object
-  ;; or funcallable-standard-object respectively. This makes
-  ;; replacing the default superclass for a new metaclass a bit
-  ;; more complicated. In order to avoid the tricky bits in user
-  ;; code, the new standard-class adjusts possible incorrect
-  ;; direct superclasses by adding or removing the metaobject
-  ;; for standard-object as needed before passing them to
-  ;; the original standard-class. In user code, just use the
-  ;; idiom suggested by AMOP to APPEND your new default superclass
-  ;; to the list of direct superclasses.
+  (cl:defmethod ccl::create-reader-method-function
+             ((class standard-class)
+              (reader-method-class standard-reader-method)
+              (dslotd standard-direct-slot-definition))
+    (let ((slot-name (slot-definition-name dslotd)))
+      (compile nil `(lambda (object) (slot-value object ',slot-name)))))
 
-  (defun modify-superclasses (direct-superclasses)
-    (if (null direct-superclasses)
-        (list (find-class 'standard-object))
-      (let ((standard-object (find-class 'standard-object)))
-        (if (eq (car (last direct-superclasses)) standard-object)
-            direct-superclasses
-          (remove standard-object direct-superclasses)))))
-
-  (cl:defmethod initialize-instance :around
-    ((class standard-class) &rest initargs
-     &key (name (gensym)) (direct-superclasses ()))
-    (declare (dynamic-extent initargs))
-    (apply #'call-next-method class
-           :name name
-           :direct-superclasses (modify-superclasses direct-superclasses)
-           initargs))
-
-  (cl:defmethod reinitialize-instance :around
-    ((class standard-class) &rest initargs
-     &key (direct-superclasses () direct-superclasses-p))
-    (declare (dynamic-extent initargs))
-    (if direct-superclasses-p
-        (apply #'call-next-method class
-               :direct-superclasses (modify-superclasses direct-superclasses)
-               initargs)
-      (call-next-method)))
+  (cl:defmethod ccl::create-writer-method-function
+             ((class standard-class)
+              (writer-method-class standard-writer-method)
+              (dslotd standard-direct-slot-definition))
+    (let ((slot-name (slot-definition-name dslotd)))
+      (compile nil `(lambda (new-value object)
+                      (setf (slot-value object ',slot-name) new-value)))))
 
   (defgeneric typep (object type)
     (:method (object type)
@@ -757,27 +732,7 @@
     :initargs :initform :initfunction
     :readers :writers))
 
-(defun fix-slot-initargs (initargs)
-  #+ccl initargs
-  #-ccl (let* ((counts (loop with counts
-                             for (key nil) on initargs by #'cddr
-                             do (incf (getf counts key 0))
-                             finally (return counts)))
-               (keys-to-fix (loop for (key value) on counts by #'cddr
-                                  if (> value 1) collect key)))
-          (if keys-to-fix
-            (let ((multiple-standard-keys
-                   (intersection keys-to-fix *standard-slot-keys*)))
-              (if multiple-standard-keys
-                (error "Too many occurences of ~S in slot initargs ~S."
-                       multiple-standard-keys initargs)
-                (loop with fixed-keys
-                      for (key value) on initargs by #'cddr
-                      if (member key keys-to-fix)
-                      do (nconcf (getf fixed-keys key) (list value))
-                      else nconc (list key value) into fixed-initargs
-                      finally (return (nconc fixed-initargs fixed-keys)))))
-            initargs)))
+(defun fix-slot-initargs (initargs) initargs)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (pushnew :closer-mop *features*))

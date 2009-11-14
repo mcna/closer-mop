@@ -82,17 +82,14 @@ LispWorks, 5.1.2 Personal & Professional Edition
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - Subclasses of BUILT-IN-CLASS (fixed), CLASS (fixed), DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, FORWARD-REFERENCED-CLASS (fixed), FUNCALLABLE-STANDARD-CLASS (fixed), SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS (fixed), STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed, except where indicated otherwise.
 
-MCL 5.1
+MCL 5.2.1
 
 In MCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
 
 - The slot order requested by a primary method for COMPUTE-SLOTS is not honoured by this MOP. Not fixed.
-- DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, SLOT-DEFINITION and STANDARD-SLOT-DEFINITION are not exported. Fixed.
-- When classes are initialized, :direct-superclasses are by default not empty. Not fixed, but direct superclasses are automatically adjusted when you use the standard idiom for adding a new default superclass.
-- The :ALLOCATION type cannot be extended. Not fixed.
-- Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
-- (SETF CLASS-NAME) doesn't use REINITIALIZE-INSTANCE for changing the names. Fixed.
+- FUNCALLABLE-STANDARD-OBJECT is not exported. Fixed.
 - REINITIALIZE-INSTANCE of a class metaobject doesn't invoke FINALIZE-INHERITANCE again. Not fixed.
+- The automatically created accessor methods in DEFCLASS forms don't call SLOT-VALUE-USING-CLASS and (SETF SLOT-VALUE-USING-CLASS). Fixed.
 - Subclasses of DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 SBCL 1.0.31

@@ -274,10 +274,11 @@
  (:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots)
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
-:mcl
+:mcl5.2.1
 ((:add-method-calls-compute-discriminating-function)
  (:compute-applicable-methods-using-classes)
- (:default-superclass-for-funcallable-standard-class-is-funcallable-standard-object)
+ (:compute-slots-requested-slot-order-honoured)
+ (:default-superclass-for-funcallable-standard-class-is-funcallable-standard-object fixed)
  (:defmethod-calls-generic-function-method-class)
  (:defmethod-calls-make-method-lambda)
  (:discriminating-functions-can-be-closures)
@@ -294,24 +295,14 @@
  (:method-functions-take-processed-parameters)
  (:method-lambdas-are-processed)
  (:reinitialize-instance-calls-compute-discriminating-function)
+ (:reinitialize-instance-calls-finalize-inheritance)
  (:reinitialize-lambda-list-reinitializes-argument-precedence-order)
  (:remove-method-calls-compute-discriminating-function)
  (:set-funcallable-instance-function)
  (:setf-generic-function-name)
  (:setf-generic-function-name-calls-reinitialize-instance)
- (:standard-class-and-funcallable-standard-class-are-compatible)
-; ---
- (:compute-slots-requested-slot-order-honoured)
- (:direct-slot-definition fixed)
- (:direct-superclasses-by-default-empty) ; not fixed, but direct superclasses are automatically adjusted, not for funcallable-standard-class though
- (:effective-slot-definition fixed)
- (:eql-specializer fixed)
- (:extensible-allocation)
- (:multiple-slot-options-passed-as-list-to-direct-slot-definition-class) ; fix with fix-slot-initargs
- (:reinitialize-instance-calls-finalize-inheritance)
- (:setf-class-name-calls-reinitialize-instance)
- (:slot-definition fixed)
- (:standard-slot-definition fixed)
+ (:slot-reader-calls-slot-value-using-class fixed)
+ (:slot-writer-calls-slot-value-using-class fixed)
  (:subclasses-of-direct-slot-definition-do-not-inherit-exported-slots)
  (:subclasses-of-effective-slot-definition-do-not-inherit-exported-slots)
  (:subclasses-of-slot-definition-do-not-inherit-exported-slots)
