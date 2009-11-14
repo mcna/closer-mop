@@ -82,7 +82,6 @@ LispWorks, 5.1.2 Personal & Professional Edition
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - Subclasses of BUILT-IN-CLASS (fixed), CLASS (fixed), DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, FORWARD-REFERENCED-CLASS (fixed), FUNCALLABLE-STANDARD-CLASS (fixed), SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS (fixed), STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed, except where indicated otherwise.
 
-
 MCL 5.1
 
 In MCL, generic functions work completely differently than specified. The specific incompatibilities are not listed and are not fixed.
@@ -110,6 +109,24 @@ SBCL 1.0.31
 
 All features implemented.
 
+SCL 1.3.9
+
+- The functions ADD-DIRECT-METHOD and REMOVE-DIRECT-METHOD don't exist, and thus are also not called. Partially fixed.
+- CLASS-DEFAULT-INITARGS and CLASS-DIRECT-DEFAULT-INITARGS don't exist. Not fixed.
+- COMPUTE-EFFECTIVE-METHOD doesn't exist and isn't called. Not fixed.
+- MAKE-METHOD-LAMBDA doesn't exist and isn't used. Not fixed.
+- The dependent protocols for classes and generic functions are not implemented. Fixed.
+- Discriminating functions cannot be funcalled, and it's unclear whether your own discriminating functions may be closures or not. COMPUTE-DISCRIMINATING-FUNCTION exists, but requires an extra 'cache' parameter, whose purpose is not specified. Not fixed.
+- EQL-SPECIALIZER is not a class, but only a type. Not fixed, but the implemented behavior should be sufficient for most cases.
+- Allocations other than :CLASS and :INSTANCE are not supported. Not fixed.
+- STANDARD-INSTANCE-ACCESS and FUNCALLABLE-STANDARD-INSTANCE-ACCESS don't exist. Not fixed.
+- COMPUTE-APPLICABLE-METHODS is not invoked when generic functions are called. Not fixed.
+- Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
+- Reinitialization of a generic function doesn't trigger recomputing its discriminating function. Not fixed.
+- (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) are not implemented by way of calling REINITIALIZE-INSTANCE. Not fixed.
+- The class SPECIALIZER doesn't exist. Not fixed.
+- STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible.
+- Subclasses of BUILT-IN-CLASS, CLASS, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, METHOD-COMBINATION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION, STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
 Summary:
 
