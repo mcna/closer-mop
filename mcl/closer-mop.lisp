@@ -2,7 +2,7 @@
 
 ;; Some internal utility functions.
 
-#-ccl
+#+mcl
 (define-modify-macro nconcf (&rest lists) nconc)
 
 ;; Some utility functions.
@@ -41,7 +41,7 @@
             
             finally (return nil))))
 
-#-ccl
+#+mcl
 (progn
   ;; We need a new standard-class for various things.
 
@@ -131,7 +131,7 @@
     (:method ((type1 class) (type2 class))
      (member type2 (class-precedence-list type1)))))
 
-#+ccl
+#+clozure
 (progn
   (cl:defclass standard-class (cl:standard-class)
     ())
@@ -147,10 +147,8 @@
           (validate-superclass class (class-prototype (find-class 'standard-class))))))
 
   (cl:defmethod reinitialize-instance :after ((class standard-class) &key)
-    (finalize-inheritance class)))
+    (finalize-inheritance class))
 
-#+ccl
-(progn
   (cl:defgeneric method-function (method)
     (:method ((method method))
      (ccl:method-function method)))
@@ -739,7 +737,7 @@
 
 ;; The following ensures that slot definitions have a documentation in Clozure CL.
 
-#+ccl
+#+clozure
 (cl:defmethod initialize-instance :after ((slot slot-definition) &key documentation)
   (setf (documentation slot 't) documentation))
 

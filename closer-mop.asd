@@ -32,7 +32,7 @@ OTHER DEALINGS IN THE SOFTWARE.
     #+clisp "clisp"
     #+ecl "ecl"
     #+lispworks "lispworks"
-    #+(or clozure-common-lisp openmcl mcl) "mcl"
+    #+(or clozure mcl) "mcl"
     #+(or cmu sbcl) "pcl"
     #+scl "scl"
     :components ((:file "closer-mop-packages")
@@ -43,6 +43,6 @@ OTHER DEALINGS IN THE SOFTWARE.
                        #+clisp "clisp"
                        #+ecl "ecl"
                        #+lispworks "lispworks"
-                       #+(or clozure-common-lisp openmcl mcl) "mcl"
+                       #+(or clozure mcl) "mcl"
                        #+(or cmu sbcl) "pcl"
                        #+scl "scl"))))
