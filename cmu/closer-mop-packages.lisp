@@ -4,11 +4,11 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
-  (:shadow #:standard-class #:standard-generic-function)
+  (:shadow #:typep #:subtypep)
 
-  (:import-from #:excl #:classp)
+  (:import-from #:pcl #:classp)
 
-  (:import-from #:mop
+  (:import-from #:clos-mop
 
    #:direct-slot-definition
    #:effective-slot-definition
@@ -57,7 +57,7 @@
    #:finalize-inheritance
    #:find-method-combination
    #:funcallable-standard-instance-access
-   #-allegro #:generic-function-argument-precedence-order
+   #:generic-function-argument-precedence-order
    #:generic-function-declarations
    #:generic-function-lambda-list
    #:generic-function-method-class
@@ -65,7 +65,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-allegro #:make-method-lambda
+   #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function
@@ -151,6 +151,7 @@
    #:compute-default-initargs
    #:compute-discriminating-function
    #:compute-effective-method
+   #:compute-effective-method-function
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -199,6 +200,8 @@
    #:specializer-direct-generic-functions
    #:specializer-direct-methods
    #:standard-instance-access
+   #:subtypep
+   #:typep
    #:update-dependent
    #:validate-superclass
    #:writer-method-class))

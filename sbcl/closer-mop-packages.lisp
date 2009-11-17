@@ -4,23 +4,11 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
-  #-sbcl (:shadow #:typep #:subtypep)
-  #-sbcl (:export #:typep #:subtypep)
+  (:import-from #:sb-pcl #:classp)
 
-  (:import-from
-   #+cmu #:pcl
-   #+sbcl #:sb-pcl
-   #:classp)
+  (:shadow #:defgeneric #:defmethod #:standard-generic-function)
 
-  #+sbcl
-  (:shadow
-   #:defgeneric
-   #:defmethod
-   #:standard-generic-function)
-
-  (:import-from
-   #+cmu #:clos-mop
-   #+sbcl #:sb-mop
+  (:import-from #:sb-mop
 
    #:direct-slot-definition
    #:effective-slot-definition
@@ -218,4 +206,4 @@
    #:validate-superclass
    #:writer-method-class
 
-   #+sbcl #:warn-on-defmethod-without-generic-function))
+   #:warn-on-defmethod-without-generic-function))

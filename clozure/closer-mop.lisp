@@ -1,6 +1,6 @@
 (in-package :closer-mop)
 
-;; Some utility functions.
+;; Some utility functions
 
 (defun required-args (lambda-list &optional (collector #'identity))
   (loop for arg in lambda-list
@@ -36,27 +36,8 @@
             
             finally (return nil))))
 
-;; We need a new standard-generic-function for various things.
-
-(defclass standard-generic-function (cl:standard-generic-function)
-  ((argument-order :accessor argument-order)
-   (initial-methods :initform '()))
-  (:metaclass clos:funcallable-standard-class))
-
-;; We need a new standard-class for various things.
-
 (defclass standard-class (cl:standard-class)
   ())
-
-;; validate-superclass for metaclass classes is a little bit
-;; more tricky than for class metaobject classes because
-;; we don't want to make all standard-classes compatible to
-;; each other.
-
-;; Our validate-superclass may get passed a class-prototype
-;; as its second argument, so don't expect its readers to
-;; yield useful information. (In ANSI parlance, "the
-;; consequences are undefined...")
 
 (cl:defmethod validate-superclass
            ((class standard-class)
@@ -68,342 +49,105 @@
       (when (eq (class-of superclass) (find-class 'cl:standard-class))
         (validate-superclass class (class-prototype (find-class 'standard-class))))))
 
-;; We need a new funcallable-standard-class for various things.
+(cl:defmethod reinitialize-instance :after ((class standard-class) &key)
+  (finalize-inheritance class))
 
-(defclass funcallable-standard-class (clos:funcallable-standard-class)
-  ())
+(cl:defgeneric method-function (method)
+  (:method ((method method))
+   (ccl:method-function method)))
+  
+(defclass standard-method (cl:standard-method)
+  ((fn :initarg :real-function :reader method-function)))
 
-;; See the comment on validate-superclass for standard-class above.
+(defparameter *stub-method-functions* (make-hash-table :test #'equal))
 
-(cl:defmethod validate-superclass
-           ((class funcallable-standard-class)
-            (superclass clos:funcallable-standard-class))
-  (or (when (eq (class-of class) (find-class 'funcallable-standard-class))
-        (or (eq (class-of superclass) (find-class 'clos:funcallable-standard-class))
-            (eq (class-of superclass) (find-class 'funcallable-standard-class))))
-      (call-next-method)
-      (when (eq (class-of superclass) (find-class 'clos:funcallable-standard-class))
-        (validate-superclass class (class-prototype (find-class 'funcallable-standard-class))))))
-
-#+lispworks5
-(cl:defmethod validate-superclass
-           ((class funcallable-standard-class)
-            (superclass (eql (find-class 'funcallable-standard-object))))
-  t)
-
-;; We also need a new funcallable-standard-object because the default one
-;; is not an instance of clos:funcallable-standard-class.
-
-#-lispworks5
-(defclass funcallable-standard-object (clos:funcallable-standard-object)
-  ()
-  (:metaclass clos:funcallable-standard-class))
-
-;; The following code ensures that possibly incorrect lists of direct
-;; superclasses are corrected.
-
-#-lispworks5
-(defun modify-superclasses (direct-superclasses &optional (standardp t))
-  (if (null direct-superclasses)
-    (list (if standardp
-            (find-class 'standard-object)
-            (find-class 'funcallable-standard-object)))
-    (let ((standard-object (if standardp
-                             (find-class 'standard-object)
-                             (find-class 'clos:funcallable-standard-object))))
-      (if (eq (car (last direct-superclasses)) standard-object)
-        (if standardp
-          direct-superclasses
-          (append (butlast direct-superclasses)
-                  (list (find-class 'funcallable-standard-object))))
-        (remove standard-object direct-superclasses)))))
-
-;; During class re/initialization, we take care of the following things:
-;; - Optimization of slot accessors is deactivated.
-;; - Lists of direct superclasses are corrected.
-;; - Removal of direct subclasses.
+(defun get-stub-method-function (lambda-list)
+  (or (gethash lambda-list *stub-method-functions*)
+      (let ((ignore-list (loop for arg in lambda-list
+                               unless (member arg lambda-list-keywords)
+                               collect (etypecase arg
+                                         (symbol arg)
+                                         (cons (etypecase (car arg)
+                                                 (symbol (car arg))
+                                                 (cons (assert (cdr arg))
+                                                       (cadr arg))))))))
+        (setf (gethash lambda-list *stub-method-functions*)
+              (compile nil `(lambda ,lambda-list
+                              (declare (ignore ,@ignore-list))
+                              (error "This method function must not be called.")))))))
 
 (cl:defmethod initialize-instance :around
-  ((class standard-class) &rest initargs
-   #-lispworks5 &key
-   #-lispworks5 (direct-superclasses ()))
-  (declare (dynamic-extent initargs))
-  (apply #'call-next-method class
-         #-lispworks5 :direct-superclasses
-         #-lispworks5 (modify-superclasses direct-superclasses)
-         :optimize-slot-access nil
-         initargs))
-
-(cl:defmethod reinitialize-instance :around
-  ((class standard-class) &rest initargs
-   #-lispworks5 &key
-   #-lispworks5 (direct-superclasses () direct-superclasses-p))
-  (declare (dynamic-extent initargs))
-  #-lispworks5
-  (progn
-    (when direct-superclasses-p
-      (setq direct-superclasses (modify-superclasses direct-superclasses))
-      (loop for superclass in (copy-list (class-direct-superclasses class))
-            unless (member superclass direct-superclasses)
-            do (remove-direct-subclass superclass class)))
-    (if direct-superclasses-p
-      (apply #'call-next-method class
-             :direct-superclasses direct-superclasses
-             :optimize-slot-access nil
-             initargs)
-      (apply #'call-next-method class
-             :optimize-slot-access nil
-             initargs)))
-  #+lispworks5
-  (apply #'call-next-method class
-         :optimize-slot-access nil
-         initargs))
-
-(cl:defmethod initialize-instance :around
-  ((class funcallable-standard-class) &rest initargs
-   #-lispworks5 &key
-   #-lispworks5 (direct-superclasses ()))
-  (declare (dynamic-extent initargs))
-  (apply #'call-next-method class
-         #-lispworks5 :direct-superclasses
-         #-lispworks5 (modify-superclasses direct-superclasses nil)
-         :optimize-slot-access nil
-         initargs))
-
-(cl:defmethod reinitialize-instance :around
-  ((class funcallable-standard-class) &rest initargs
-   #-lispworks5 &key
-   #-lispworks5 (direct-superclasses () direct-superclasses-p))
-  (declare (dynamic-extent initargs))
-  #-lispworks5
-  (progn
-    (when direct-superclasses-p
-      (setq direct-superclasses (modify-superclasses direct-superclasses nil))
-      (loop for superclass in (copy-list (class-direct-superclasses class))
-            unless (member superclass direct-superclasses)
-            do (remove-direct-subclass superclass class)))
-    (if direct-superclasses-p
-      (apply #'call-next-method class
-             :direct-superclasses direct-superclasses
-             :optimize-slot-access nil
-             initargs)
-      (apply #'call-next-method class
-             :optimize-slot-access nil
-             initargs)))
-  #+lispworks5
-  (apply #'call-next-method class
-         :optimize-slot-access nil
-         initargs))
-
-;; The following is necessary for forward-referenced-classes.
-;; Since we replace the original funcallable-standard-object with
-;; a new one, we have to prevent LispWorks from trying to use
-;; the original one when forward-ferenced-classes are resolved.
-
-#-lispworks5
-(cl:defmethod change-class :around
-  ((class forward-referenced-class)
-   (new-class funcallable-standard-class)
-   &rest initargs
-   &key (direct-superclasses ()))
-  (declare (dynamic-extent initargs))
-  (apply #'call-next-method class new-class
-         :optimize-slot-access nil
-         :direct-superclasses (modify-superclasses direct-superclasses nil)
-         initargs))
-
-;;; In LispWorks, the slot accessors (slot-value-using-class, etc.) are specialized
-;;; on slot names instead of effective slot definitions. In order to fix this,
-;;; we need to rewire the slot access protocol.
-
-(cl:defmethod slot-value-using-class
-           ((class standard-class) object (slot symbol))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
-    (if slotd
-      (slot-value-using-class class object slotd)
-      (slot-missing class object slot 'slot-value))))
-
-(cl:defmethod slot-value-using-class
-           ((class standard-class) object (slotd standard-effective-slot-definition))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (slot-value-using-class
-   (load-time-value (class-prototype (find-class 'cl:standard-class)))
-   object
-   (slot-definition-name slotd)))
-
-(cl:defmethod (setf slot-value-using-class)
-           (new-value (class standard-class) object (slot symbol))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
-    (if slotd
-      (setf (slot-value-using-class class object slotd)
-            new-value)
-      (slot-missing class object slot 'setf new-value))))
-
-(cl:defmethod (setf slot-value-using-class)
-           (new-value (class standard-class) object (slotd standard-effective-slot-definition))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (setf (slot-value-using-class
-         (load-time-value (class-prototype (find-class 'cl:standard-class)))
-         object
-         (slot-definition-name slotd))
-        new-value))
-
-(cl:defmethod slot-boundp-using-class
-           ((class standard-class) object (slot symbol))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
-    (if slotd
-      (slot-boundp-using-class class object slotd)
-      (slot-missing class object slot 'slot-boundp))))
-
-(cl:defmethod slot-boundp-using-class
-           ((class standard-class) object (slotd standard-effective-slot-definition))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (slot-boundp-using-class
-   (load-time-value (class-prototype (find-class 'cl:standard-class)))
-   object
-   (slot-definition-name slotd)))
-
-(cl:defmethod slot-makunbound-using-class
-           ((class standard-class) object (slot symbol))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
-    (if slotd
-      (slot-makunbound-using-class class object slotd)
-      (slot-missing class object slot 'slot-makunbound))))
-
-(cl:defmethod slot-makunbound-using-class
-           ((class standard-class) object (slotd standard-effective-slot-definition))
-  (declare (optimize (speed 3) (debug 0) (safety 0)
-                     (compilation-speed 0)))
-  (slot-makunbound-using-class
-   (load-time-value (class-prototype (find-class 'cl:standard-class)))
-   object
-   (slot-definition-name slotd)))
-
-;; In LispWorks, eql specializers are lists. We cannot change this
-;; but we can soften some of the incompatibilities.
-
-(deftype eql-specializer ()
-  '(or eql-specializer*
-       (satisfies clos:eql-specializer-p)))
-
-(cl:defgeneric eql-specializer-object (eql-specializer)
-  (:method ((cons cons))
-   (if (clos:eql-specializer-p cons)
-     (cadr cons)
-     (error "~S is not an eql-specializer." cons))))
-
-(defun intern-eql-specializer (object)
-  `(eql ,object))
-
-(defclass eql-specializer* (metaobject)
-  ((obj :reader eql-specializer-object
-        :initarg eso
-        :initform (error "Use intern-eql-specializer to create eql-specializers."))
-   (direct-methods :reader specializer-direct-methods
-                   :accessor es-direct-methods
-                   :initform ())))
-
-(defvar *eql-specializers* (make-hash-table))
-
-(defun intern-eql-specializer* (object)
-  (or (gethash object *eql-specializers*)
-      (sys:with-hash-table-locked *eql-specializers*
-        (or (gethash object *eql-specializers*)
-            (setf (gethash object *eql-specializers*)
-                  (make-instance 'eql-specializer* 'eso object))))))
-
-(cl:defmethod add-direct-method ((specializer eql-specializer*) (method method))
-  (pushnew method (es-direct-methods specializer)))
-
-(cl:defmethod remove-direct-method ((specializer eql-specializer*) (method method))
-  (removef (es-direct-methods specializer) method))
-
-(cl:defgeneric specializer-direct-generic-functions (specializer)
-  (:method ((class class))
-   (remove-duplicates
-    (mapcar #'method-generic-function
-            (specializer-direct-methods class))))
-  (:method ((eql-specializer eql-specializer*))
-   (remove-duplicates
-    (mapcar #'method-generic-function
-            (specializer-direct-methods eql-specializer))))
-  (:method ((cons cons))
-   (specializer-direct-generic-functions
-    (intern-eql-specializer*
-     (eql-specializer-object cons)))))
-
-;; The following method ensures that remove-method is called.
-
-#-lispworks5
-(cl:defmethod add-method :before ((gf standard-generic-function) (method method))
-  (when-let (old-method (find-method gf (method-qualifiers method)
-                                     (method-specializers method) nil))
-    (remove-method gf old-method)))
-
-;; The following two methods ensure that add/remove-direct-method is called,
-;; and that the dependent protocol for generic function works.
-
-(cl:defmethod add-method :after ((gf standard-generic-function) (method method))
-  (loop for specializer in (method-specializers method)
-        if (consp specializer)
-        do (add-direct-method
-            (intern-eql-specializer*
-             (eql-specializer-object specializer))
-            method)
-        #-lispworks5 else
-        #-lispworks5 do
-        #-lispworks5 (add-direct-method specializer method))
-  #+lispworks4.3
-  (map-dependents
-   gf (lambda (dep) (update-dependent gf dep 'add-method method))))
-
-(cl:defmethod remove-method :after ((gf standard-generic-function) (method method))
-  (loop for specializer in (method-specializers method)
-        if (consp specializer)
-        do (remove-direct-method
-            (intern-eql-specializer*
-             (eql-specializer-object specializer))
-            method)
-        #-lispworks5 else
-        #-lispworks5 do
-        #-lispworks5 (remove-direct-method specializer method))
-  #+lispworks4.3
-  (map-dependents
-   gf (lambda (dep) (update-dependent gf dep 'remove-method method))))
-
-(cl:defgeneric find-method-combination (gf combi combi-options)
-  (:method ((gf generic-function) (combi symbol) combi-options)
-   (when combi-options
-     (error "This implementation of find-method-combination cannot handle method combination options."))
-   (clos::find-a-method-combination-type combi)))
+  ((method standard-method) &rest initargs &key lambda-list function closer-patch)
+  (if closer-patch
+    (apply #'call-next-method method
+           :real-function function
+           :function (get-stub-method-function lambda-list)
+           initargs)
+    (apply #'call-next-method method
+           :real-function function
+           initargs)))
 
 (declaim (inline m-function))
-
+  
 (defun m-function (m)
   (method-function m))
 
 (define-compiler-macro m-function (m)
   (handler-case (method-function m)
     (error () `(the function (method-function (the method ,m))))))
+
+(defclass standard-generic-function (cl:standard-generic-function)
+  ((argument-order :accessor argument-order)
+   (initial-methods :initform '()))
+  (:metaclass funcallable-standard-class)
+  (:default-initargs :name (gensym) :method-class (find-class 'standard-method)))
+
+(cl:defmethod reinitialize-instance :around
+  ((gf standard-generic-function) &rest initargs &key
+   (lambda-list '() lambda-list-p)
+   (argument-precedence-order '() argument-precedence-order-p))
+  (declare (dynamic-extent initargs)
+           (ignore argument-precedence-order))
+  (if (and lambda-list-p (not argument-precedence-order-p))
+    (apply #'call-next-method gf
+           :argument-precedence-order (required-args lambda-list)
+           initargs)
+    (call-next-method)))
+
+(cl:defgeneric compute-discriminating-function (gf)
+  (:method ((gf generic-function))
+   (let ((non-dt-dcode (ccl::non-dt-dcode-function gf)))
+     (if non-dt-dcode
+       non-dt-dcode
+       (let* ((std-dfun (ccl::%gf-dcode gf))
+              (dt (ccl::%gf-dispatch-table gf))
+              (proto (cdr (assoc std-dfun ccl::dcode-proto-alist))))
+         (if (or (eq proto #'ccl::gag-one-arg)
+                 (eq proto #'ccl::gag-two-arg))
+           (lambda (&rest args)
+             (declare (dynamic-extent args))
+             (apply std-dfun dt args))
+           (lambda (&rest args)
+             (declare (dynamic-extent args))
+             (funcall std-dfun dt args))))))))
+
+(cl:defmethod add-method :after ((gf standard-generic-function) method)
+  (declare (ignore method))
+  (set-funcallable-instance-function
+   gf (compute-discriminating-function gf)))
+  
+(cl:defmethod remove-method :after ((gf standard-generic-function) method)
+  (declare (ignore method))
+  (set-funcallable-instance-function
+   gf (compute-discriminating-function gf)))
+  
+(cl:defmethod initialize-instance :after ((gf standard-generic-function) &key)
+  (set-funcallable-instance-function
+   gf (compute-discriminating-function gf)))
+  
+(cl:defmethod reinitialize-instance :after ((gf standard-generic-function) &key)
+  (set-funcallable-instance-function
+   gf (compute-discriminating-function gf)))
 
 (defun compute-argument-order (gf nof-required-args)
   (loop with specialized-count = (make-array nof-required-args :initial-element 0)
@@ -422,70 +166,114 @@
               collect pos into argument-order
               finally (setf (argument-order gf) (coerce argument-order 'simple-vector)))))
 
-(cl:defmethod compute-applicable-methods-using-classes ((gf standard-generic-function) classes)
-  (labels ((subclass* (spec1 spec2 arg-spec)
-             (let ((cpl (class-precedence-list arg-spec)))
-               (declare (type list cpl))
-               (find spec2 (the list (cdr (member spec1 cpl :test #'eq))) :test #'eq)))
-           (method-more-specific-p (m1 m2)
-             (declare (type method m1 m2))
-             (loop for n of-type fixnum across (argument-order gf)
-                   for spec1 = (nth n (method-specializers m1))
-                   for spec2 = (nth n (method-specializers m2))
-                   unless (eq spec1 spec2)
-                   return (subclass* spec1 spec2 (nth n classes)))))
-    (let ((applicable-methods
-           (sort
-            (loop for method of-type method in (the list (generic-function-methods gf))
-                  when (loop for class in classes
-                             for specializer in (the list (method-specializers method))
-                             if (typep specializer 'eql-specializer)
-                             do (when (typep (eql-specializer-object specializer) class)
-                                  (return-from compute-applicable-methods-using-classes (values '() nil)))
-                             else if (not (subclassp class specializer)) return nil
-                             finally (return t))
-                  collect method)
-            #'method-more-specific-p)))
-      (values applicable-methods t))))
+(cl:defgeneric compute-effective-method (gf combination methods))
+
+(cl:defmethod compute-effective-method ((gf standard-generic-function)
+                                        (combination ccl:standard-method-combination)
+                                        methods)
+  (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
+  (loop for method in methods
+        for qualifiers = (method-qualifiers method)
+        if (equal qualifiers '()) collect method into primary
+        else if (equal qualifiers '(:before)) collect method into before
+        else if (equal qualifiers '(:after)) collect method into after
+        else if (equal qualifiers '(:around)) collect method into around
+        else do (invalid-method-error method "Invalid method qualifiers ~S." qualifiers)
+        finally
+        (unless primary (method-combination-error "No primary method."))
+        (let ((form (if (or before after (rest primary))
+                      `(multiple-value-prog1
+                           (progn ,@(loop for method in before collect `(call-method ,method))
+                             (call-method ,(first primary) ,(rest primary)))
+                         ,@(loop for method in (reverse after) collect `(call-method ,method)))
+                      `(call-method ,(first primary)))))
+          (return
+           (if around
+             `(call-method ,(first around) (,@(rest around) (make-method ,form)))
+             form)))))
+
+(cl:defmethod compute-effective-method ((gf standard-generic-function)
+                                        (combination ccl:short-method-combination)
+                                        methods)
+  (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
+  (loop with primary-qualifiers = (list (ccl::method-combination-name combination))
+        for method in methods
+        for qualifiers in (method-qualifiers method)
+        if (equal qualifiers primary-qualifiers) collect method into primary
+        else if (equal qualifiers '(:around)) collect method into around
+        else do (invalid-method-error method "Invalid method qualifiers ~S." qualifiers)
+        finally
+        (unless primary (method-combination-error "No primary method."))
+        (when (eq (car (ccl::method-combination-options combination))
+                  :most-specific-last)
+          (setq primary (nreverse primary)))
+        (let ((form (if (and (ccl::method-combination-identity-with-one-argument combination)
+                             (null (rest primary)))
+                      `(call-method ,(first primary))
+                      `(,(ccl::method-combination-operator combination)
+                        ,@(loop for method in primary collect `(call-method ,method))))))
+          (return
+           (if around
+             `(call-method ,(first around) (,@(rest around) (make-method ,form)))
+             form)))))
+
+(cl:defmethod compute-effective-method ((gf standard-generic-function)
+                                        (combination ccl:long-method-combination)
+                                        methods)
+  (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
+  (destructuring-bind ((args-var . gf-name) . expander)
+      (ccl::method-combination-expander combination)
+    (declare (ignore args-var gf-name))
+    (funcall expander gf methods (ccl::method-combination-options combination))))
+
+(cl:defgeneric compute-applicable-methods-using-classes (gf classes)
+  (:method ((gf standard-generic-function) classes)
+   (labels ((subclass* (spec1 spec2 arg-spec)
+              (let ((cpl (class-precedence-list arg-spec)))
+                (declare (type list cpl))
+                (find spec2 (the list (cdr (member spec1 cpl :test #'eq))) :test #'eq)))
+            (method-more-specific-p (m1 m2)
+              (declare (type method m1 m2))
+              (loop for n of-type fixnum across (argument-order gf)
+                    for spec1 = (nth n (method-specializers m1))
+                    for spec2 = (nth n (method-specializers m2))
+                    unless (eq spec1 spec2)
+                    return (subclass* spec1 spec2 (nth n classes)))))
+     (let ((applicable-methods
+            (sort
+             (loop for method of-type method in (the list (generic-function-methods gf))
+                   when (loop for class in classes
+                              for specializer in (the list (method-specializers method))
+                              if (typep specializer 'eql-specializer)
+                              do (when (typep (eql-specializer-object specializer) class)
+                                   (return-from compute-applicable-methods-using-classes (values '() nil)))
+                              else if (not (subclassp class specializer)) return nil
+                              finally (return t))
+                   collect method)
+             #'method-more-specific-p)))
+       (values applicable-methods t)))))
 
 (cl:defgeneric make-method-lambda (generic-function method lambda-expression environment)
-  (:method ((gf generic-function) (method standard-method) lambda-expression environment)
-   (destructuring-bind
-       (lambda (&rest args) &body body)
-       lambda-expression
-     (declare (ignore lambda))
-     (loop with documentation = :unbound
-           for (car . cdr) = body then cdr
-           while (or (and cdr (stringp car))
-                     (and (consp car) (eq (car car) 'declare)))
-           if (stringp car)
-           do (setf documentation
-                    (if (eq documentation :unbound) car
-                      (error "Too many documentation strings in lambda expression ~S."
-                             lambda-expression)))
-           else append (loop for declaration in (cdr car) 
-                             if (eq (car declaration) 'ignore)
-                             collect `(ignorable ,@(cdr declaration))
-                             and collect `(dynamic-extent ,@(cdr declaration))
-                             else collect declaration) into declarations
-           finally (multiple-value-bind
-                       (method-lambda method-args)
-                       (clos:make-method-lambda
-                        gf method args declarations
-                        `(progn ,car ,@cdr)
-                        environment)
-                     (if (eq documentation :unbound)
-                       (return (values method-lambda method-args))
-                       (return (values
-                                `(lambda ,(cadr method-lambda)
-                                   ,documentation
-                                   ,@(cddr method-lambda))
-                                method-args)))))))
+  (:method ((gf generic-function) (method method) lambda-expression environment)
+   (declare (ignore environment) (optimize (speed 3) (space 0) (compilation-speed 0)))
+   (let ((methvar (gensym)))
+     (values
+      `(lambda (ccl::&method ,methvar ,@(cadr lambda-expression))
+         (flet ((call-next-method (&rest args)
+                  (declare (dynamic-extent args))
+                  (if args
+                    (apply #'ccl::%call-next-method-with-args ,methvar args)
+                    (ccl::%call-next-method ,methvar)))
+                (next-method-p () (ccl::%next-method-p ,methvar)))
+           (declare (inline call-next-method next-method-p))
+           ,@(cddr lambda-expression)))
+      '())))
   (:method ((gf standard-generic-function) (method standard-method) lambda-expression environment)
    (declare (ignore environment) (optimize (speed 3) (space 0) (compilation-speed 0)))
    (when (only-standard-methods gf)
      (return-from make-method-lambda (call-next-method)))
-   (with-unique-names (args next-methods more-args method-function)
+   (let ((args (gensym)) (next-methods (gensym))
+         (more-args (gensym)) (method-function (gensym)))
      (values
       `(lambda (,args ,next-methods &rest ,more-args)
          (declare (dynamic-extent ,more-args)
@@ -505,7 +293,7 @@
            (flet ((,method-function ,@(rest lambda-expression)))
              (declare (inline ,method-function))
              (apply #',method-function ,args))))
-      '()))))
+      '(:closer-patch t)))))
 
 (cl:defgeneric compute-effective-method-function (gf effective-method options)
   (:method ((gf generic-function) effective-method options)
@@ -701,7 +489,7 @@
 
 (defmacro defgeneric (&whole form name (&rest args) &body options)
   (unless (every #'consp options)
-    (error "Illegal generic function options in defgeneric form ~S." form))
+    (error "Illegal generic functions options in defgeneric form ~S." form))
   (let ((non-standard (member :generic-function-class options :key #'car :test #'eq))
         (options-without-methods (remove :method options :key #'car :test #'eq)))
     `(progn
@@ -716,8 +504,7 @@
              (eval-when (:compile-toplevel)
                (cl:defgeneric ,name ,args ,@options-without-methods))
              (eval-when (:load-toplevel :execute)
-               (let ((dspec:*redefinition-action* :quiet))
-                 (cl:defgeneric ,name ,args ,@options)))))
+               (cl:defgeneric ,name ,args ,@options))))
        (let ((generic-function (fdefinition ',name)))
          ,(when non-standard
             `(setf (slot-value generic-function 'initial-methods)
@@ -769,7 +556,7 @@
 (define-condition defmethod-without-generic-function (style-warning)
   ((name :initarg :name :reader dwg-name))
   (:report (lambda (c s) (format s "No generic function present when encountering a defmethod for ~S. Assuming it will be an instance of standard-generic-function." (dwg-name c)))))
-
+  
 (define-symbol-macro warn-on-defmethod-without-generic-function t)
 
 (defmacro defmethod (&whole form name &body body &environment env)
@@ -819,8 +606,7 @@
                                     ',qualifiers (list ,@specializers) ',lambda-list
                                     (function ,method-lambda) ',method-options))))))))
 
-
-(defun ensure-method (gf lambda-expression 
+(defun ensure-method (gf lambda-expression
                          &key (method-class (generic-function-method-class gf))
                          (qualifiers ())
                          (lambda-list (cadr lambda-expression))
@@ -840,6 +626,10 @@
       (add-method gf method)
       method)))
 
+;; The following ensures that slot definitions have a documentation in Clozure CL.
+
+(cl:defmethod initialize-instance :after ((slot slot-definition) &key documentation)
+  (setf (documentation slot 't) documentation))
 
 ;; The following can be used in direct-slot-definition-class to get the correct initargs
 ;; for a slot. Use it like this:
@@ -857,36 +647,7 @@
     :initargs :initform :initfunction
     :readers :writers))
 
-(defun fix-slot-initargs (initargs)
-  initargs)
-
-;; Provide standard-instance-access and funcallable-standard-instance-access
-
-(declaim (inline standard-instance-access
-                 (setf standard-instance-access)))
-
-(defun standard-instance-access (instance location)
-  (clos::fast-standard-instance-access instance location))
-
-(defun (setf standard-instance-access) (new-value instance location)
-  (setf (clos::fast-standard-instance-access instance location) new-value))
-
-(declaim (inline funcallable-instance-access))
-
-(defun funcallable-instance-access (instance location &rest args)
-  (declare (dynamic-extent args))
-  (let* ((class (class-of instance))
-         (slot (find location (class-slots class)
-                     :key #'slot-definition-location)))
-    (if slot
-      (apply #'clos::funcallable-instance-access instance (slot-definition-name slot) args)
-      (error "There is no slot with location ~S for instance ~S." location instance))))
-
-(defun funcallable-standard-instance-access (instance location)
-  (funcallable-instance-access instance location))
-
-(defun (setf funcallable-standard-instance-access) (new-value instance location)
-  (funcallable-instance-access instance location new-value))
+(defun fix-slot-initargs (initargs) initargs)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (pushnew :closer-mop *features*))

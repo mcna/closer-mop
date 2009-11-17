@@ -4,11 +4,14 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
-  (:shadow #:standard-class #:standard-generic-function)
+  (:shadow
+   #:standard-class
+   #:defgeneric #:standard-generic-function
+   #:defmethod #:standard-method #:method-function)
+  
+  (:import-from #:ccl
 
-  (:import-from #:excl #:classp)
-
-  (:import-from #:mop
+   #:classp
 
    #:direct-slot-definition
    #:effective-slot-definition
@@ -39,11 +42,11 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #:compute-applicable-methods-using-classes
+   #-clozure #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
-   #:compute-discriminating-function
-   #:compute-effective-method
+   #-clozure #:compute-discriminating-function
+   #-clozure #:compute-effective-method
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -57,7 +60,7 @@
    #:finalize-inheritance
    #:find-method-combination
    #:funcallable-standard-instance-access
-   #-allegro #:generic-function-argument-precedence-order
+   #:generic-function-argument-precedence-order
    #:generic-function-declarations
    #:generic-function-lambda-list
    #:generic-function-method-class
@@ -65,9 +68,9 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-allegro #:make-method-lambda
+   #-clozure #:make-method-lambda
    #:map-dependents
-   #:method-function
+   #-clozure #:method-function
    #:method-generic-function
    #:method-lambda-list
    #:method-specializers
@@ -151,6 +154,7 @@
    #:compute-default-initargs
    #:compute-discriminating-function
    #:compute-effective-method
+   #:compute-effective-method-function
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -201,4 +205,6 @@
    #:standard-instance-access
    #:update-dependent
    #:validate-superclass
-   #:writer-method-class))
+   #:writer-method-class
+
+   #:warn-on-defmethod-without-generic-function))

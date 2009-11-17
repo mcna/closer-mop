@@ -4,17 +4,8 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
-  #+mcl
   (:shadow #:standard-class #:typep #:subtypep)
-  #+mcl
-  (:export #:typep #:subtypep)
 
-  #+clozure
-  (:shadow
-   #:standard-class
-   #:defgeneric #:standard-generic-function
-   #:defmethod #:standard-method #:method-function)
-  
   (:import-from #:ccl
 
    #:classp
@@ -48,11 +39,11 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-(or clozure mcl) #:compute-applicable-methods-using-classes
+   #-mcl #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
-   #-clozure #:compute-discriminating-function
-   #-clozure #:compute-effective-method
+   #:compute-discriminating-function
+   #:compute-effective-method
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -74,9 +65,9 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-(or clozure mcl) #:make-method-lambda
+   #-mcl #:make-method-lambda
    #:map-dependents
-   #-clozure #:method-function
+   #:method-function
    #:method-generic-function
    #:method-lambda-list
    #:method-specializers
@@ -84,7 +75,7 @@
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #+clozure #:set-funcallable-instance-function
+   #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
@@ -155,7 +146,7 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #+clozure #:compute-applicable-methods-using-classes
+   #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #:compute-default-initargs
    #:compute-discriminating-function
@@ -183,7 +174,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #+clozure #:make-method-lambda
+   #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function
@@ -193,7 +184,7 @@
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
-   #+clozure #:set-funcallable-instance-function
+   #:set-funcallable-instance-function
    #:slot-boundp-using-class
    #:slot-definition-allocation
    #:slot-definition-initargs
@@ -213,6 +204,4 @@
    #+mcl #:typep
    #:update-dependent
    #:validate-superclass
-   #:writer-method-class
-
-   #+clozure #:warn-on-defmethod-without-generic-function))
+   #:writer-method-class))

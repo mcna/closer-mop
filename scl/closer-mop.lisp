@@ -41,15 +41,15 @@
 (defun classp (thing)
   (typep thing 'class))
 
-(cl:defgeneric add-direct-method (specializer method)
+(defgeneric add-direct-method (specializer method)
   (:method ((specializer standard-object) (method method))))
 
-(cl:defgeneric remove-direct-method (specializer method)
+(defgeneric remove-direct-method (specializer method)
   (:method ((specializer standard-object) (method method))))
 
 (defvar *dependents* (make-hash-table :test #'eq))
 
-(cl:defgeneric add-dependent (metaobject dependent)
+(defgeneric add-dependent (metaobject dependent)
   (:method ((metaobject standard-class) dependent)
     (pushnew dependent (gethash metaobject *dependents*)))
   (:method ((metaobject funcallable-standard-class) dependent)
@@ -57,7 +57,7 @@
   (:method ((metaobject standard-generic-function) dependent)
     (pushnew dependent (gethash metaobject *dependents*))))
 
-(cl:defgeneric remove-dependent (metaobject dependent)
+(defgeneric remove-dependent (metaobject dependent)
   (:method ((metaobject standard-class) dependent)
     (setf (gethash metaobject *dependents*)
 	  (delete metaobject (gethash metaobject *dependents*))))
@@ -68,7 +68,7 @@
     (setf (gethash metaobject *dependents*)
 	  (delete metaobject (gethash metaobject *dependents*)))))
 
-(cl:defgeneric map-dependents (metaobject function)
+(defgeneric map-dependents (metaobject function)
   (:method ((metaobject standard-class) function)
     (mapc function (gethash metaobject *dependents*)))
   (:method ((metaobject funcallable-standard-class) function)
@@ -76,40 +76,26 @@
   (:method ((metaobject standard-generic-function) function)
     (mapc function (gethash metaobject *dependents*))))
 
-(cl:defgeneric update-dependent (metaobject dependent &rest initargs))
+(defgeneric update-dependent (metaobject dependent &rest initargs))
 
-(cl:defmethod reinitialize-instance :after ((metaobject metaobject) &rest initargs)
+(defmethod reinitialize-instance :after ((metaobject metaobject) &rest initargs)
   (declare (dynamic-extent initargs))
   (map-dependents
    metaobject (lambda (dep) (apply #'update-dependent metaobject dep initargs))))
 
-(cl:defmethod add-method :after
+(defmethod add-method :after
   ((gf standard-generic-function) method)
   (loop for specializer in (method-specializers method)
         do (add-direct-method specializer method))
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'add-method method))))
 
-(cl:defmethod remove-method :after
+(defmethod remove-method :after
   ((gf standard-generic-function) method)
   (loop for specializer in (method-specializers method)
 	do (remove-direct-method specializer method))
   (map-dependents
    gf (lambda (dep) (update-dependent gf dep 'remove-method method))))
-
-(define-condition defmethod-without-generic-function (style-warning)
-  ((name :initarg :name :reader dwg-name))
-  (:report (lambda (c s) (format s "No generic function present when encountering a defmethod for ~S. Assuming it will be an instance of standard-generic-function." (dwg-name c)))))
-
-(define-symbol-macro warn-on-defmethod-without-generic-function t)
-
-(defmacro defmethod (&whole form name &body body &environment env)
-  (declare (ignore body))
-  (let ((generic-function (when (fboundp name) (fdefinition name))))
-    (when (macroexpand 'warn-on-defmethod-without-generic-function env)
-      (unless generic-function
-	(warn 'defmethod-without-generic-function :name name)))
-    `(cl:defmethod ,@(cdr form))))
 
 (defun ensure-method (gf lambda-expression 
                          &key (qualifiers ())

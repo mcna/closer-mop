@@ -30,10 +30,12 @@ OTHER DEALINGS IN THE SOFTWARE.
   ((:module
     #+allegro "allegro"
     #+clisp "clisp"
+    #+clozure "clozure"
+    #+cmu "cmu"
     #+ecl "ecl"
     #+lispworks "lispworks"
-    #+(or clozure mcl) "mcl"
-    #+(or cmu sbcl) "pcl"
+    #+mcl "mcl"
+    #+sbcl "sbcl"
     #+scl "scl"
     :components ((:file "closer-mop-packages")
                  (:file "closer-mop"
@@ -41,8 +43,10 @@ OTHER DEALINGS IN THE SOFTWARE.
    (:file "closer-mop-utility-packages"
           :depends-on (#+allegro "allegro"
                        #+clisp "clisp"
+                       #+clozure "clozure"
+                       #+cmu "cmu"
                        #+ecl "ecl"
                        #+lispworks "lispworks"
-                       #+(or clozure mcl) "mcl"
-                       #+(or cmu sbcl) "pcl"
+                       #+mcl "mcl"
+                       #+sbcl "sbcl"
                        #+scl "scl"))))

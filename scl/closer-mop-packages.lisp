@@ -4,10 +4,7 @@
   (:use #:common-lisp)
   (:nicknames #:c2mop)
 
-  (:shadow #:defmethod)
-
-  (:import-from
-   #:clos
+  (:import-from #:clos
 
    #:direct-slot-definition
    #:effective-slot-definition
@@ -108,7 +105,7 @@
    #:method
    #:method-combination
    #:slot-definition
-   #-scl #:specializer
+   #:specializer
    #:standard-accessor-method
    #:standard-class
    #:standard-generic-function
@@ -149,8 +146,8 @@
    #:compute-class-precedence-list
    #:compute-default-initargs
    #:compute-discriminating-function
-   #-scl #:compute-effective-method
-   #-scl #:compute-effective-method-function
+   #:compute-effective-method
+   #:compute-effective-method-function
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -164,7 +161,7 @@
    #:extract-specializer-names
    #:finalize-inheritance
    #:find-method-combination
-   #-scl #:funcallable-standard-instance-access
+   #:funcallable-standard-instance-access
    #:generic-function-argument-precedence-order
    #:generic-function-declarations
    #:generic-function-lambda-list
@@ -173,7 +170,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #-scl #:make-method-lambda
+   #:make-method-lambda
    #:map-dependents
    #:method-function
    #:method-generic-function
@@ -198,11 +195,9 @@
    #:slot-value-using-class
    #:specializer-direct-generic-functions
    #:specializer-direct-methods
-   #-scl #:standard-instance-access
+   #:standard-instance-access
    #:subtypep
    #:typep
    #:update-dependent
    #:validate-superclass
-   #:writer-method-class
-
-   #:warn-on-defmethod-without-generic-function))
+   #:writer-method-class))

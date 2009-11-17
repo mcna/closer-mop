@@ -38,7 +38,7 @@
 
 ;; We need a new standard-class for various things.
 
-(cl:defclass standard-class (cl:standard-class excl:lockable-object)
+(defclass standard-class (cl:standard-class excl:lockable-object)
   ((valid-slot-allocations :initform '(:instance :class)
                            :accessor valid-slot-allocations
                            :reader excl::valid-slot-allocation-list)))
@@ -120,33 +120,9 @@
 
 ;; We need a new standard-generic-function for various things.
 
-(cl:defclass standard-generic-function (cl:standard-generic-function)
+(defclass standard-generic-function (cl:standard-generic-function)
   ()
   (:metaclass clos:funcallable-standard-class))
-
-#|
-;; The following ensures that the new standard-generic-function is used.
-
-(defun ensure-generic-function
-       (name &rest args
-             &key (generic-function-class 'standard-generic-function)
-             &allow-other-keys)
-  (declare (dynamic-extent args))
-  (when (fboundp name)
-    (let ((function (fdefinition name)))
-      (unless (typep function 'generic-function)
-        (cerror "Discard existing definition and create generic function."
-                "~S is already fbound, but not as a generic function." name)
-        (fmakunbound name))))
-  (if (fboundp name)
-      (let ((function (fdefinition name)))
-        (apply #'ensure-generic-function-using-class
-               function name args))
-    (apply #'ensure-generic-function-using-class nil name
-           :generic-function-class generic-function-class
-           args)))
-|#
-
 
 ;;; The following three methods ensure that the dependent protocol
 ;;; for generic function works.

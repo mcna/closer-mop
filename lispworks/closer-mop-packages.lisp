@@ -115,7 +115,7 @@
    #:method
    #:method-combination
    #:slot-definition
-   #-lispworks #:specializer
+   #:specializer
    #:standard-accessor-method
    #:standard-class
    #:standard-generic-function
@@ -139,7 +139,7 @@
    #:required-args
    #:subclassp
 
-   #-lispworks4.3 #:accessor-method-slot-definition
+   #:accessor-method-slot-definition
    #:add-dependent
    #:add-direct-method
    #:add-direct-subclass
@@ -154,7 +154,7 @@
    #:class-slots
    #+lispworks5 #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
-   #-lispworks #:compute-default-initargs
+   #:compute-default-initargs
    #:compute-discriminating-function
    #:compute-effective-method
    #:compute-effective-method-function
@@ -187,7 +187,7 @@
    #:method-generic-function
    #:method-lambda-list
    #:method-specializers
-   #-lispworks4.3 #:reader-method-class
+   #:reader-method-class
    #:remove-dependent
    #:remove-direct-method
    #:remove-direct-subclass
@@ -209,6 +209,6 @@
    #:standard-instance-access
    #:update-dependent
    #:validate-superclass
-   #-lispworks4.3 #:writer-method-class
+   #:writer-method-class
 
    #:warn-on-defmethod-without-generic-function))
