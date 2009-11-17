@@ -579,7 +579,7 @@
             ((&rest specialized-args) &body body) tail
           (loop with documentation = :unbound
                 for (car . cdr) = body then cdr
-                while (or (stringp car)
+                while (or (and cdr (stringp car))
                           (and (consp car) (eq (car car) 'declare)))
                 if (stringp car)
                 do (setq documentation
