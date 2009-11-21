@@ -1,46 +1,5 @@
 (in-package :closer-mop)
 
-;; Some internal utility functions.
-
-(define-modify-macro nconcf (&rest lists) nconc)
-
-;; Some utility functions.
-
-(defun required-args (lambda-list &optional (collector #'identity))
-  (loop for arg in lambda-list
-        until (member arg lambda-list-keywords)
-        collect (funcall collector arg)))
-
-(defun ensure-finalized (class &optional (errorp t))
-  (if (typep class 'class)
-    (unless (class-finalized-p class)
-      (finalize-inheritance class))
-    (when errorp (error "~S is not a class." class)))
-  class)
-
-(defun subclassp (class superclass)
-  (flet ((get-class (class) (etypecase class
-                              (class class)
-                              (symbol (find-class class)))))
-    
-      (loop with class = (get-class class)
-            with superclass = (get-class superclass)
-            
-            for superclasses = (list class)
-            then (set-difference 
-                  (union (class-direct-superclasses current-class) superclasses)
-                  seen)
-
-            for current-class = (first superclasses)
-
-            while current-class
-            
-            if (eq current-class superclass) return t
-            else collect current-class into seen
-            
-            finally (return nil))))
-
-
 ;; In CMUCL, reader-method-class and writer-method-class are
 ;; not used during class initialization. The following definitions
 ;; correct this.
@@ -113,20 +72,7 @@
 (defmethod reinitialize-instance :after
   ((gf standard-generic-function) &rest initargs)
   (declare (dynamic-extent initargs))
-  (set-funcallable-instance-function
-   gf (compute-discriminating-function gf)))
-
-(defun ensure-method (gf lambda-expression 
-                         &key (qualifiers ())
-                         (lambda-list (cadr lambda-expression))
-                         (specializers (required-args lambda-list (constantly 't))))
-  (funcall (compile nil `(lambda ()
-                           (defmethod ,(generic-function-name gf) ,@qualifiers
-                             ,(loop for specializer in specializers
-                                    for (arg . rest) on lambda-list
-                                    collect `(,arg ,specializer) into args
-                                    finally (return (nconc args rest)))
-                             ,@(cddr lambda-expression))))))
+  (set-funcallable-instance-function gf (compute-discriminating-function gf)))
 
 ;; The following ensures that effective slot definitions have a documentation in CMUCL.
 
@@ -139,43 +85,6 @@
           (setf (documentation effective-slot 't) documentation)
           (loop-finish))
     effective-slot))
-
-;; The following can be used in direct-slot-definition-class to get the correct initargs
-;; for a slot. Use it like this:
-;;
-;; (defmethod direct-slot-definition-class
-;;            ((class my-standard-class) &rest initargs)
-;;   (declare (dynamic-extent initargs))
-;;   (destructuring-bind
-;;       (&key key-of-interest &allow-other-keys)
-;;       (fix-slot-initargs initargs)
-;;     ...))
-
-(defvar *standard-slot-keys*
-  '(:name :documentation
-    :initargs :initform :initfunction
-    :readers :writers))
-
-(defun fix-slot-initargs (initargs)
-  (let* ((counts (loop with counts
-                       for (key nil) on initargs by #'cddr
-                       do (incf (getf counts key 0))
-                       finally (return counts)))
-         (keys-to-fix (loop for (key value) on counts by #'cddr
-                            if (> value 1) collect key)))
-    (if keys-to-fix
-      (let ((multiple-standard-keys
-             (intersection keys-to-fix *standard-slot-keys*)))
-        (if multiple-standard-keys
-          (error "Too many occurences of ~S in slot initargs ~S."
-                 multiple-standard-keys initargs)
-          (loop with fixed-keys
-                for (key value) on initargs by #'cddr
-                if (member key keys-to-fix)
-                do (nconcf (getf fixed-keys key) (list value))
-                else nconc (list key value) into fixed-initargs
-                finally (return (nconc fixed-initargs fixed-keys)))))
-      initargs)))
 
 ;; In CMUCL, TYPEP and SUBTYPEP don't work as expected
 ;; in conjunction with class metaobjects.

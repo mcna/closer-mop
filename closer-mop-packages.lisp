@@ -1,24 +1,49 @@
 (in-package :cl-user)
 
 (defpackage #:closer-mop
-  (:use #:common-lisp)
+  (:use #:common-lisp #+lispworks #:lispworks)
   (:nicknames #:c2mop)
 
-  (:import-from #:sb-pcl #:classp)
+  #+(or allegro clozure lispworks mcl)
+  (:shadow #:standard-class)
 
+  #+(or allegro clisp clozure lispworks sbcl)
   (:shadow #:defgeneric #:defmethod #:standard-generic-function)
 
-  (:import-from #:sb-mop
+  #+clozure (:shadow standard-method)
+
+  #+(or cmu mcl) (:shadow #:typep subtypep)
+
+  #-(or clisp scl)
+  (:import-from
+   #+allegro   #:excl
+   #+clozure   #:ccl
+   #+cmu       #:pcl
+   #+lispworks #:clos
+   #+mcl       #:ccl
+   #+sbcl      #:sb-pcl
+
+   #:classp)
+
+  (:import-from
+   #+allegro   #:mop
+   #+clisp     #:clos
+   #+clozure   #:ccl
+   #+cmu       #:clos-mop
+   #+lispworks #:clos
+   #+mcl       #:ccl
+   #+sbcl      #:sb-mop
+   #+scl       #:clos
 
    #:direct-slot-definition
    #:effective-slot-definition
-   #:eql-specializer
+   #-lispworks #:eql-specializer
    #:forward-referenced-class
-   #:funcallable-standard-class
-   #:funcallable-standard-object
+   #-lispworks #:funcallable-standard-class
+   #-lispworks4 #:funcallable-standard-object
    #:metaobject
    #:slot-definition
-   #:specializer
+   #-(or lispworks scl) #:specializer
    #:standard-accessor-method
    #:standard-direct-slot-definition
    #:standard-effective-slot-definition
@@ -26,12 +51,12 @@
    #:standard-slot-definition
    #:standard-writer-method
 
-   #:accessor-method-slot-definition
-   #:add-dependent
-   #:add-direct-method
+   #-lispworks4.3 #:accessor-method-slot-definition
+   #-scl #:add-dependent
+   #-scl #:add-direct-method
    #:add-direct-subclass
-   #:class-default-initargs
-   #:class-direct-default-initargs
+   #-scl #:class-default-initargs
+   #-scl #:class-direct-default-initargs
    #:class-direct-slots
    #:class-direct-subclasses
    #:class-direct-superclasses
@@ -39,11 +64,11 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #:compute-applicable-methods-using-classes
+   #-(or clozure lispworks mcl) #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
-   #:compute-default-initargs
-   #:compute-discriminating-function
-   #:compute-effective-method
+   #-lispworks #:compute-default-initargs
+   #-clozure #:compute-discriminating-function
+   #-(or clozure scl) #:compute-effective-method
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -51,29 +76,29 @@
    #:ensure-class
    #:ensure-class-using-class
    #:ensure-generic-function-using-class
-   #:eql-specializer-object
+   #-lispworks #:eql-specializer-object
    #:extract-lambda-list
    #:extract-specializer-names
    #:finalize-inheritance
-   #:find-method-combination
-   #:funcallable-standard-instance-access
-   #:generic-function-argument-precedence-order
+   #-lispworks #:find-method-combination
+   #-(or lispworks scl) #:funcallable-standard-instance-access
+   #-allegro #:generic-function-argument-precedence-order
    #:generic-function-declarations
    #:generic-function-lambda-list
    #:generic-function-method-class
    #:generic-function-method-combination
    #:generic-function-methods
    #:generic-function-name
-   #:intern-eql-specializer
-   #:make-method-lambda
-   #:map-dependents
-   #:method-function
+   #-lispworks #:intern-eql-specializer
+   #-(or allegro clisp clozure lispworks mcl scl) #:make-method-lambda
+   #-scl #:map-dependents
+   #-clozure #:method-function
    #:method-generic-function
    #:method-lambda-list
    #:method-specializers
-   #:reader-method-class
-   #:remove-dependent
-   #:remove-direct-method
+   #-lispworks4.3 #:reader-method-class
+   #-scl #:remove-dependent
+   #-scl #:remove-direct-method
    #:remove-direct-subclass
    #:set-funcallable-instance-function
    #:slot-boundp-using-class
@@ -88,12 +113,12 @@
    #:slot-definition-type
    #:slot-makunbound-using-class
    #:slot-value-using-class
-   #:specializer-direct-generic-functions
+   #-lispworks #:specializer-direct-generic-functions
    #:specializer-direct-methods
-   #:standard-instance-access
-   #:update-dependent
+   #-lispworks #:standard-instance-access
+   #-scl #:update-dependent
    #:validate-superclass
-   #:writer-method-class)
+   #-lispworks4.3 #:writer-method-class)
 
   (:export
    #:built-in-class
@@ -101,6 +126,7 @@
    #:direct-slot-definition
    #:effective-slot-definition
    #:eql-specializer
+   #+lispworks #:eql-specializer*
    #:forward-referenced-class
    #:funcallable-standard-class
    #:funcallable-standard-object
@@ -174,6 +200,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
+   #+lispworks #:intern-eql-specializer*
    #:make-method-lambda
    #:map-dependents
    #:method-function
@@ -207,3 +234,27 @@
    #:writer-method-class
 
    #:warn-on-defmethod-without-generic-function))
+
+(macrolet ((define-closer-common-lisp-package ()
+             (loop with symbols = (nunion (loop for sym being the external-symbols of :common-lisp
+                                                if (find-symbol (symbol-name sym) :c2mop)
+                                                collect it
+                                                else collect sym)
+                                          (loop for sym being the external-symbols of :c2mop
+                                                collect sym))
+                   with map = '()
+                   for symbol in symbols do
+                   (push (symbol-name symbol)
+                         (getf map (symbol-package symbol)))
+                   finally (return 
+                            `(defpackage #:closer-common-lisp
+                               (:nicknames #:c2cl)
+                               (:use)
+                               ,@(loop for (package symbols) on map by #'cddr
+                                       collect `(:import-from ,(package-name package) ,@symbols))
+                               (:export ,@(mapcar #'symbol-name symbols)))))))
+  (define-closer-common-lisp-package))
+
+(defpackage #:closer-common-lisp-user
+  (:nicknames #:c2cl-user)
+  (:use #:closer-common-lisp))

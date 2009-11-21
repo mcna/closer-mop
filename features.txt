@@ -6,13 +6,13 @@ Allegro Common Lisp 8.1
 - COMPUTE-DEFAULT-INITARGS takes more parameters than specified. Not fixed. Conditionalize on #+allegro for your own methods instead.
 - FUNCALLABLE-STANDARD-OBJECT is not used as the default superclass for classes with :metaclass FUNCALLABLE-STANDARD-CLASS.
 - DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
-- DEFMETHOD doesn't call MAKE-METHOD-LAMBDA. Not fixed.
+- DEFMETHOD doesn't call MAKE-METHOD-LAMBDA. Fixed.
 - The dependent protocol for generic functions doesn't work fully. Fixed.
 - GENERIC-FUNCTION-ARGUMENT-PRECEDENCE-ORDER doesn't return only the required arguments. Fixed.
-- The function invocation protocol doesn't call COMPUTE-APPLICABLE-METHODS, COMPUTE-APPLICABLE-METHODS-USING-CLASSES and COMPUTE-EFFECTIVE-METHOD. Not fixed.
+- The function invocation protocol doesn't call COMPUTE-APPLICABLE-METHODS, COMPUTE-APPLICABLE-METHODS-USING-CLASSES and COMPUTE-EFFECTIVE-METHOD. Fixed.
 - The :ALLOCATION type cannot be extended. Fixed.
-- MAKE-METHOD-LAMBDA is not provided. Not fixed.
-- Method functions don't take parameters as specified in AMOP, but instead just the parameters that the generic function receives. Not fixed.
+- MAKE-METHOD-LAMBDA is not provided. Fixed.
+- Method functions don't take parameters as specified in AMOP, but instead just the parameters that the generic function receives. Fixed.
 - REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
 - (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) do not use REINITIALIZE-INSTANCE for changing the names. Not fixed.
 - SLOT-MAKUNBOUND-USING-CLASS is not specialized on slot definition metaobjects, but on symbols. Fixed.
@@ -119,7 +119,7 @@ Some extra notes:
 
 - If you specialize COMPUTE-DEFAULT-INITAGS, conditionalize for the extra parameters in Allegro Common Lisp.
 - Don't rely on FIND-METHOD-COMBINATION to do its job correctly, only when you don't provide method combination options.
-- MAKE-METHOD-LAMBDA works in CLisp, Clozure Common Lisp, CMUCL, LispWorks and SBCL as specified (but make sure that the respective generic function and method metaobject classes and make-method-lambda definitions are part of your compilation enviroment).
+- MAKE-METHOD-LAMBDA works in Allegro, CLisp, Clozure Common Lisp, CMUCL, LispWorks and SBCL as specified (but make sure that the respective generic function and method metaobject classes and make-method-lambda definitions are part of your compilation enviroment).
 - Specialize the methods for the dependent protocol on the class or generic function metaobject class. The example in AMOP doesn't do this but that is fragile code.
 - Don't rely on methods being initialized with the specified initargs from inside the MOP.
 - If you specialize DIRECT-SLOT-DEFINITION-CLASS, use FIX-SLOT-INITARGS in portable code.

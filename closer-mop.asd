@@ -27,26 +27,16 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 "
   :components
-  ((:module
-    #+allegro "allegro"
-    #+clisp "clisp"
-    #+clozure "clozure"
-    #+cmu "cmu"
-    #+ecl "ecl"
-    #+lispworks "lispworks"
-    #+mcl "mcl"
-    #+sbcl "sbcl"
-    #+scl "scl"
-    :components ((:file "closer-mop-packages")
-                 (:file "closer-mop"
-                        :depends-on ("closer-mop-packages"))))
-   (:file "closer-mop-utility-packages"
-          :depends-on (#+allegro "allegro"
-                       #+clisp "clisp"
-                       #+clozure "clozure"
-                       #+cmu "cmu"
-                       #+ecl "ecl"
-                       #+lispworks "lispworks"
-                       #+mcl "mcl"
-                       #+sbcl "sbcl"
-                       #+scl "scl"))))
+  ((:file "closer-mop-packages")
+   (:file "closer-mop-shared" :depends-on ("closer-mop-packages"))
+   (:file
+    #+allegro   "closer-allegro"
+    #+clisp     "closer-clisp"
+    #+clozure   "closer-clozure"
+    #+cmu       "closer-cmu"
+    #+ecl       "closer-ecl"
+    #+lispworks "closer-lispworks"
+    #+mcl       "closer-mcl"
+    #+sbcl      "closer-sbcl"
+    #+scl       "closer-scl"
+    :depends-on ("closer-mop-packages" "closer-mop-shared"))))
