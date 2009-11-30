@@ -169,8 +169,8 @@
 
 ;; The following ensures that slot definitions have a documentation.
 
-(cl:defmethod initialize-instance :after ((slot slot-definition) &key documentation)
-  (setf (documentation slot 't) documentation))
+(cl:defmethod documentation ((slot slot-definition) (type (eql 't)))
+  (ccl:slot-definition-documentation slot))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (pushnew :closer-mop *features*))
