@@ -10,7 +10,7 @@
 (defclass funcallable-standard-class (clos:funcallable-standard-class) ())
 (define-validate-superclass-method funcallable-standard-class clos:funcallable-standard-class)
 
-#+lispworks5
+#-lispworks4
 (cl:defmethod validate-superclass
            ((class funcallable-standard-class)
             (superclass (eql (find-class 'funcallable-standard-object))))
@@ -19,14 +19,14 @@
 ;; We also need a new funcallable-standard-object because the default one
 ;; is not an instance of clos:funcallable-standard-class.
 
-#-lispworks5
+#+lispworks4
 (defclass funcallable-standard-object (clos:funcallable-standard-object) ()
   (:metaclass clos:funcallable-standard-class))
 
 ;; The following code ensures that possibly incorrect lists of direct
 ;; superclasses are corrected.
 
-#-lispworks5
+#+lispworks4
 (defun modify-superclasses (direct-superclasses &optional (standardp t))
   (if (null direct-superclasses)
     (list (if standardp
@@ -47,23 +47,33 @@
 ;; - Lists of direct superclasses are corrected.
 ;; - Removal of direct subclasses.
 
+(defun optimize-slot-access-p (class)
+  (flet ((applicablep (specializer)
+           (if (consp specializer)
+             (eql class (eql-specializer-object specializer))
+             (subclassp (class-of class) specializer))))
+    (and (loop for method in (generic-function-methods #'slot-value-using-class)
+               never (applicablep (first (method-specializers method))))
+         (loop for method in (generic-function-methods #'(setf slot-value-using-class))
+               never (applicablep (second (method-specializers method)))))))
+
 (cl:defmethod initialize-instance :around
   ((class standard-class) &rest initargs
-   #-lispworks5 &key
-   #-lispworks5 (direct-superclasses ()))
+   #+lispworks4 &key
+   #+lispworks4 (direct-superclasses ()))
   (declare (dynamic-extent initargs))
   (apply #'call-next-method class
-         #-lispworks5 :direct-superclasses
-         #-lispworks5 (modify-superclasses direct-superclasses)
-         :optimize-slot-access nil
+         #+lispworks4 :direct-superclasses
+         #+lispworks4 (modify-superclasses direct-superclasses)
+         :optimize-slot-access (optimize-slot-access-p class)
          initargs))
 
 (cl:defmethod reinitialize-instance :around
   ((class standard-class) &rest initargs
-   #-lispworks5 &key
-   #-lispworks5 (direct-superclasses () direct-superclasses-p))
+   #+lispworks4 &key
+   #+lispworks4 (direct-superclasses () direct-superclasses-p))
   (declare (dynamic-extent initargs))
-  #-lispworks5
+  #+lispworks4
   (progn
     (when direct-superclasses-p
       (setq direct-superclasses (modify-superclasses direct-superclasses))
@@ -73,33 +83,33 @@
     (if direct-superclasses-p
       (apply #'call-next-method class
              :direct-superclasses direct-superclasses
-             :optimize-slot-access nil
+             :optimize-slot-access (optimize-slot-access-p class)
              initargs)
       (apply #'call-next-method class
-             :optimize-slot-access nil
+             :optimize-slot-access (optimize-slot-access-p class)
              initargs)))
-  #+lispworks5
+  #-lispworks4
   (apply #'call-next-method class
-         :optimize-slot-access nil
+         :optimize-slot-access (optimize-slot-access-p class)
          initargs))
 
 (cl:defmethod initialize-instance :around
   ((class funcallable-standard-class) &rest initargs
-   #-lispworks5 &key
-   #-lispworks5 (direct-superclasses ()))
+   #+lispworks4 &key
+   #+lispworks4 (direct-superclasses ()))
   (declare (dynamic-extent initargs))
   (apply #'call-next-method class
-         #-lispworks5 :direct-superclasses
-         #-lispworks5 (modify-superclasses direct-superclasses nil)
-         :optimize-slot-access nil
+         #+lispworks4 :direct-superclasses
+         #+lispworks4 (modify-superclasses direct-superclasses nil)
+         :optimize-slot-access (optimize-slot-access-p class)
          initargs))
 
 (cl:defmethod reinitialize-instance :around
   ((class funcallable-standard-class) &rest initargs
-   #-lispworks5 &key
-   #-lispworks5 (direct-superclasses () direct-superclasses-p))
+   #+lispworks4 &key
+   #+lispworks4 (direct-superclasses () direct-superclasses-p))
   (declare (dynamic-extent initargs))
-  #-lispworks5
+  #+lispworks4
   (progn
     (when direct-superclasses-p
       (setq direct-superclasses (modify-superclasses direct-superclasses nil))
@@ -109,14 +119,14 @@
     (if direct-superclasses-p
       (apply #'call-next-method class
              :direct-superclasses direct-superclasses
-             :optimize-slot-access nil
+             :optimize-slot-access (optimize-slot-access-p class)
              initargs)
       (apply #'call-next-method class
-             :optimize-slot-access nil
+             :optimize-slot-access (optimize-slot-access-p class)
              initargs)))
-  #+lispworks5
+  #-lispworks4
   (apply #'call-next-method class
-         :optimize-slot-access nil
+         :optimize-slot-access (optimize-slot-access-p class)
          initargs))
 
 ;; The following is necessary for forward-referenced-classes.
@@ -124,7 +134,7 @@
 ;; a new one, we have to prevent LispWorks from trying to use
 ;; the original one when forward-ferenced-classes are resolved.
 
-#-lispworks5
+#+lispworks4
 (cl:defmethod change-class :around
   ((class forward-referenced-class)
    (new-class funcallable-standard-class)
@@ -132,7 +142,7 @@
    &key (direct-superclasses ()))
   (declare (dynamic-extent initargs))
   (apply #'call-next-method class new-class
-         :optimize-slot-access nil
+         :optimize-slot-access (optimize-slot-access-p new-class)
          :direct-superclasses (modify-superclasses direct-superclasses nil)
          initargs))
 
@@ -277,7 +287,7 @@
 
 ;; The following method ensures that remove-method is called.
 
-#-lispworks5
+#+lispworks4
 (cl:defmethod add-method :before ((gf standard-generic-function) (method method))
   (when-let (old-method (find-method gf (method-qualifiers method)
                                      (method-specializers method) nil))
@@ -292,7 +302,7 @@
       (add-direct-method (intern-eql-specializer*
                           (eql-specializer-object specializer))
                          method)
-      #-lispworks5
+      #+lispworks4
       (add-direct-method specializer method)))
   #+lispworks4.3
   (map-dependents gf (lambda (dep) (update-dependent gf dep 'add-method method))))
@@ -303,7 +313,7 @@
       (remove-direct-method (intern-eql-specializer*
                              (eql-specializer-object specializer))
                             method)
-      #-lispworks5
+      #+lispworks4
       (remove-direct-method specializer method)))
   #+lispworks4.3
   (map-dependents gf (lambda (dep) (update-dependent gf dep 'remove-method method))))
