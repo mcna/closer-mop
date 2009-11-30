@@ -512,46 +512,48 @@
          (eval-when (:load-toplevel :execute)
            (cl:defgeneric ,name ,args ,@options)))))
 
-  (defun create-gf-lambda-list (method-lambda-list)
-    (loop with stop-keywords = '#.(remove '&optional lambda-list-keywords)
-          for arg in method-lambda-list
-          until (member arg stop-keywords)
-          collect arg into gf-lambda-list
-          finally (return (let (rest)
-                            (cond ((member '&key method-lambda-list)
-                                   (nconc gf-lambda-list '(&key)))
-                                  ((setq rest (member '&rest method-lambda-list))
-                                   (nconc gf-lambda-list (subseq rest 0 2)))
-                                  (t gf-lambda-list))))))
-
-  (defun extract-specializers (specialized-args form)
-    (loop for specializer-name in (extract-specializer-names specialized-args)
-          collect (typecase specializer-name
-                    (symbol `(find-class ',specializer-name))
-                    (class specializer-name)
-                    (cons (cond
-                           ((> (length specializer-name) 2)
-                            (error "Invalid specializer ~S in defmethod form ~S."
-                                   specializer-name form))
-                           ((eq (car specializer-name) 'eql)
-                            `(intern-eql-specializer ,(cadr specializer-name)))
-                           (t (error "Invalid specializer ~S in defmethod form ~S."
-                                     specializer-name form))))
-                    (t (error "Invalid specializer ~S in defmethod form ~S."
-                              specializer-name form)))))
-
-  (defun load-method (name gf-lambda-list type qualifiers specializers lambda-list function options)
-    (let* ((gf (if (fboundp name) (fdefinition name)
-                 (ensure-generic-function name :lambda-list gf-lambda-list :generic-function-class type)))
-           (method (apply #'make-instance
-                          (generic-function-method-class gf)
-                          :qualifiers qualifiers
-                          :specializers specializers
-                          :lambda-list lambda-list
-                          :function function
-                          options)))
-      (add-method gf method)
-      method))
+  #-sbcl
+  (progn
+    (defun create-gf-lambda-list (method-lambda-list)
+      (loop with stop-keywords = '#.(remove '&optional lambda-list-keywords)
+            for arg in method-lambda-list
+            until (member arg stop-keywords)
+            collect arg into gf-lambda-list
+            finally (return (let (rest)
+                              (cond ((member '&key method-lambda-list)
+                                     (nconc gf-lambda-list '(&key)))
+                                    ((setq rest (member '&rest method-lambda-list))
+                                     (nconc gf-lambda-list (subseq rest 0 2)))
+                                    (t gf-lambda-list))))))
+    
+    (defun extract-specializers (specialized-args form)
+      (loop for specializer-name in (extract-specializer-names specialized-args)
+            collect (typecase specializer-name
+                      (symbol `(find-class ',specializer-name))
+                      (class specializer-name)
+                      (cons (cond
+                             ((> (length specializer-name) 2)
+                              (error "Invalid specializer ~S in defmethod form ~S."
+                                     specializer-name form))
+                             ((eq (car specializer-name) 'eql)
+                              `(intern-eql-specializer ,(cadr specializer-name)))
+                             (t (error "Invalid specializer ~S in defmethod form ~S."
+                                       specializer-name form))))
+                      (t (error "Invalid specializer ~S in defmethod form ~S."
+                                specializer-name form)))))
+    
+    (defun load-method (name gf-lambda-list type qualifiers specializers lambda-list function options)
+      (let* ((gf (if (fboundp name) (fdefinition name)
+                   (ensure-generic-function name :lambda-list gf-lambda-list :generic-function-class type)))
+             (method (apply #'make-instance
+                            (generic-function-method-class gf)
+                            :qualifiers qualifiers
+                            :specializers specializers
+                            :lambda-list lambda-list
+                            :function function
+                            options)))
+        (add-method gf method)
+        method)))
 
   (define-condition defmethod-without-generic-function (style-warning)
     ((name :initarg :name :reader dwg-name))
