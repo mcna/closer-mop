@@ -429,6 +429,7 @@
                   (apply (the function effective-method-function) args)
                   (discriminate (lambda (emf) (setf (gethash (the list classes) emfs) emf)) args classes)))))))))
 
+  #-(or clisp lispworks)
   (cl:defmethod compute-discriminating-function ((gf standard-generic-function))
     (if (eq (class-of gf) (find-class 'standard-generic-function))
       (lambda (&rest args)
@@ -437,6 +438,10 @@
           (set-funcallable-instance-function gf discriminator)
           (apply discriminator args)))
       (compute-discriminator gf #'call-next-method)))
+
+  #+(or clisp lispworks)
+  (cl:defmethod compute-discriminating-function ((gf standard-generic-function))
+    (compute-discriminator gf #'call-next-method))
 
   #-sbcl
   (progn
