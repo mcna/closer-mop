@@ -256,6 +256,7 @@
  (:defmethod-calls-make-method-lambda)
  (:discriminating-functions-can-be-closures)
  (:discriminating-functions-can-be-funcalled)
+ (:funcallable-instance-functions-can-be-closures)
  (:funcallable-standard-object fixed)
  (:function-invocation-calls-compute-applicable-methods)
  (:function-invocation-calls-compute-applicable-methods-using-classes)
