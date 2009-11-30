@@ -145,7 +145,9 @@
                (next-method-p () (ccl::%next-method-p ,methvar)))
           (declare (inline call-next-method next-method-p))
           ,@(cddr lambda-expression)))
-     '())))
+     (let ((documentation (parse-method-body (cddr lambda-expression) lambda-expression)))
+       (when documentation
+         (list :documentation documentation))))))
 
 ;; "Native" compute-discriminating-function.
 
