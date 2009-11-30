@@ -126,6 +126,18 @@
                 finally (return-from compute-argument-order
                           (coerce argument-order 'simple-vector)))))
 
+  (defun parse-method-body (body error-form)
+    (loop with documentation = nil
+          for (car . cdr) = body then cdr
+          while (or (and cdr (stringp car))
+                    (and (consp car) (eq (car car) 'declare)))
+          if (stringp car)
+          do (setq documentation
+                   (if (null documentation) car
+                     (error "Too many documentation strings in ~S." error-form)))
+          else append (cdr car) into declarations
+          finally (return (values documentation declarations (cons car cdr)))))
+
   #-sbcl (cl:defgeneric make-method-lambda (generic-function method lambda-expression environment))
 
   #-ecl
@@ -137,27 +149,36 @@
       (return-from make-method-lambda (call-next-method)))
     (let ((args (gensym)) (next-methods (gensym))
           (more-args (gensym)) (method-function (gensym)))
-      (values
-       `(lambda (,args ,next-methods &rest ,more-args)
-          (declare (dynamic-extent ,more-args)
-                   (ignorable ,args ,next-methods ,more-args))
-          (flet ((call-next-method (&rest args)
-                   (declare (dynamic-extent args))
-                   (if ,next-methods
-                     (apply (method-function (first ,next-methods))
-                            (if args args ,args) (rest ,next-methods) ,more-args)
-                     (apply #'no-next-method
-                            (getf ,more-args :generic-function)
-                            (getf ,more-args :method)
-                            (if args args ,args))))
-                 (next-method-p () (not (null ,next-methods))))
-            (declare (inline call-next-method next-method-p)
-                     (ignorable #'call-next-method #'next-method-p))
-            (flet ((,method-function ,@(rest lambda-expression)))
-              (declare (inline ,method-function))
-              (apply #',method-function ,args))))
-       #-clozure '()
-       #+clozure '(:closer-patch t))))
+      (destructuring-bind
+          (lambda (&rest lambda-args) &body body)
+          lambda-expression
+        (declare (ignore lambda-args))
+        (assert (eq lambda 'lambda))
+        (values
+         `(lambda (,args ,next-methods &rest ,more-args)
+            (declare (dynamic-extent ,more-args)
+                     (ignorable ,args ,next-methods ,more-args))
+            (flet ((call-next-method (&rest args)
+                     (declare (dynamic-extent args))
+                     (if ,next-methods
+                       (apply (method-function (first ,next-methods))
+                              (if args args ,args) (rest ,next-methods) ,more-args)
+                       (apply #'no-next-method
+                              (getf ,more-args :generic-function)
+                              (getf ,more-args :method)
+                              (if args args ,args))))
+                   (next-method-p () (not (null ,next-methods))))
+              (declare (inline call-next-method next-method-p)
+                       (ignorable #'call-next-method #'next-method-p))
+              (flet ((,method-function ,@(rest lambda-expression)))
+                (declare (inline ,method-function))
+                (apply #',method-function ,args))))
+         (let ((documentation (parse-method-body body lambda-expression)))
+           (nconc
+            (when documentation
+              (list :documentation documentation))
+            #+clozure '(:closer-patch t)
+            #-clozure '()))))))
 
   #+(or clozure ecl lispworks)
   (cl:defgeneric compute-applicable-methods-using-classes (generic-function classes)
@@ -555,35 +576,29 @@
           finally
           (destructuring-bind
               ((&rest specialized-args) &body body) tail
-            (loop with documentation = :unbound
-                  for (car . cdr) = body then cdr
-                  while (or (and cdr (stringp car))
-                            (and (consp car) (eq (car car) 'declare)))
-                  if (stringp car)
-                  do (setq documentation
-                           (if (eq documentation :unbound) car
-                             (error "Too many documentation strings for defmethod form ~S." form)))
-                  else append (cdr car) into declarations
-                  finally
-                  (let* ((lambda-list (extract-lambda-list specialized-args))
-                         (gf-lambda-list (create-gf-lambda-list lambda-list))
-                         (specializers (extract-specializers specialized-args form))
-                         (method-class (generic-function-method-class generic-function)))
-                    (ensure-finalized method-class)
-                    (multiple-value-bind
-                        (method-lambda method-options)
-                        (make-method-lambda generic-function (class-prototype method-class)
-                                            `(lambda ,lambda-list
-                                               (declare ,@declarations)
-                                               (declare (ignorable ,@(loop for arg in specialized-args
-                                                                           until (member arg lambda-list-keywords)
-                                                                           when (consp arg) collect (car arg))))
-                                               (block ,(if (consp name) (cadr name) name) ,car ,@cdr))
-                                            env)
-                      (return-from defmethod
-                        `(load-method ',name ',gf-lambda-list ',(type-of generic-function)
-                                      ',qualifiers (list ,@specializers) ',lambda-list
-                                      (function ,method-lambda) ',method-options))))))))
+            (multiple-value-bind
+                (documentation declarations main-body)
+                (parse-method-body body form)
+              (let* ((lambda-list (extract-lambda-list specialized-args))
+                     (gf-lambda-list (create-gf-lambda-list lambda-list))
+                     (specializers (extract-specializers specialized-args form))
+                     (method-class (generic-function-method-class generic-function)))
+                #+allegro (ensure-finalized method-class)
+                (multiple-value-bind
+                    (method-lambda method-options)
+                    (make-method-lambda generic-function (class-prototype method-class)
+                                        `(lambda ,lambda-list
+                                           ,@(when documentation (list documentation))
+                                           (declare ,@declarations)
+                                           (declare (ignorable ,@(loop for arg in specialized-args
+                                                                       until (member arg lambda-list-keywords)
+                                                                       when (consp arg) collect (car arg))))
+                                           (block ,(if (consp name) (cadr name) name) ,@main-body))
+                                        env)
+                  (return-from defmethod
+                    `(load-method ',name ',gf-lambda-list ',(type-of generic-function)
+                                  ',qualifiers (list ,@specializers) ',lambda-list
+                                  (function ,method-lambda) ',method-options))))))))
 
   #+sbcl
   (defmacro defmethod (&whole form name &body body &environment env)
