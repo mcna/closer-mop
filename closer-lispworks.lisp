@@ -260,7 +260,7 @@
 
 (defun intern-eql-specializer* (object)
   (or (gethash object *eql-specializers*)
-      (sys:with-hash-table-locked *eql-specializers*
+      (with-hash-table-locked *eql-specializers*
         (or (gethash object *eql-specializers*)
             (setf (gethash object *eql-specializers*)
                   (make-instance 'eql-specializer* 'eso object))))))

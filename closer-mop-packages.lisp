@@ -16,6 +16,9 @@
 
   #+(or cmu mcl) (:shadow #:typep subtypep)
 
+  #+lispworks5
+  (:import-from #:system #:with-hash-table-locked) 
+
   #-(or clisp scl)
   (:import-from
    #+allegro   #:excl
