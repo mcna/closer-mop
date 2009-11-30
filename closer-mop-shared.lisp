@@ -34,7 +34,7 @@
             
             finally (return nil))))
 
-#+(or allegro clozure lispworks mcl)
+#+(or allegro clozure ecl lispworks mcl)
 (progn
   ;; validate-superclass for metaclass classes is a little bit
   ;; more tricky than for class metaobject classes because
@@ -65,12 +65,21 @@
   (defun classp (thing)
     (typep thing 'class)))
 
-#+(or allegro clisp clozure lispworks sbcl)
+#+(or allegro clisp clozure ecl lispworks sbcl)
 (progn ;;; New generic functions.
 
+  #+ecl
+  (cl:defgeneric specializer-direct-methods (metaobject))
+
+  #+ecl
+  (defclass funcallable-standard-class (clos:funcallable-standard-class)
+    ((direct-methods :initform '() :reader specializer-direct-methods)))
+
   (defclass standard-generic-function (cl:standard-generic-function)
-    (#+(or clozure lispworks) (argument-order :accessor argument-order)
-     #-sbcl                   (initial-methods :initform '()))
+    (#+(or clozure ecl lispworks) (argument-order :accessor argument-order)
+     #-sbcl                       (initial-methods :initform '())
+     #+ecl                        (declarations :initarg :declarations :initform '()
+                                                :reader generic-function-declarations))
     
     (:metaclass
      #-lispworks funcallable-standard-class
@@ -88,14 +97,16 @@
     (defclass standard-method (cl:standard-method)
       ((fn :initarg :real-function :reader method-function))))
 
-  (declaim (inline m-function))
-
-  (defun m-function (m)
-    (method-function m))
-
-  (define-compiler-macro m-function (m)
-    (handler-case (method-function m)
-      (error () `(the function (method-function real-method-function (the method ,m))))))
+  #-ecl
+  (progn
+    (declaim (inline m-function))
+    
+    (defun m-function (m)
+      (method-function m))
+    
+    (define-compiler-macro m-function (m)
+      (handler-case (method-function m)
+        (error () `(the function (method-function real-method-function (the method ,m)))))))
   
   (defun compute-argument-order (gf nof-required-args)
     (loop with specialized-count = (make-array nof-required-args :initial-element 0)
@@ -117,7 +128,9 @@
 
   #-sbcl (cl:defgeneric make-method-lambda (generic-function method lambda-expression environment))
 
-  (cl:defmethod make-method-lambda ((gf standard-generic-function) (method standard-method) lambda-expression environment)
+  #-ecl
+  (cl:defmethod make-method-lambda ((gf standard-generic-function) (method standard-method)
+                                    lambda-expression environment)
     (declare (ignore environment) (optimize (speed 3) (space 0) (compilation-speed 0)))
     #+(or clozure lispworks sbcl)
     (when (only-standard-methods gf)
@@ -146,7 +159,7 @@
        #-clozure '()
        #+clozure '(:closer-patch t))))
 
-  #+(or clozure lispworks)
+  #+(or clozure ecl lispworks)
   (cl:defgeneric compute-applicable-methods-using-classes (generic-function classes)
     (:method ((gf standard-generic-function) classes)
      (labels ((subclass* (spec1 spec2 arg-spec)
@@ -162,7 +175,7 @@
                       return (subclass* spec1 spec2 (nth n classes)))))
        (let ((applicable-methods
               (sort
-               (loop for method of-type method in (the list (generic-function-methods gf))
+               (loop for method #-ecl of-type #-ecl method in (the list (generic-function-methods gf))
                      when (loop for class in classes
                                 for specializer in (the list (method-specializers method))
                                 if (typep specializer 'eql-specializer)
@@ -174,67 +187,82 @@
                #'method-more-specific-p)))
          (values applicable-methods t)))))
 
-  (cl:defgeneric compute-effective-method-function (gf effective-method options)
-    (:method ((gf generic-function) effective-method options)
-     (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
-     (when #-clisp options
-       #+clisp (or (cdr (assoc :arguments options))
-                   (cdr (assoc :duplicates options)))
-       (cerror "Ignore these options."
-               "This version of compute-effective-method-function does not support method combination options: ~S"
-               options))
-     (let ((all-t-specializers (required-args (generic-function-lambda-list gf)
-                                              (constantly (find-class 't))))
-           (args (gensym)))
-       (labels ((transform-effective-method (form)
-                  (if (atom form) form
-                    (case (car form)
-                      (call-method (transform-effective-method
-                                    (let ((the-method (transform-effective-method (cadr form)))
-                                          (method-var (gensym)))
-                                      `(locally (declare (optimize (speed 3) (safety 0) (debug 0)))
-                                         (let ((,method-var ,the-method))
-                                           (declare (ignorable ,method-var))
-                                           (funcall (m-function ,(if (typep the-method 'method)
-                                                                   the-method method-var))
-                                                    ,args
-                                                    ,@(let ((subforms
-                                                             (loop for subform in (the list (cddr form))
-                                                                   collect `',subform)))
-                                                        (if subforms subforms '(())))
-                                                    :generic-function ,gf
-                                                    :method ,(if (typep the-method 'method)
-                                                               the-method method-var)))))))
-                      (make-method (when (cddr form)
-                                     (error "Incorrect make-method form: ~S." form))
-                                   (let ((method-class (generic-function-method-class gf)))
-                                     (ensure-finalized method-class)
-                                     (multiple-value-bind
-					 (method-lambda method-options)
-                                         (make-method-lambda
-                                          gf (class-prototype method-class)
-                                          `(lambda (&rest ,args)
-                                             (declare (dynamic-extent ,args) (ignorable ,args))
-                                             ,(transform-effective-method (cadr form))) nil)
-                                       (apply #'make-instance
-                                              method-class
-                                              :qualifiers '()
-                                              :specializers all-t-specializers
-                                              :lambda-list (generic-function-lambda-list gf)
-                                              :function (compile nil method-lambda)
-                                              method-options))))
-                      (t (mapcar #'transform-effective-method (the list form)))))))
-         (let ((emf-lambda `(lambda (&rest ,args)
-                              (declare (dynamic-extent ,args) (ignorable ,args))
-                              ,(transform-effective-method effective-method))))
-           (multiple-value-bind (function warnings failure)
-               (compile nil emf-lambda)
-             (declare (ignore warnings))
-             (assert (not failure))
-             function))))))
+  (cl:defgeneric compute-effective-method-function (gf effective-method options))
 
-  #+clozure (cl:defgeneric compute-effective-method (generic-function combination methods))
-  #+clozure (cl:defgeneric compute-discriminating-function (generic-function))
+  #-ecl
+  (cl:defmethod compute-effective-method-function ((gf generic-function) effective-method options)
+    (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
+    (when #-clisp options
+      #+clisp (or (cdr (assoc :arguments options))
+                  (cdr (assoc :duplicates options)))
+      (cerror "Ignore these options."
+              "This version of compute-effective-method-function does not support method combination options: ~S"
+              options))
+    (let ((all-t-specializers (required-args (generic-function-lambda-list gf)
+                                             (constantly (find-class 't))))
+          (args (gensym)))
+      (labels ((transform-effective-method (form)
+                 (if (atom form) form
+                   (case (car form)
+                     (call-method (transform-effective-method
+                                   (let ((the-method (transform-effective-method (cadr form)))
+                                         (method-var (gensym)))
+                                     `(locally (declare (optimize (speed 3) (safety 0) (debug 0)))
+                                        (let ((,method-var ,the-method))
+                                          (declare (ignorable ,method-var))
+                                          (funcall (m-function ,(if (typep the-method 'method)
+                                                                  the-method method-var))
+                                                   ,args
+                                                   ,@(let ((subforms
+                                                            (loop for subform in (the list (cddr form))
+                                                                  collect `',subform)))
+                                                       (if subforms subforms '(())))
+                                                   :generic-function ,gf
+                                                   :method ,(if (typep the-method 'method)
+                                                              the-method method-var)))))))
+                     (make-method (when (cddr form)
+                                    (error "Incorrect make-method form: ~S." form))
+                                  (let ((method-class (generic-function-method-class gf)))
+                                    #+allegro (ensure-finalized method-class)
+                                    (multiple-value-bind
+                                        (method-lambda method-options)
+                                        (make-method-lambda
+                                         gf (class-prototype method-class)
+                                         `(lambda (&rest ,args)
+                                            (declare (dynamic-extent ,args) (ignorable ,args))
+                                            ,(transform-effective-method (cadr form))) nil)
+                                      (apply #'make-instance
+                                             method-class
+                                             :qualifiers '()
+                                             :specializers all-t-specializers
+                                             :lambda-list (generic-function-lambda-list gf)
+                                             :function (compile nil method-lambda)
+                                             method-options))))
+                     (t (mapcar #'transform-effective-method (the list form)))))))
+        (let ((emf-lambda `(lambda (&rest ,args)
+                             (declare (dynamic-extent ,args) (ignorable ,args))
+                             ,(transform-effective-method effective-method))))
+          (multiple-value-bind (function warnings failure)
+              (compile nil emf-lambda)
+            (declare (ignore warnings))
+            (assert (not failure))
+            function)))))
+
+  #+clozure
+  (cl:defgeneric compute-effective-method (generic-function combination methods))
+  
+  #+clozure
+  (cl:defgeneric compute-discriminating-function (generic-function))
+
+  #+ecl
+  (cl:defgeneric compute-effective-method (generic-function combination methods)
+    (:method ((gf generic-function) combination methods)
+     (clos:compute-effective-method gf combination methods)))
+
+  #+ecl
+  (cl:defgeneric compute-applicable-methods (gf arguments)
+    (:method ((gf generic-function) arguments)
+     (cl:compute-applicable-methods gf arguments)))
 
   (defun get-emf (gf args nof-required-args)
     (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
@@ -313,7 +341,7 @@
     (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
     (let ((nof-required-args (length (required-args (generic-function-lambda-list gf))))
           discriminator)
-      #+(or clozure lispworks)
+      #+(or clozure ecl lispworks)
       (setf (argument-order gf)
             (compute-argument-order gf nof-required-args))
       (flet ((discriminate (emf-setter args &optional (classes (loop for arg in args
@@ -332,8 +360,8 @@
                      #+allegro #'compute-discriminating-function)
                   (funcall compute-native-discriminator)
                   (let ((argument-order
-                         #-(or clozure lispworks) (compute-argument-order gf nof-required-args)
-                         #+(or clozure lispworks) (argument-order gf)))
+                         #-(or clozure ecl lispworks) (compute-argument-order gf nof-required-args)
+                         #+(or clozure ecl lispworks) (argument-order gf)))
                     (cond ((null (generic-function-methods gf))
                            (lambda (&rest args)
                              (declare (dynamic-extent args))
@@ -517,6 +545,7 @@
               (warn 'defmethod-without-generic-function :name name)))
           (unless (typep generic-function 'standard-generic-function)
             (return-from defmethod `(cl:defmethod ,@(cdr form))))
+          #-ecl
           (when (only-standard-methods generic-function)
             (return-from defmethod `(cl:defmethod ,@(cdr form))))
 
@@ -581,10 +610,10 @@
     
     #+(or allegro clisp cmu scl)
     (funcall (compile nil `(lambda () ,form)))
-    
+
     #+mcl (eval form)))
 
-#+(or clozure lispworks sbcl)
+#+(or clozure ecl lispworks sbcl)
 (defun ensure-method (gf lambda-expression
                          &key (method-class (generic-function-method-class gf))
                          (qualifiers ())
@@ -600,7 +629,9 @@
                          :qualifiers qualifiers
                          :lambda-list lambda-list
                          :specializers specializers
-                         :function (compile nil method-lambda)
+                         :function
+                         #-ecl (compile nil method-lambda)
+                         #+ecl (coerce method-lambda 'function)
                          method-args)))
       (add-method gf method)
       method)))
@@ -621,14 +652,14 @@
     :initargs :initform :initfunction
     :readers :writers))
 
-#+(or cmu scl)
+#+(or cmu ecl scl)
 (define-modify-macro nconcf (&rest lists) nconc)
 
 (defun fix-slot-initargs (initargs)
   #+(or allegro clisp clozure lispworks mcl sbcl)
   initargs
 
-  #+(or cmu scl)
+  #+(or cmu ecl scl)
   (let* ((counts (loop with counts
                        for (key nil) on initargs by #'cddr
                        do (incf (getf counts key 0))

@@ -4,11 +4,13 @@
   (:use #:common-lisp #+lispworks #:lispworks)
   (:nicknames #:c2mop)
 
-  #+(or allegro clozure lispworks mcl)
+  #+(or allegro clozure ecl lispworks mcl)
   (:shadow #:standard-class)
 
-  #+(or allegro clisp clozure lispworks sbcl)
+  #+(or allegro clisp clozure ecl lispworks sbcl)
   (:shadow #:defgeneric #:defmethod #:standard-generic-function)
+
+  #+ecl (:shadow #:compute-applicable-methods #:find-method #:remove-method)
 
   #+clozure (:shadow standard-method)
 
@@ -19,6 +21,7 @@
    #+allegro   #:excl
    #+clozure   #:ccl
    #+cmu       #:pcl
+   #+ecl       #:clos
    #+lispworks #:clos
    #+mcl       #:ccl
    #+sbcl      #:sb-pcl
@@ -30,6 +33,7 @@
    #+clisp     #:clos
    #+clozure   #:ccl
    #+cmu       #:clos-mop
+   #+ecl       #:clos
    #+lispworks #:clos
    #+mcl       #:ccl
    #+sbcl      #:sb-mop
@@ -39,7 +43,7 @@
    #:effective-slot-definition
    #-lispworks #:eql-specializer
    #:forward-referenced-class
-   #-lispworks #:funcallable-standard-class
+   #-(or ecl lispworks) #:funcallable-standard-class
    #-lispworks4 #:funcallable-standard-object
    #:metaobject
    #:slot-definition
@@ -52,8 +56,8 @@
    #:standard-writer-method
 
    #-lispworks4.3 #:accessor-method-slot-definition
-   #-scl #:add-dependent
-   #-scl #:add-direct-method
+   #-(or ecl scl) #:add-dependent
+   #-(or ecl scl) #:add-direct-method
    #:add-direct-subclass
    #-scl #:class-default-initargs
    #-scl #:class-direct-default-initargs
@@ -64,11 +68,11 @@
    #:class-precedence-list
    #:class-prototype
    #:class-slots
-   #-(or clozure lispworks mcl) #:compute-applicable-methods-using-classes
+   #-(or clozure ecl lispworks mcl) #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
    #-lispworks #:compute-default-initargs
-   #-clozure #:compute-discriminating-function
-   #-(or clozure scl) #:compute-effective-method
+   #-(or clozure ecl) #:compute-discriminating-function
+   #-(or clozure ecl scl) #:compute-effective-method
    #:compute-effective-slot-definition
    #:compute-slots
    #:direct-slot-definition-class
@@ -77,28 +81,28 @@
    #:ensure-class-using-class
    #:ensure-generic-function-using-class
    #-lispworks #:eql-specializer-object
-   #:extract-lambda-list
-   #:extract-specializer-names
+   #-ecl #:extract-lambda-list
+   #-ecl #:extract-specializer-names
    #:finalize-inheritance
-   #-lispworks #:find-method-combination
+   #-(or ecl lispworks) #:find-method-combination
    #-(or lispworks scl) #:funcallable-standard-instance-access
    #-allegro #:generic-function-argument-precedence-order
-   #:generic-function-declarations
+   #-ecl #:generic-function-declarations
    #:generic-function-lambda-list
-   #:generic-function-method-class
+   #-ecl #:generic-function-method-class
    #:generic-function-method-combination
    #:generic-function-methods
    #:generic-function-name
    #-lispworks #:intern-eql-specializer
-   #-(or allegro clisp clozure lispworks mcl scl) #:make-method-lambda
-   #-scl #:map-dependents
+   #-(or allegro clisp clozure ecl lispworks mcl scl) #:make-method-lambda
+   #-(or ecl scl) #:map-dependents
    #-clozure #:method-function
    #:method-generic-function
    #:method-lambda-list
    #:method-specializers
    #-lispworks4.3 #:reader-method-class
-   #-scl #:remove-dependent
-   #-scl #:remove-direct-method
+   #-(or ecl scl) #:remove-dependent
+   #-(or ecl scl) #:remove-direct-method
    #:remove-direct-subclass
    #:set-funcallable-instance-function
    #:slot-boundp-using-class
@@ -116,8 +120,8 @@
    #-lispworks #:specializer-direct-generic-functions
    #:specializer-direct-methods
    #-lispworks #:standard-instance-access
-   #-scl #:update-dependent
-   #:validate-superclass
+   #-(or ecl scl) #:update-dependent
+   #-ecl #:validate-superclass
    #-lispworks4.3 #:writer-method-class)
 
   (:export
@@ -126,7 +130,7 @@
    #:direct-slot-definition
    #:effective-slot-definition
    #:eql-specializer
-   #+lispworks #:eql-specializer*
+   #+(or ecl lispworks) #:eql-specializer*
    #:forward-referenced-class
    #:funcallable-standard-class
    #:funcallable-standard-object
@@ -200,7 +204,7 @@
    #:generic-function-methods
    #:generic-function-name
    #:intern-eql-specializer
-   #+lispworks #:intern-eql-specializer*
+   #+(or ecl lispworks) #:intern-eql-specializer*
    #:make-method-lambda
    #:map-dependents
    #:method-function
