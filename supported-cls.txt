@@ -5,5 +5,5 @@ CMU Common Lisp 20a
 LispWorks 5.1.1 Personal Edition
 LispWorks 5.1.2 Professional Edition
 MCL 5.2.1
-SBCL 1.0.32
+SBCL 1.0.33
 Scieneer 1.3.9
