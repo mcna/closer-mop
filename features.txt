@@ -61,7 +61,39 @@ CMUCL 20a
 - STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
 - Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, EQL-SPECIALIZER, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SLOT-DEFINITION, SPECIALIZER, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-LispWorks, 5.1.2 Personal & Professional Edition
+Embeddable Common Lisp 9.12.2
+
+- The functions ADD-DIRECT-METHOD and REMOVE-DIRECT-METHOD don't exist, and thus are also not called. Fixed.
+- ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. Fixed.
+- ADD-METHOD doesn't call FIND-METHOD or REMOVE-METHOD to remove potentially replaced methods, but uses some internal implementation instead. Fixed.
+- SPECIALIZER-DIRECT-GENERIC-FUNCTIONS and SPECIALIZER-DIRECT-METHODS don't exist, and thus are also not updated by ADD-METHOD and REMOVE-METHOD. Fixed.
+- Class initialization doesn't call READER-METHOD-CLASS and WRITER-METHOD-CLASS for accessor methods. However, ECL merely delays invocation of those two functions until a class is finalized, so this shouldn't be a problem in practice.
+- Class reinitialization does not remove direct subclasses that should be removed. Fixed.
+- VALIDATE-SUPERCLASS doesn't exist, and thus isn't called to determine whether two classes in a direct superclass relationship have compatible metaclasses. Fixed.
+- COMPUTE-APPLICABLE-METHODS and COMPUTE-EFFECTIVE-METHOD are not generic functions. Fixed.
+- COMPUTE-APPLICABLE-METHODS-USING-CLASSES doesn't exist. Fixed.
+- COMPUTE-EFFECTIVE-METHOD returns a function object, not an effective method form. Not fixed.
+- DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
+- DEFMETHOD doesn't call GENERIC-FUNCTION-METHOD-CLASS or MAKE-METHOD-LAMBDA. Fixed.
+- The dependent protocols for classes and generic functions are not implemented. Fixed.
+- EQL-SPECIALIZER, EQL-SPECIALIZER-OBJECT and INTERN-EQL-SPECIALIZER don't exist. In ECL, eql specializers are lists not objects. I have provided EQL-SPECIALIZER as a type (not as a class) and EQL-SPECIALIZER-OBJECT and INTERN-EQL-SPECIALIZER to work on lists, and a class EQL-SPECIALIZER* and corresponding EQL-SPECIALIZER-OBJECT* and INTERN-EQL-SPECILAIZER* to soften the incompatibilities.
+- EXTRACT-LAMBDA-LIST and EXTRACT-SPECIALIZER-NAMES don't exist. Fixed.
+- FIND-METHOD-COMBINATION doesn't exist. This is partially fixed, but returns a cons describing the method combination, not an actual method combination metaobject.
+- FIND-METHOD and REMOVE-METHOD are not generic functions. Fixed.
+- The function invocation protocol doesn't call COMPUTE-APPLICABLE-METHODS, COMPUTE-APPLICABLE-METHODS-USING-CLASSES, and COMPUTE-EFFECTIVE-METHOD. Fixed.
+- GENERIC-FUNCTION-DECLARATIONS doesn't exist. Fixed.
+- GENERIC-FUNCTION-METHOD-CLASS is not a generic function. Fixed.
+- Generic functions cannot be empty when called. Fixed.
+- MAKE-METHOD-LAMBDA doesn't exist. Fixed, but this version returns a lambda that takes only unprocessed parameters.
+- The classes METAOBJECT and SPECIALIZER don't exist. Not fixed.
+- Method functions don't take parameters as specified in AMOP, but instead just the parameters that the generic function receives. Not fixed.
+- Method metaobjects are not initialized with :DOCUMENTATION. Fixed.
+- Multiple slot options are not passed as lists to DIRECT-SLOT-DEFINITION-CLASS. Not fixed, but use FIX-SLOT-INITARGS as a workaround.
+- (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) are not implemented by way of calling REINITIALIZE-INSTANCE. Not fixed.
+- The automatically created accessor methods in DEFCLASS forms don't call SLOT-VALUE-USING-CLASS and (SETF SLOT-VALUE-USING-CLASS). Fixed.
+- Subclasses of BUILT-IN-CLASS, CLASS, DIRECT-SLOT-DEFINITION, EFFECTIVE-SLOT-DEFINITION, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, SLOT-DEFINITION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION, and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
+
+LispWorks 5.1.2 Personal & Professional Edition
 
 - CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS don't return canonicalized default initargs as specified. Not fixed.
 - ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.
