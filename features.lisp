@@ -289,10 +289,10 @@
  (:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots)
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
-:sbcl 1.0.33
+:sbcl1.0.33
 #| all features implemented |#
 
-:scl 1.3.9
+:scl1.3.9
 ((:add-direct-method fixed)
  (:add-method-calls-add-direct-method fixed)
  (:class-default-initargs)
