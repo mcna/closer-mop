@@ -134,7 +134,7 @@
           if (stringp car)
           do (setq documentation
                    (if (null documentation) car
-                     (error "Too many documentation strings in ~S." error-form)))
+                     (warn "Too many documentation strings in ~S." error-form)))
           else append (cdr car) into declarations
           finally (return (values documentation declarations (cons car cdr)))))
 

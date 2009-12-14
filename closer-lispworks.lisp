@@ -338,8 +338,8 @@
           if (stringp car)
           do (setf documentation
                    (if (eq documentation :unbound) car
-                     (error "Too many documentation strings in lambda expression ~S."
-                            lambda-expression)))
+                     (warn "Too many documentation strings in lambda expression ~S."
+                           lambda-expression)))
           else append (loop for declaration in (cdr car) 
                             if (eq (car declaration) 'ignore)
                             collect `(ignorable ,@(cdr declaration))
