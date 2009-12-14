@@ -123,7 +123,7 @@
  (:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots)
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
-:ecl9.12.2
+:ecl9.12.3
 ((:add-direct-method fixed)
  (:add-method-calls-add-direct-method fixed)
  (:add-method-calls-compute-discriminating-function fixed)
