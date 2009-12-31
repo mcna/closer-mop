@@ -256,7 +256,7 @@
                    :accessor es-direct-methods
                    :initform ())))
 
-(defvar *eql-specializers* (make-hash-table))
+(defvar *eql-specializers* (make-hash-table :weak-kind :value))
 
 (defun intern-eql-specializer* (object)
   (or (gethash object *eql-specializers*)
