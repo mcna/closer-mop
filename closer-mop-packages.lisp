@@ -17,7 +17,9 @@
   #+(or cmu mcl) (:shadow #:typep subtypep)
 
   #+lispworks5
-  (:import-from #:system #:with-hash-table-locked) 
+  (:import-from #:system #:with-hash-table-locked)
+  #+lispworks6
+  (:import-from #:hcl #:with-hash-table-locked)
 
   #-(or clisp scl)
   (:import-from
@@ -50,7 +52,7 @@
    #-lispworks4 #:funcallable-standard-object
    #:metaobject
    #:slot-definition
-   #-(or lispworks scl) #:specializer
+   #-(or lispworks4 lispworks5 scl) #:specializer
    #:standard-accessor-method
    #:standard-direct-slot-definition
    #:standard-effective-slot-definition
@@ -73,7 +75,7 @@
    #:class-slots
    #-(or clozure ecl lispworks mcl) #:compute-applicable-methods-using-classes
    #:compute-class-precedence-list
-   #-lispworks #:compute-default-initargs
+   #-(or lispworks4 lispworks5) #:compute-default-initargs
    #-(or clozure ecl) #:compute-discriminating-function
    #-(or clozure ecl scl) #:compute-effective-method
    #:compute-effective-slot-definition
