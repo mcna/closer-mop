@@ -1,9 +1,9 @@
 (asdf:defsystem #:closer-mop
   :name "Closer to MOP"
   :author "Pascal Costanza"
-  :version "0.6"
+  :version "0.61"
   :licence "
-Copyright (c) 2005 - 2009 Pascal Costanza
+Copyright (c) 2005 - 2010 Pascal Costanza
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
