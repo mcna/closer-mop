@@ -258,9 +258,21 @@
 
 (defvar *eql-specializers* (make-hash-table :weak-kind :value))
 
+#+lispworks5.0
+(defvar *eql-specializers-lock* (mp:make-lock))
+
+#-lispworks5.0
 (defun intern-eql-specializer* (object)
   (or (gethash object *eql-specializers*)
       (with-hash-table-locked *eql-specializers*
+        (or (gethash object *eql-specializers*)
+            (setf (gethash object *eql-specializers*)
+                  (make-instance 'eql-specializer* 'eso object))))))
+
+#+lispworks5.0
+(defun intern-eql-specializer* (object)
+  (or (gethash object *eql-specializers*)
+      (mp:with-lock (*eql-specializers-lock*)
         (or (gethash object *eql-specializers*)
             (setf (gethash object *eql-specializers*)
                   (make-instance 'eql-specializer* 'eso object))))))

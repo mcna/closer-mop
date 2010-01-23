@@ -16,7 +16,7 @@
 
   #+(or cmu mcl) (:shadow #:typep subtypep)
 
-  #+lispworks5
+  #+lispworks5.1
   (:import-from #:system #:with-hash-table-locked)
   #+lispworks6
   (:import-from #:hcl #:with-hash-table-locked)
