@@ -145,13 +145,20 @@
 ;;; on slot names instead of effective slot definitions. In order to fix this,
 ;;; we need to rewire the slot access protocol.
 
+(declaim (inline find-slot))
+
+(defun find-slot (slot-name class)
+  (declare (optimize (speed 3) (debug 0) (safety 0)
+                     (compilation-speed 0)))
+  (loop for slot in (class-slots class)
+        when (eq slot-name (slot-definition-name slot))
+        return slot))
+
 (cl:defmethod slot-value-using-class
            ((class standard-class) object (slot symbol))
   (declare (optimize (speed 3) (debug 0) (safety 0)
                      (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
+  (let ((slotd (find-slot slot class)))
     (if slotd
       (slot-value-using-class class object slotd)
       (slot-missing class object slot 'slot-value))))
@@ -169,9 +176,7 @@
            (new-value (class standard-class) object (slot symbol))
   (declare (optimize (speed 3) (debug 0) (safety 0)
                      (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
+  (let ((slotd (find-slot slot class)))
     (if slotd
       (setf (slot-value-using-class class object slotd)
             new-value)
@@ -191,9 +196,7 @@
            ((class standard-class) object (slot symbol))
   (declare (optimize (speed 3) (debug 0) (safety 0)
                      (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
+  (let ((slotd (find-slot slot class)))
     (if slotd
       (slot-boundp-using-class class object slotd)
       (slot-missing class object slot 'slot-boundp))))
@@ -211,9 +214,7 @@
            ((class standard-class) object (slot symbol))
   (declare (optimize (speed 3) (debug 0) (safety 0)
                      (compilation-speed 0)))
-  (let ((slotd (find slot (class-slots class)
-                     :test #'eq
-                     :key #'slot-definition-name)))
+  (let ((slotd (find-slot slot class)))
     (if slotd
       (slot-makunbound-using-class class object slotd)
       (slot-missing class object slot 'slot-makunbound))))
