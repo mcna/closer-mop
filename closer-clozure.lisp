@@ -45,8 +45,7 @@
   ((gf standard-generic-function) &rest initargs &key
    (lambda-list '() lambda-list-p)
    (argument-precedence-order '() argument-precedence-order-p))
-  (declare (dynamic-extent initargs)
-           (ignore argument-precedence-order))
+  (declare (ignore argument-precedence-order))
   (if (and lambda-list-p (not argument-precedence-order-p))
     (apply #'call-next-method gf
            :argument-precedence-order (required-args lambda-list)
@@ -138,7 +137,6 @@
     (values
      `(lambda (ccl::&method ,methvar ,@(cadr lambda-expression))
         (flet ((call-next-method (&rest args)
-                 (declare (dynamic-extent args))
                  (if args
                    (apply #'ccl::%call-next-method-with-args ,methvar args)
                    (ccl::%call-next-method ,methvar)))
@@ -161,10 +159,8 @@
         (if (or (eq proto #'ccl::gag-one-arg)
                 (eq proto #'ccl::gag-two-arg))
           (lambda (&rest args)
-            (declare (dynamic-extent args))
             (apply std-dfun dt args))
           (lambda (&rest args)
-            (declare (dynamic-extent args))
             (funcall std-dfun dt args)))))))
 
 ;; The following ensures that slot definitions have a documentation.

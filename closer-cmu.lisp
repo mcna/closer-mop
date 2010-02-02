@@ -38,14 +38,12 @@
 (defmethod initialize-instance :around
   ((class standard-class) &rest initargs
    &key (name (gensym)))
-  (declare (dynamic-extent initargs))
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
 
 (defmethod initialize-instance :around
   ((class funcallable-standard-class) &rest initargs
    &key (name (gensym)))
-  (declare (dynamic-extent initargs))
   (prog1 (apply #'call-next-method class :name name initargs)
     (modify-accessors class)))
 
@@ -71,7 +69,6 @@
 
 (defmethod reinitialize-instance :after
   ((gf standard-generic-function) &rest initargs)
-  (declare (dynamic-extent initargs))
   (set-funcallable-instance-function gf (compute-discriminating-function gf)))
 
 ;; The following ensures that effective slot definitions have a documentation in CMUCL.

@@ -68,7 +68,6 @@
 
 (cl:defmethod initialize-instance :around
   ((gf standard-generic-function) &rest initargs &key (method-class nil method-class-p))
-  (declare (dynamic-extent initargs))
   (if (and method-class-p (symbolp method-class))
     (apply #'call-next-method gf
            :method-class (find-class method-class)
@@ -77,7 +76,6 @@
 
 (cl:defmethod reinitialize-instance :around
   ((gf standard-generic-function) &rest initargs &key (method-class nil method-class-p))
-  (declare (dynamic-extent initargs))
   (if (and method-class-p (symbolp method-class))
     (apply #'call-next-method gf
            :method-class (find-class method-class)
@@ -92,7 +90,6 @@
 
 (cl:defmethod reinitialize-instance :after
   ((gf standard-generic-function) &rest initargs)
-  (declare (dynamic-extent initargs))
   (set-funcallable-instance-function gf (compute-discriminating-function gf))
   (map-dependents gf (lambda (dep) (apply #'update-dependent gf dep initargs))))
 

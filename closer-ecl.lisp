@@ -50,7 +50,6 @@
   (if (only-standard-methods gf)
     effective-method
     (lambda (&rest args)
-      (declare (dynamic-extent args))
       (funcall effective-method args nil))))
 
 (cl:defgeneric find-method-combination (generic-function type options)
@@ -72,28 +71,24 @@
       '(t))))
 
 (cl:defmethod initialize-instance :around ((class standard-class) &rest initargs)
-  (declare (dynamic-extent initargs))
   (apply #'call-next-method class
          :optimize-slot-access
          (optimize-slot-access-p class)
          initargs))
 
 (cl:defmethod reinitialize-instance :around ((class standard-class) &rest initargs)
-  (declare (dynamic-extent initargs))
   (apply #'call-next-method class
          :optimize-slot-access
          (optimize-slot-access-p class)
          initargs))
 
 (cl:defmethod initialize-instance :around ((class funcallable-standard-class) &rest initargs)
-  (declare (dynamic-extent initargs))
   (apply #'call-next-method class
          :optimize-slot-access
          (optimize-slot-access-p class)
          initargs))
 
 (cl:defmethod reinitialize-instance :around ((class funcallable-standard-class) &rest initargs)
-  (declare (dynamic-extent initargs))
   (apply #'call-next-method class
          :optimize-slot-access
          (optimize-slot-access-p class)
@@ -180,11 +175,9 @@
 (cl:defgeneric update-dependent (metaobject dependent &rest initargs))
 
 (cl:defmethod reinitialize-instance :after ((metaobject standard-class) &rest initargs)
-  (declare (dynamic-extent initargs))
   (map-dependents metaobject (lambda (dep) (apply #'update-dependent metaobject dep initargs))))
 
 (cl:defmethod reinitialize-instance :after ((metaobject funcallable-standard-class) &rest initargs)
-  (declare (dynamic-extent initargs))
   (map-dependents metaobject (lambda (dep) (apply #'update-dependent metaobject dep initargs))))
 
 (cl:defmethod initialize-instance :after ((gf standard-generic-function) &rest initargs)
@@ -199,7 +192,6 @@
       new-gf)))
 
 (cl:defmethod reinitialize-instance :after ((gf standard-generic-function) &rest initargs)
-  (declare (dynamic-extent initargs))
   (set-funcallable-instance-function gf (compute-discriminating-function gf))
   (map-dependents gf (lambda (dep) (apply #'update-dependent gf dep initargs))))
 

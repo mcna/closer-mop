@@ -61,7 +61,6 @@
   ((class standard-class) &rest initargs
    #+lispworks4 &key
    #+lispworks4 (direct-superclasses ()))
-  (declare (dynamic-extent initargs))
   (apply #'call-next-method class
          #+lispworks4 :direct-superclasses
          #+lispworks4 (modify-superclasses direct-superclasses)
@@ -72,7 +71,6 @@
   ((class standard-class) &rest initargs
    #+lispworks4 &key
    #+lispworks4 (direct-superclasses () direct-superclasses-p))
-  (declare (dynamic-extent initargs))
   #+lispworks4
   (progn
     (when direct-superclasses-p
@@ -97,7 +95,6 @@
   ((class funcallable-standard-class) &rest initargs
    #+lispworks4 &key
    #+lispworks4 (direct-superclasses ()))
-  (declare (dynamic-extent initargs))
   (apply #'call-next-method class
          #+lispworks4 :direct-superclasses
          #+lispworks4 (modify-superclasses direct-superclasses nil)
@@ -108,7 +105,6 @@
   ((class funcallable-standard-class) &rest initargs
    #+lispworks4 &key
    #+lispworks4 (direct-superclasses () direct-superclasses-p))
-  (declare (dynamic-extent initargs))
   #+lispworks4
   (progn
     (when direct-superclasses-p
@@ -140,7 +136,6 @@
    (new-class funcallable-standard-class)
    &rest initargs
    &key (direct-superclasses ()))
-  (declare (dynamic-extent initargs))
   (apply #'call-next-method class new-class
          :optimize-slot-access (optimize-slot-access-p new-class)
          :direct-superclasses (modify-superclasses direct-superclasses nil)
@@ -384,7 +379,6 @@
 (declaim (inline funcallable-instance-access))
 
 (defun funcallable-instance-access (instance location &rest args)
-  (declare (dynamic-extent args))
   (let* ((class (class-of instance))
          (slot (find location (class-slots class)
                      :key #'slot-definition-location)))

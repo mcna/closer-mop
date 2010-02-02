@@ -156,10 +156,8 @@
         (assert (eq lambda 'lambda))
         (values
          `(lambda (,args ,next-methods &rest ,more-args)
-            (declare (dynamic-extent ,more-args)
-                     (ignorable ,args ,next-methods ,more-args))
+            (declare (ignorable ,args ,next-methods ,more-args))
             (flet ((call-next-method (&rest args)
-                     (declare (dynamic-extent args))
                      (if ,next-methods
                        (apply (method-function (first ,next-methods))
                               (if args args ,args) (rest ,next-methods) ,more-args)
@@ -250,7 +248,7 @@
                                         (make-method-lambda
                                          gf (class-prototype method-class)
                                          `(lambda (&rest ,args)
-                                            (declare (dynamic-extent ,args) (ignorable ,args))
+                                            (declare (ignorable ,args))
                                             ,(transform-effective-method (cadr form))) nil)
                                       (apply #'make-instance
                                              method-class
@@ -261,7 +259,7 @@
                                              method-options))))
                      (t (mapcar #'transform-effective-method (the list form)))))))
         (let ((emf-lambda `(lambda (&rest ,args)
-                             (declare (dynamic-extent ,args) (ignorable ,args))
+                             (declare (ignorable ,args))
                              ,(transform-effective-method effective-method))))
           (multiple-value-bind (function warnings failure)
               (compile nil emf-lambda)
@@ -296,7 +294,6 @@
              applicable-methods)
           (compute-effective-method-function gf effective-method options))
         (lambda (&rest args)
-          (declare (dynamic-extent args))
           (apply #'no-applicable-method gf args)))))
 
   (defun get-emf-using-classes (gf args classes nof-required-args)
@@ -317,7 +314,6 @@
               applicable-methods)
            (compute-effective-method-function gf effective-method options))
          (lambda (&rest args)
-           (declare (dynamic-extent args))
            (apply #'no-applicable-method gf args)))
        validp)))
 
@@ -327,7 +323,7 @@
           #+allegro #'compute-discriminating-function))
 
   (defun only-standard-methods (gf &rest other-gfs)
-    (declare (dynamic-extent other-gfs) (optimize (speed 3) (space 0) (compilation-speed 0)))
+    (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
     (loop for other-gf in (or other-gfs *standard-gfs*)
           always (loop for method in (generic-function-methods other-gf)
                        for specializer = (first (method-specializers method))
@@ -371,7 +367,6 @@
                (declare (type list args classes) (type function emf-setter))
                (multiple-value-bind (emf validp) (get-emf-using-classes gf args classes nof-required-args)
                  (funcall emf-setter (if validp emf (lambda (&rest args)
-                                                      (declare (dynamic-extent args))
                                                       (apply (the function (get-emf gf args nof-required-args)) args))))
                  (apply (the function emf) args))))
         (when (only-standard-methods gf #'compute-applicable-methods #'compute-applicable-methods-using-classes)
@@ -385,15 +380,14 @@
                          #+(or clozure ecl lispworks) (argument-order gf)))
                     (cond ((null (generic-function-methods gf))
                            (lambda (&rest args)
-                             (declare (dynamic-extent args))
                              (apply #'no-applicable-method gf args)))
                           ((methods-all-the-same-specializers gf)
                            (let ((specializers (method-specializers (first (generic-function-methods gf))))
                                  (effective-method-function nil))
                              (declare (type list specializers))
                              (lambda (&rest args)
-                               (declare (dynamic-extent args) (optimize (speed 3) (safety 0) (debug 0)
-                                                                        (compilation-speed 0)))
+                               (declare (optimize (speed 3) (safety 0) (debug 0)
+                                                  (compilation-speed 0)))
                                (cond ((loop for arg in args
                                             for spec in specializers
                                             always (etypecase spec
@@ -408,8 +402,8 @@
                                  (emfs (make-hash-table :test #'eq)))
                              (declare (type hash-table emfs) (type fixnum dispatch-argument-index))
                              (lambda (&rest args)
-                               (declare (dynamic-extent args) (optimize (speed 3) (safety 0) (debug 0)
-                                                                        (compilation-speed 0)))
+                               (declare (optimize (speed 3) (safety 0) (debug 0)
+                                                  (compilation-speed 0)))
                                (let* ((dispatch-class (class-of (nth dispatch-argument-index args)))
                                       (effective-method-function (gethash dispatch-class emfs)))
                                  (if effective-method-function
@@ -419,8 +413,8 @@
           (let ((emfs (make-hash-table :test #'equal)))
             (declare (type hash-table emfs))
             (lambda (&rest args)
-              (declare (dynamic-extent args) (optimize (speed 3) (safety 0) (debug 0)
-                                                       (compilation-speed 0)))
+              (declare (optimize (speed 3) (safety 0) (debug 0)
+                                 (compilation-speed 0)))
               (let* ((classes (loop for arg in args
                                     repeat nof-required-args
                                     collect (class-of arg)))
@@ -433,7 +427,6 @@
   (cl:defmethod compute-discriminating-function ((gf standard-generic-function))
     (if (eq (class-of gf) (find-class 'standard-generic-function))
       (lambda (&rest args)
-        (declare (dynamic-extent args))
         (let ((discriminator (compute-discriminator gf #'call-next-method)))
           (set-funcallable-instance-function gf discriminator)
           (apply discriminator args)))
@@ -663,7 +656,6 @@
 ;;
 ;; (defmethod direct-slot-definition-class
 ;;            ((class my-standard-class) &rest initargs)
-;;   (declare (dynamic-extent initargs))
 ;;   (destructuring-bind
 ;;       (&key key-of-interest &allow-other-keys)
 ;;       (fix-slot-initargs initargs)

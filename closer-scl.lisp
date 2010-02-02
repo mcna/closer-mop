@@ -38,7 +38,6 @@
 (defgeneric update-dependent (metaobject dependent &rest initargs))
 
 (defmethod reinitialize-instance :after ((metaobject metaobject) &rest initargs)
-  (declare (dynamic-extent initargs))
   (map-dependents metaobject (lambda (dep) (apply #'update-dependent metaobject dep initargs))))
 
 (defmethod add-method :after
