@@ -38,10 +38,7 @@
                (not (member '&allow-other-keys args :test #'eq)))
       (let ((tail (member '&aux args :test #'eq)))
         (setq lambda-expression
-              `(lambda ,(nconc (ldiff args tail)
-                               (list '&allow-other-keys)
-                               tail)
-                 ,@body))))
+              `(lambda (,.(ldiff args tail) &allow-other-keys ,@tail) ,@body))))
     (values
      lambda-expression
      (let ((documentation (parse-method-body body lambda-expression)))
