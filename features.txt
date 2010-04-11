@@ -20,6 +20,25 @@ Allegro Common Lisp 8.1
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
 - Subclasses of BUILT-IN-CLASS, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, METHOD-COMBINATION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
+Allegro Common Lisp 8.2
+
+- CLASS-DIRECT-DEFAULT-INITARGS and CLASS-DEFAULT-INITARGS don't return canonicalized default initargs as specified. Not fixed.
+- FUNCALLABLE-STANDARD-OBJECT is not used as the default superclass for classes with :metaclass FUNCALLABLE-STANDARD-CLASS.
+- DEFGENERIC does not call FIND-METHOD-COMBINATION. Not fixed.
+- DEFMETHOD doesn't call MAKE-METHOD-LAMBDA. Fixed.
+- The dependent protocol for generic functions doesn't work fully. Fixed.
+- GENERIC-FUNCTION-ARGUMENT-PRECEDENCE-ORDER doesn't return only the required arguments. Fixed.
+- The function invocation protocol doesn't call COMPUTE-APPLICABLE-METHODS, COMPUTE-APPLICABLE-METHODS-USING-CLASSES and COMPUTE-EFFECTIVE-METHOD. Fixed.
+- The :ALLOCATION type cannot be extended. Fixed.
+- MAKE-METHOD-LAMBDA is not provided. Fixed.
+- Method functions don't take parameters as specified in AMOP, but instead just the parameters that the generic function receives. Fixed.
+- REINITIALIZE-INSTANCE doesn't determine a new discriminating function. Fixed.
+- (SETF CLASS-NAME) and (SETF GENERIC-FUNCTION-NAME) do not use REINITIALIZE-INSTANCE for changing the names. Not fixed.
+- SLOT-MAKUNBOUND-USING-CLASS is not specialized on slot definition metaobjects, but on symbols. Fixed.
+- STANDARD-CLASS and FUNCALLABLE-STANDARD-CLASS are not compatible. Not fixed.
+- VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
+- Subclasses of BUILT-IN-CLASS, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, METHOD-COMBINATION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
+
 CLisp 2.48
 
 - Methods are not initialized with :function. Not fixed.
@@ -168,7 +187,7 @@ SCL 1.3.9
 
 Some extra notes:
 
-- If you specialize COMPUTE-DEFAULT-INITAGS, conditionalize for the extra parameters in Allegro Common Lisp.
+- If you specialize COMPUTE-DEFAULT-INITAGS, conditionalize for the extra parameters in Allegro before Allegro Common Lisp 8.2.
 - Don't rely on FIND-METHOD-COMBINATION to do its job correctly, only when you don't provide method combination options.
 - MAKE-METHOD-LAMBDA works in Allegro, CLisp, Clozure Common Lisp, CMUCL, LispWorks and SBCL as specified (but make sure that the respective generic function and method metaobject classes and make-method-lambda definitions are part of your compilation enviroment).
 - Specialize the methods for the dependent protocol on the class or generic function metaobject class. The example in AMOP doesn't do this but that is fragile code.

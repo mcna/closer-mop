@@ -1,4 +1,4 @@
-Allegro 8.1
+Allegro 8.1, 8.2
 CLisp 2.48
 Clozure Common Lisp 1.4
 CMU Common Lisp 20a
