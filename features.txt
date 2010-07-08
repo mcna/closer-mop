@@ -39,7 +39,7 @@ Allegro Common Lisp 8.2
 - VALIDATE-SUPERCLASS doesn't recognize T as a valid superclass. Not fixed.
 - Subclasses of BUILT-IN-CLASS, FORWARD-REFERENCED-CLASS, FUNCALLABLE-STANDARD-CLASS, METHOD-COMBINATION, STANDARD-ACCESSOR-METHOD, STANDARD-CLASS, STANDARD-DIRECT-SLOT-DEFINITION, STANDARD-EFFECTIVE-SLOT-DEFINITION, STANDARD-GENERIC-FUNCTION, STANDARD-METHOD, STANDARD-READER-METHOD, STANDARD-SLOT-DEFINITION and STANDARD-WRITER-METHOD will inherit slots whose names are exported symbols and/or accessible in the package common-lisp-user. Not fixed.
 
-CLisp 2.48
+CLisp 2.49
 
 - Methods are not initialized with :function. Not fixed.
 - ADD-METHOD, REMOVE-METHOD, INITIALIZE-INSTANCE and REINITIALIZE-INSTANCE do not determine a new discriminating function. This is postponed until function invocation instead, so shouldn't be a problem in practice.
