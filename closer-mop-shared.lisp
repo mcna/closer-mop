@@ -106,7 +106,7 @@
     
     (define-compiler-macro m-function (m)
       (handler-case (method-function m)
-        (error () `(the function (method-function real-method-function (the method ,m)))))))
+        (error () `(the function (method-function (the method ,m)))))))
   
   (defun compute-argument-order (gf nof-required-args)
     (loop with specialized-count = (make-array nof-required-args :initial-element 0)
