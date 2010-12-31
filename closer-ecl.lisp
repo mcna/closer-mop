@@ -25,11 +25,13 @@
   (:method ((gf generic-function))
    (clos:generic-function-method-class gf)))
 
-(cl:defmethod compute-discriminating-function ((gf generic-function)) t)
+(cl:defmethod compute-discriminating-function ((gf generic-function)) 
+  (declare (ignore gf))
+  t)
 
 (cl:defmethod make-method-lambda ((gf generic-function) (method method)
                                   lambda-expression environment)
-  (declare (ignore environment))
+  (declare (ignore environment method gf))
   (destructuring-bind
       (lambda (&rest args) &body body)
       lambda-expression
@@ -58,6 +60,7 @@
 
 (cl:defgeneric find-method-combination (generic-function type options)
   (:method ((gf generic-function) type options)
+   (declare (ignore gf))
    (cons type options)))
 
 (defclass standard-class (cl:standard-class)
@@ -130,7 +133,8 @@
   (make-hash-table :test #'eq))
 
 (cl:defgeneric add-direct-method (specializer method)
-  (:method ((specializer class) (method method)))
+  (:method ((specializer class) (method method))
+   (declare (ignore specializer method)))
   (:method ((specializer built-in-class) (method method))
    (pushnew method (gethash specializer *direct-methods-for-built-in-classes*)))
   (:method ((specializer standard-class) (method method))
@@ -139,7 +143,8 @@
    (pushnew method (slot-value specializer 'direct-methods))))
 
 (cl:defgeneric remove-direct-method (specializer method)
-  (:method ((specializer class) (method method)))
+  (:method ((specializer class) (method method))
+   (declare (ignore specializer method)))
   (:method ((specializer built-in-class) (method method))
    (removef (gethash specializer *direct-methods-for-built-in-classes*) method))
   (:method ((specializer standard-class) (method method))
@@ -189,7 +194,7 @@
   (set-funcallable-instance-function gf (compute-discriminating-function gf)))
 
 (cl:defmethod ensure-generic-function-using-class :around ((gf null) name &rest initargs)
-  (declare (ignore name initargs))
+  (declare (ignore name initargs gf))
   (let ((new-gf (call-next-method)))
     (if (typep new-gf 'standard-generic-function)
       (set-funcallable-instance-function new-gf (compute-discriminating-function new-gf))
