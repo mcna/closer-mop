@@ -2,7 +2,7 @@ Allegro 8.2
 CLisp 2.49
 Clozure Common Lisp 1.6
 CMU Common Lisp 20b
-Embeddable Common Lisp 10.4.1
+Embeddable Common Lisp 11.1.1
 LispWorks 5.1.2 Professional Edition
 LispWorks 6.0.1 Personal Edition
 LispWorks 6.0.1 Enterprise Edition
