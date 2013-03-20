@@ -133,17 +133,20 @@
 
 (cl:defmethod make-method-lambda ((gf generic-function) (method method) lambda-expression environment)
   (declare (ignore environment) (optimize (speed 3) (space 0) (compilation-speed 0)))
-  (let ((methvar (gensym)))
-    (values
-     `(lambda (ccl::&method ,methvar ,@(cadr lambda-expression))
-        (flet ((call-next-method (&rest args)
-                 (if args
-                   (apply #'ccl::%call-next-method-with-args ,methvar args)
-                   (ccl::%call-next-method ,methvar)))
-               (next-method-p () (ccl::%next-method-p ,methvar)))
-          (declare (inline call-next-method next-method-p))
-          ,@(cddr lambda-expression)))
-     (let ((documentation (parse-method-body (cddr lambda-expression) lambda-expression)))
+  (multiple-value-bind (documentation declarations body)
+      (parse-method-body (cddr lambda-expression) lambda-expression)
+    (let ((methvar (gensym)))
+      (values
+       `(lambda (ccl::&method ,methvar ,@(cadr lambda-expression))
+          ,@(when documentation `(,documentation))
+          ,@(when declarations `((declare ,@declarations)))
+          (flet ((call-next-method (&rest args)
+                   (if args
+                     (apply #'ccl::%call-next-method-with-args ,methvar args)
+                     (ccl::%call-next-method ,methvar)))
+                 (next-method-p () (ccl::%next-method-p ,methvar)))
+            (declare (inline call-next-method next-method-p))
+            ,@body))
        (when documentation
          (list :documentation documentation))))))
 

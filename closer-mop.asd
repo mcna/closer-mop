@@ -30,6 +30,7 @@ OTHER DEALINGS IN THE SOFTWARE.
   ((:file "closer-mop-packages")
    (:file "closer-mop-shared" :depends-on ("closer-mop-packages"))
    (:file
+    #+abcl	"closer-abcl"
     #+allegro   "closer-allegro"
     #+clisp     "closer-clisp"
     #+clozure   "closer-clozure"

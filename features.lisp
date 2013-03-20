@@ -1,4 +1,7 @@
-:allegro8.2
+:abcl1.1.1
+#| all features implemented |#
+
+:allegro8.2-9.0
 ((:class-default-initargs)
  (:class-direct-default-initargs)
  (:default-superclass-for-funcallable-standard-class-is-funcallable-standard-object)
@@ -47,7 +50,7 @@
  (:remove-method-calls-compute-discriminating-function)
  (:subclasses-of-method-combination-do-not-inherit-exported-slots))
 
-:clozure-common-lisp1.7
+:clozure-common-lisp1.9
 ((:add-method-calls-compute-discriminating-function fixed)
  (:compute-slots-requested-slot-order-honoured)
  (:defmethod-calls-generic-function-method-class fixed)
@@ -81,7 +84,7 @@
  (:subclasses-of-standard-accessor-method-do-not-inherit-exported-slots)
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
-:cmu20c
+:cmu20d
 ((:accessor-method-initialized-with-function fixed)
  (:accessor-method-initialized-with-lambda-list fixed)
  (:accessor-method-initialized-with-slot-definition fixed)
@@ -122,80 +125,25 @@
  (:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots)
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
-:ecl11.1.1
-((:add-direct-method fixed)
- (:add-method-calls-add-direct-method fixed)
- (:add-method-calls-compute-discriminating-function fixed)
- (:add-method-calls-remove-method fixed)
- (:add-method-updates-specializer-direct-generic-functions fixed)
- (:add-method-updates-specializer-direct-methods fixed)
- (:class-initialization-calls-reader-method-class)
+:ecl12.12.1
+((:class-initialization-calls-reader-method-class)
  (:class-initialization-calls-writer-method-class)
- (:class-reinitialization-calls-remove-direct-subclass fixed)
- (:classes-are-always-their-own-valid-superclasses fixed)
- (:compute-applicable-methods-is-generic fixed)
- (:compute-applicable-methods-using-classes fixed)
- (:compute-effective-method-is-generic fixed)
- (:defgeneric-calls-find-method-combination)
- (:defmethod-calls-generic-function-method-class fixed)
- (:defmethod-calls-make-method-lambda fixed)
- (:dependent-protocol-for-classes fixed)
- (:dependent-protocol-for-generic-functions fixed)
- (:discriminating-functions-can-be-closures fixed)
- (:discriminating-functions-can-be-funcalled fixed)
- (:eql-specializer) ;; partially fixed
- (:eql-specializer-object fixed)
- (:eql-specializers-are-objects)
- (:extract-lambda-list fixed)
- (:extract-specializer-names fixed)
- (:find-method-combination) ;; partially fixed
- (:find-method-is-generic fixed)
- (:function-invocation-calls-compute-applicable-methods fixed)
- (:function-invocation-calls-compute-applicable-methods-using-classes fixed)
- (:function-invocation-calls-compute-effective-method fixed)
- (:generic-function-declarations fixed)
- (:generic-function-method-class-is-generic fixed)
- (:generic-functions-can-be-empty fixed)
- (:initialize-instance-calls-compute-discriminating-function fixed)
- (:intern-eql-specializer fixed)
- (:make-method-lambda fixed)
- (:metaobject)
- (:method-functions-take-processed-parameters)
- (:method-initialized-with-documentation fixed)
- (:method-lambdas-are-processed)
- (:multiple-slot-options-passed-as-list-to-direct-slot-definition-class)
- (:reinitialize-instance-calls-compute-discriminating-function fixed)
- (:remove-direct-method fixed)
- (:remove-method-calls-compute-discriminating-function fixed)
- (:remove-method-calls-remove-direct-method fixed)
- (:remove-method-is-generic fixed)
- (:setf-class-name-calls-reinitialize-instance fixed)
- (:setf-generic-function-name fixed)
- (:setf-generic-function-name-calls-reinitialize-instance fixed)
- (:slot-reader-calls-slot-value-using-class fixed)
- (:slot-writer-calls-slot-value-using-class fixed)
- (:specializer)
- (:specializer-direct-generic-functions fixed)
- (:specializer-direct-methods fixed)
- (:standard-class-and-funcallable-standard-class-are-compatible fixed)
- (:subclasses-of-built-in-class-do-not-inherit-exported-slots)
- (:subclasses-of-class-do-not-inherit-exported-slots)
- (:subclasses-of-direct-slot-definition-do-not-inherit-exported-slots)
- (:subclasses-of-effective-slot-definition-do-not-inherit-exported-slots)
- (:subclasses-of-forward-referenced-class-do-not-inherit-exported-slots)
- (:subclasses-of-funcallable-standard-class-do-not-inherit-exported-slots)
- (:subclasses-of-slot-definition-do-not-inherit-exported-slots)
+ (:subclasses-of-built-in-class-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-class-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-direct-slot-definition-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-effective-slot-definition-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-forward-referenced-class-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-funcallable-standard-class-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-slot-definition-do-not-inherit-exported-slots fixed)
  (:subclasses-of-standard-accessor-method-do-not-inherit-exported-slots)
- (:subclasses-of-standard-class-do-not-inherit-exported-slots)
- (:subclasses-of-standard-direct-slot-definition-do-not-inherit-exported-slots)
- (:subclasses-of-standard-effective-slot-definition-do-not-inherit-exported-slots)
+ (:subclasses-of-standard-class-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-standard-direct-slot-definition-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-standard-effective-slot-definition-do-not-inherit-exported-slots fixed)
  (:subclasses-of-standard-generic-function-do-not-inherit-exported-slots)
- (:subclasses-of-standard-method-do-not-inherit-exported-slots)
+ (:subclasses-of-standard-method-do-not-inherit-exported-slots fixed)
  (:subclasses-of-standard-reader-method-do-not-inherit-exported-slots)
- (:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots)
- (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots)
- (:t-is-always-a-valid-superclass fixed)
- (:validate-superclass fixed))
+ (:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots fixed)
+ (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
 :lispworks5.1-5.1.2
 ((:add-method-calls-compute-discriminating-function)
@@ -246,7 +194,7 @@
  (:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots)
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
-:lispworks6.0.1
+:lispworks6.0.1-6.1.1
 ((:add-method-calls-compute-discriminating-function)
  (:add-method-updates-specializer-direct-generic-functions fixed)
  (:class-default-initargs)
@@ -334,7 +282,7 @@
  (:subclasses-of-standard-slot-definition-do-not-inherit-exported-slots)
  (:subclasses-of-standard-writer-method-do-not-inherit-exported-slots))
 
-:sbcl1.0.55
+:sbcl1.1.5
 #| all features implemented |#
 
 :scl1.3.9

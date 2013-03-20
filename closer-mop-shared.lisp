@@ -34,7 +34,7 @@
             
             finally (return nil))))
 
-#+(or allegro clozure ecl lispworks mcl)
+#+(or allegro clozure lispworks mcl)
 (progn
   ;; validate-superclass for metaclass classes is a little bit
   ;; more tricky than for class metaobject classes because
@@ -68,25 +68,16 @@
 #+(or allegro clisp clozure ecl lispworks sbcl)
 (progn ;;; New generic functions.
 
-  #+ecl
-  (cl:defgeneric specializer-direct-methods (metaobject))
-
-  #+ecl
-  (defclass funcallable-standard-class (clos:funcallable-standard-class)
-    ((direct-methods :initform '() :reader specializer-direct-methods)))
-
   (defclass standard-generic-function (cl:standard-generic-function)
-    (#+(or clozure ecl lispworks) (argument-order :accessor argument-order)
-     #-sbcl                       (initial-methods :initform '())
-     #+ecl                        (declarations :initarg :declarations :initform '()
-                                                :reader generic-function-declarations))
+    (#+(or clozure lispworks) (argument-order :accessor argument-order)
+     #-(or abcl sbcl)         (initial-methods :initform '()))
     
     (:metaclass
      #-lispworks funcallable-standard-class
      #+lispworks clos:funcallable-standard-class)
     
     #+clozure
-    (:default-initargs :name (gensym) :method-class (find-class 'standard-method)))
+    (:default-initargs :name (copy-symbol :name) :method-class (find-class 'standard-method)))
 
   #+clozure
   (progn
@@ -138,17 +129,17 @@
           else append (cdr car) into declarations
           finally (return (values documentation declarations (cons car cdr)))))
 
-  #-sbcl (cl:defgeneric make-method-lambda (generic-function method lambda-expression environment))
+  #-(or abcl sbcl) (cl:defgeneric make-method-lambda (generic-function method lambda-expression environment))
 
   #-ecl
   (cl:defmethod make-method-lambda ((gf standard-generic-function) (method standard-method)
                                     lambda-expression environment)
     (declare (ignore environment) (optimize (speed 3) (space 0) (compilation-speed 0)))
-    #+(or clozure lispworks sbcl)
+    #+(or abcl clozure lispworks sbcl)
     (when (only-standard-methods gf)
       (return-from make-method-lambda (call-next-method)))
-    (let ((args (gensym)) (next-methods (gensym))
-          (more-args (gensym)) (method-function (gensym)))
+    (let ((args (copy-symbol 'args)) (next-methods (copy-symbol 'next-methods))
+          (more-args (copy-symbol 'more-args)) (method-function (copy-symbol 'method-function)))
       (destructuring-bind
           (lambda (&rest lambda-args) &body body)
           lambda-expression
@@ -178,7 +169,7 @@
             #+clozure '(:closer-patch t)
             #-clozure '()))))))
 
-  #+(or clozure ecl lispworks)
+  #+(or clozure lispworks)
   (cl:defgeneric compute-applicable-methods-using-classes (generic-function classes)
     (:method ((gf standard-generic-function) classes)
      (labels ((subclass* (spec1 spec2 arg-spec)
@@ -194,7 +185,7 @@
                       return (subclass* spec1 spec2 (nth n classes)))))
        (let ((applicable-methods
               (sort
-               (loop for method #-ecl of-type #-ecl method in (the list (generic-function-methods gf))
+               (loop for method of-type method in (the list (generic-function-methods gf))
                      when (loop for class in classes
                                 for specializer in (the list (method-specializers method))
                                 if (typep specializer 'eql-specializer)
@@ -219,13 +210,13 @@
               options))
     (let ((all-t-specializers (required-args (generic-function-lambda-list gf)
                                              (constantly (find-class 't))))
-          (args (gensym)))
+          (args (copy-symbol 'args)))
       (labels ((transform-effective-method (form)
                  (if (atom form) form
                    (case (car form)
                      (call-method (transform-effective-method
                                    (let ((the-method (transform-effective-method (cadr form)))
-                                         (method-var (gensym)))
+                                         (method-var (copy-symbol 'method-var)))
                                      `(locally (declare (optimize (speed 3) (safety 0) (debug 0)))
                                         (let ((,method-var ,the-method))
                                           (declare (ignorable ,method-var))
@@ -273,16 +264,6 @@
   #+clozure
   (cl:defgeneric compute-discriminating-function (generic-function))
 
-  #+ecl
-  (cl:defgeneric compute-effective-method (generic-function combination methods)
-    (:method ((gf generic-function) combination methods)
-     (clos:compute-effective-method gf combination methods)))
-
-  #+ecl
-  (cl:defgeneric compute-applicable-methods (gf arguments)
-    (:method ((gf generic-function) arguments)
-     (cl:compute-applicable-methods gf arguments)))
-
   (defun get-emf (gf args nof-required-args)
     (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
     (let ((applicable-methods (compute-applicable-methods gf (subseq args 0 nof-required-args))))
@@ -319,7 +300,9 @@
 
   (defvar *standard-gfs*
     (list #'compute-applicable-methods #'compute-applicable-methods-using-classes
-          #'compute-effective-method #'compute-effective-method-function #'make-method-lambda
+          #'compute-effective-method #'compute-effective-method-function
+          #'generic-function-method-class
+          #'make-method-lambda
           #+allegro #'compute-discriminating-function))
 
   (defun only-standard-methods (gf &rest other-gfs)
@@ -356,9 +339,14 @@
 
   (defun compute-discriminator (gf compute-native-discriminator)
     (declare (optimize (speed 3) (space 0) (compilation-speed 0)))
-    (let ((nof-required-args (length (required-args (generic-function-lambda-list gf))))
+    (let ((nof-required-args 
+           (length (required-args 
+                    (handler-case (generic-function-lambda-list gf)
+                      (unbound-slot ()
+                        (return-from compute-discriminator
+                          (funcall compute-native-discriminator)))))))
           discriminator)
-      #+(or clozure ecl lispworks)
+      #+(or clozure lispworks)
       (setf (argument-order gf)
             (compute-argument-order gf nof-required-args))
       (flet ((discriminate (emf-setter args &optional (classes (loop for arg in args
@@ -376,8 +364,8 @@
                      #+allegro #'compute-discriminating-function)
                   (funcall compute-native-discriminator)
                   (let ((argument-order
-                         #-(or clozure ecl lispworks) (compute-argument-order gf nof-required-args)
-                         #+(or clozure ecl lispworks) (argument-order gf)))
+                         #-(or clozure lispworks) (compute-argument-order gf nof-required-args)
+                         #+(or clozure lispworks) (argument-order gf)))
                     (cond ((null (generic-function-methods gf))
                            (lambda (&rest args)
                              (apply #'no-applicable-method gf args)))
@@ -436,7 +424,7 @@
   (cl:defmethod compute-discriminating-function ((gf standard-generic-function))
     (compute-discriminator gf #'call-next-method))
 
-  #-sbcl
+  #-(or abcl sbcl)
   (progn
     (defun maybe-remove-initial-methods (function-name)
       (let ((generic-function (ignore-errors (fdefinition function-name))))
@@ -470,7 +458,7 @@
             if (eq (car option) :method) collect option into method-options
             else collect option into non-method-options
             finally
-            (let ((gf (gensym))
+            (let ((gf (copy-symbol 'gf))
                   (non-standard (when generic-function-class-name
                                   (let ((standard-generic-function (find-class 'standard-generic-function t env))
                                         (this-generic-function (find-class generic-function-class-name t env)))
@@ -494,7 +482,7 @@
                                              collect `(defmethod ,name ,@(cdr method-option))))))
                      ,gf)))))))
 
-  #+sbcl
+  #+(or abcl sbcl)
   (defmacro defgeneric (&whole form name (&rest args) &body options)
     (unless (every #'consp options)
       (error "Illegal generic function options in defgeneric form ~S." form))
@@ -505,7 +493,7 @@
          (eval-when (:load-toplevel :execute)
            (cl:defgeneric ,name ,args ,@options)))))
 
-  #-sbcl
+  #-(or abcl sbcl)
   (progn
     (defun create-gf-lambda-list (method-lambda-list)
       (loop with stop-keywords = '#.(remove '&optional lambda-list-keywords)
@@ -553,10 +541,10 @@
     (:report (lambda (c s) (format s "No generic function present when encountering a defmethod for ~S. Assuming it will be an instance of standard-generic-function." (dwg-name c)))))
 
   (define-symbol-macro warn-on-defmethod-without-generic-function
-    #-sbcl t
-    #+sbcl nil)
+    #-(or abcl sbcl) t
+    #+(or abcl sbcl) nil)
 
-  #-sbcl
+  #-(or abcl sbcl)
   (defmacro defmethod (&whole form name &body body &environment env)
     (loop with generic-function = (when (fboundp name) (fdefinition name))
         
@@ -566,7 +554,6 @@
               (warn 'defmethod-without-generic-function :name name)))
           (unless (typep generic-function 'standard-generic-function)
             (return-from defmethod `(cl:defmethod ,@(cdr form))))
-          #-ecl
           (when (only-standard-methods generic-function)
             (return-from defmethod `(cl:defmethod ,@(cdr form))))
 
@@ -600,7 +587,7 @@
                                   ',qualifiers (list ,@specializers) ',lambda-list
                                   (function ,method-lambda) ',method-options))))))))
 
-  #+sbcl
+  #+(or abcl sbcl)
   (defmacro defmethod (&whole form name &body body &environment env)
     (declare (ignore body))
     (let ((generic-function (when (fboundp name) (fdefinition name))))
@@ -628,7 +615,7 @@
 
     #+mcl (eval form)))
 
-#+(or clozure ecl lispworks sbcl)
+#+(or abcl clozure ecl lispworks sbcl)
 (defun ensure-method (gf lambda-expression
                          &key (method-class (generic-function-method-class gf))
                          (qualifiers ())
@@ -666,14 +653,14 @@
     :initargs :initform :initfunction
     :readers :writers))
 
-#+(or cmu ecl scl)
+#+(or cmu scl)
 (define-modify-macro nconcf (&rest lists) nconc)
 
 (defun fix-slot-initargs (initargs)
-  #+(or allegro clisp clozure lispworks mcl sbcl)
+  #+(or abcl allegro clisp clozure ecl lispworks mcl sbcl)
   initargs
 
-  #+(or cmu ecl scl)
+  #+(or cmu scl)
   (let* ((counts (loop with counts
                        for (key nil) on initargs by #'cddr
                        do (incf (getf counts key 0))
